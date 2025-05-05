@@ -1,0 +1,130 @@
+graph TD
+    %% Node Definitions (Generic terms already used where appropriate)
+    AccusationSimple["ACCUSATION (simple)"]
+    ADAIntro1["ADA Intro 1"]
+    ADAIntro2["ADA Intro 2"]
+    ADAIntro3["ADA Intro 3"]
+    ADAIntro4["ADA Intro 4"]
+    ADAIntro5["ADA Intro 5"]
+    ADAIntro6["ADA Intro 6"]
+    AutopsyDirect["Autopsy (Direct)"]
+    AutopsyLinear["Autopsy Linear"]
+    ChiselDirect["Chisel (Direct)"]
+    CrimeSceneDirect["Crime Scene (Direct)"]
+    CrimeSceneDirect2["Crime Scene (Direct) 2"]
+    CrimeSceneLinear["Crime Scene Linear"]
+    CulpritDirect["Culprit (Direct)"]
+    CulpritInterviewDirect["Culprit Interview (Direct)"]
+    CulpritInterviewResponse["Culprit Interview Response"]
+    CulpritResult["Culprit Result"]
+    DossierReveal["Dossier Reveal"]
+    EvidenceRevealwAccusation["Evidence Reveal w Accusation"]
+    GATEDossierCheck["GATE: Dossier Check"]
+    GATEInterviewCheck["GATE: Interview Check"]
+    GATEIntroEvidenceCheck["GATE: Intro Evidence Check"]
+    INIT["INIT"]
+    InterviewDossierReveal["Interview + Dossier Reveal"]
+    InterviewReveal["Interview Reveal"]
+    InterviewSelection["Interview Selection"]
+    IntroCard["Intro Card"]
+    IntroEvidenceReveal["Intro Evidence Reveal"]
+    IntroSummary["Intro Summary"]
+    PoliceReportDirect["Police Report (Direct)"]
+    PoliceReportLinear["Police Report Linear"]
+    PreInterviewSelection["Pre Interview Selection"]
+    REVEALAllDossier["REVEAL All Dossier"]
+    REVEALAllInterviews["REVEAL All Interviews"]
+    Suspect1Direct["Suspect 1 (Direct)"]
+    Suspect1InterviewDirect["Suspect 1 Interview (Direct)"]
+    Suspect1InterviewResponse["Suspect 1 Interview Response"]
+    Suspect1Result["Suspect 1 Result"]
+    Suspect2Direct["Suspect 2 (Direct)"]
+    Suspect2InterviewDirect["Suspect 2 Interview (Direct)"]
+    Suspect2InterviewResponse["Suspect 2 Interview Response"]
+    Suspect2Result["Suspect 2 Result"]
+    Suspect3Direct["Suspect 3 (Direct)"]
+    Suspect3InterviewDirect["Suspect 3 Interview (Direct)"]
+    Suspect3InterviewResponse["Suspect 3 Interview Response"]
+    Suspect3Result["Suspect 3 Result"]
+    VictimDirect["Victim (Direct)"]
+    VictimLinear["Victim Linear"]
+
+    %% Connections (Link labels updated to generic terms)
+    IntroCard -- "Open Case" --> IntroSummary
+    IntroSummary -- "Let's Begin" --> INIT
+    INIT --> IntroEvidenceReveal
+
+    %% Intro Sequence
+    ADAIntro1 -- next --> CrimeSceneDirect2
+    CrimeSceneDirect2 --> ADAIntro2
+    ADAIntro2 -- next --> Suspect1Direct
+    Suspect1Direct --> ADAIntro3
+    ADAIntro3 -- next --> ChiselDirect
+    ChiselDirect --> ADAIntro4
+    ADAIntro4 -- next --> Suspect2Direct
+    Suspect2Direct --> ADAIntro5
+    ADAIntro5 -- next --> CulpritDirect
+    CulpritDirect --> ADAIntro6
+    ADAIntro6 -- next --> Suspect3Direct
+    Suspect3Direct --> IntroEvidenceReveal
+
+    %% Intro Evidence Reveal Phase
+    IntroEvidenceReveal --> GATEIntroEvidenceCheck
+
+    %% Gate Checks and Dossier/Interview Reveals
+    GATEIntroEvidenceCheck --> DossierReveal
+    DossierReveal --> REVEALAllDossier
+    DossierReveal --> GATEDossierCheck
+    GATEDossierCheck -- next --> InterviewReveal
+    InterviewReveal --> REVEALAllInterviews
+    InterviewReveal --> GATEInterviewCheck
+
+    %% Interview Loop
+    PreInterviewSelection -- next --> InterviewSelection
+    InterviewSelection -- "Suspect_1" --> Suspect1InterviewDirect  %% Changed label
+    InterviewSelection -- "Suspect_2" --> Suspect2InterviewDirect  %% Changed label
+    InterviewSelection -- "Suspect_3" --> Suspect3InterviewDirect  %% Changed label
+    InterviewSelection -- "Culprit" --> CulpritInterviewDirect  %% Changed label
+    InterviewSelection --> GATEInterviewCheck
+
+    Suspect1InterviewDirect -- "(after first view)" --> Suspect1InterviewResponse
+    Suspect1InterviewResponse -- next --> InterviewSelection
+    Suspect2InterviewDirect -- "(after first view)" --> Suspect2InterviewResponse
+    Suspect2InterviewResponse -- next --> InterviewSelection
+    Suspect3InterviewDirect -- "(after first view)" --> Suspect3InterviewResponse
+    Suspect3InterviewResponse -- next --> InterviewSelection
+    CulpritInterviewDirect -- "(after first view)" --> CulpritInterviewResponse
+    CulpritInterviewResponse -- next --> InterviewSelection
+
+    %% Post-Interview / Accusation Phase
+    GATEInterviewCheck --> EvidenceRevealwAccusation
+    EvidenceRevealwAccusation -- "MAKE ACCUSATION" --> AccusationSimple
+
+    %% Accusation Outcomes
+    AccusationSimple -- "Suspect_1" --> Suspect1Result  %% Changed label
+    AccusationSimple -- "Suspect_2" --> Suspect2Result  %% Changed label
+    AccusationSimple -- "Suspect_3" --> Suspect3Result  %% Changed label
+    AccusationSimple -- "Culprit" --> CulpritResult      %% Changed label
+
+    Suspect1Result -- "RETRY ACCUSATION" --> EvidenceRevealwAccusation
+    Suspect2Result -- "RETRY ACCUSATION" --> EvidenceRevealwAccusation
+    Suspect3Result -- "RETRY ACCUSATION" --> EvidenceRevealwAccusation
+    CulpritResult -- "RETRY ACCUSATION" --> EvidenceRevealwAccusation
+
+    %% Utility Node Connections (Show what calls them)
+    InterviewDossierReveal --> REVEALAllInterviews
+    InterviewDossierReveal --> REVEALAllDossier
+    InterviewDossierReveal --> GATEInterviewCheck
+
+    %% Style nodes (optional, for clarity - unchanged)
+    style INIT fill:#f9f,stroke:#333,stroke-width:2px
+    style IntroCard fill:#ccf,stroke:#333,stroke-width:2px
+    style IntroSummary fill:#ccf,stroke:#333,stroke-width:2px
+    style GATEDossierCheck fill:#f9d,stroke:#333,stroke-width:2px
+    style GATEInterviewCheck fill:#f9d,stroke:#333,stroke-width:2px
+    style GATEIntroEvidenceCheck fill:#f9d,stroke:#333,stroke-width:2px
+    style AccusationSimple fill:#f00,stroke:#333,stroke-width:2px,color:#fff
+    style Suspect1Result fill:#f66,stroke:#333,stroke-width:2px
+    style Suspect2Result fill:#f66,stroke:#333,stroke-width:2px
+    style Suspect3Result fill:#f66,stroke:#333,stroke-width:2px
+    style CulpritResult fill:#6f6,stroke:#333,stroke-width:2px

@@ -1,0 +1,783 @@
+{
+  "type": "object",
+  "properties": {
+    "passages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string",
+                  "enum": ["red", "orange", "yellow", "green", "blue", "purple"]
+                }
+              },
+              "required": ["name", "color"],
+              "additionalProperties": false
+            }
+          },
+          "commands": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "intro"
+                    },
+                    "actions": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "anyOf": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "const": "action"
+                                      },
+                                      "actionType": {
+                                        "type": "string",
+                                        "const": "HIDE_ALL_EVIDENCE"
+                                      }
+                                    },
+                                    "required": ["type", "actionType"],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "const": "action"
+                                      },
+                                      "actionType": {
+                                        "type": "string",
+                                        "const": "MOVE"
+                                      },
+                                      "moveTarget": {
+                                        "anyOf": [
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string",
+                                                "const": "passage"
+                                              },
+                                              "passageTarget": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": ["type", "passageTarget"],
+                                            "additionalProperties": false
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string",
+                                                "const": "application"
+                                              },
+                                              "applicationTarget": {
+                                                "type": "string",
+                                                "enum": ["HOME", "ADA", "DOSSIER", "EVIDENCE"]
+                                              }
+                                            },
+                                            "required": ["type", "applicationTarget"],
+                                            "additionalProperties": false
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string",
+                                                "const": "evidence"
+                                              },
+                                              "evidenceTarget": {
+                                                "type": "string"
+                                              },
+                                              "evidenceAlias": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": ["type", "evidenceTarget", "evidenceAlias"],
+                                            "additionalProperties": false
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "required": ["type", "actionType", "moveTarget"],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "const": "action"
+                                      },
+                                      "actionType": {
+                                        "type": "string",
+                                        "enum": ["REVEAL", "UNLOCK", "LOCK", "HIDE", "HIGHLIGHT"]
+                                      },
+                                      "evidenceTarget": {
+                                        "type": "string"
+                                      },
+                                      "evidenceAlias": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": ["type", "actionType", "evidenceTarget", "evidenceAlias"],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "const": "updateAspect"
+                                  },
+                                  "aspect": {
+                                    "type": "string"
+                                  },
+                                  "operation": {
+                                    "type": "string",
+                                    "enum": ["SET", "increment", "decrement"]
+                                  },
+                                  "value": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["type", "aspect", "operation", "value"],
+                                "additionalProperties": false
+                              }
+                            ]
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": ["bot"]
+                              },
+                              "lines": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "text": {
+                                      "type": "string"
+                                    },
+                                    "imageAlias": {
+                                      "type": "string"
+                                    },
+                                    "imageDescription": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": ["text", "imageAlias", "imageDescription"],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "branch": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "const": "branch"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "replayAbility": {
+                                    "type": "string",
+                                    "enum": ["once", "re-playable", "re-executable"]
+                                  },
+                                  "presentation": {
+                                    "type": "string",
+                                    "enum": ["option-list", "passable", "block-panel", "button-list"]
+                                  },
+                                  "integrationType": {
+                                    "type": "string",
+                                    "enum": ["standalone", "blocking", "ada"]
+                                  },
+                                  "options": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "const": "branchOption"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "aspectCheck": {
+                                          "anyOf": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "type": {
+                                                  "type": "string",
+                                                  "const": "checkAspect"
+                                                },
+                                                "check": {
+                                                  "anyOf": [
+                                                    {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "enum": ["eq", "lt", "lte", "gt", "gte", "ne", "like", "ilike"]
+                                                        },
+                                                        "aspectUid": {
+                                                          "type": "string",
+                                                          "format": "uuid"
+                                                        },
+                                                        "target": {
+                                                          "type": ["string", "number", "boolean", "null"]
+                                                        },
+                                                        "aspect": {
+                                                          "type": "string"
+                                                        }
+                                                      },
+                                                      "required": ["type", "aspectUid", "target", "aspect"],
+                                                      "additionalProperties": false
+                                                    },
+                                                    {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "enum": ["in", "nin"]
+                                                        },
+                                                        "target": {
+                                                          "type": "array",
+                                                          "items": {
+                                                            "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/branch/properties/options/items/properties/aspectCheck/anyOf/0/properties/check/anyOf/0/properties/target"
+                                                          }
+                                                        },
+                                                        "aspect": {
+                                                          "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/branch/properties/options/items/properties/aspectCheck/anyOf/0/properties/check/anyOf/0/properties/aspect"
+                                                        }
+                                                      },
+                                                      "required": ["type", "target", "aspect"],
+                                                      "additionalProperties": false
+                                                    },
+                                                    {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "enum": ["and", "or"]
+                                                        },
+                                                        "target": {
+                                                          "type": "array",
+                                                          "items": {
+                                                            "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/branch/properties/options/items/properties/aspectCheck/anyOf/0/properties/check"
+                                                          }
+                                                        }
+                                                      },
+                                                      "required": ["type", "target"],
+                                                      "additionalProperties": false
+                                                    },
+                                                    {
+                                                      "type": "object",
+                                                      "properties": {
+                                                        "type": {
+                                                          "type": "string",
+                                                          "const": "not"
+                                                        },
+                                                        "target": {
+                                                          "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/branch/properties/options/items/properties/aspectCheck/anyOf/0/properties/check"
+                                                        }
+                                                      },
+                                                      "required": ["type", "target"],
+                                                      "additionalProperties": false
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              "required": ["type", "check"],
+                                              "additionalProperties": false
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "description": {
+                                          "type": "string"
+                                        },
+                                        "actions": {
+                                          "type": "array",
+                                          "items": {
+                                            "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items"
+                                          },
+                                          "minItems": 1
+                                        },
+                                        "imageAlias": {
+                                          "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/lines/items/properties/imageAlias"
+                                        },
+                                        "imageDescription": {
+                                          "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/lines/items/properties/imageDescription"
+                                        }
+                                      },
+                                      "required": ["type", "name", "aspectCheck", "description", "actions", "imageAlias", "imageDescription"],
+                                      "additionalProperties": false
+                                    }
+                                  }
+                                },
+                                "required": ["type", "description", "replayAbility", "presentation", "integrationType", "options"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["type", "lines"],
+                            "additionalProperties": false
+                          }
+                        ]
+                      },
+                      "minItems": 1,
+                      "maxItems": 1
+                    },
+                    "steps": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "introStep"
+                          },
+                          "components": {
+                            "type": "array",
+                            "items": {
+                              "anyOf": [
+                                {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "imageAlias": {
+                                          "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/lines/items/properties/imageAlias"
+                                        },
+                                        "imageDescription": {
+                                          "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/lines/items/properties/imageDescription"
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "const": "introStepBG"
+                                        },
+                                        "backgroundType": {
+                                          "type": "string",
+                                          "const": "IMAGE"
+                                        }
+                                      },
+                                      "required": ["imageAlias", "imageDescription", "type", "backgroundType"],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "videoAlias": {
+                                          "type": "string"
+                                        },
+                                        "videoDescription": {
+                                          "type": "string"
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "const": "introStepBG"
+                                        },
+                                        "backgroundType": {
+                                          "type": "string",
+                                          "const": "VIDEO"
+                                        },
+                                        "mode": {
+                                          "type": "string",
+                                          "enum": ["SOUND_ON", "SOUND_OFF"]
+                                        }
+                                      },
+                                      "required": ["videoAlias", "videoDescription", "type", "backgroundType", "mode"],
+                                      "additionalProperties": false
+                                    }
+                                  ]
+                                },
+                                {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "const": "introStepText"
+                                        },
+                                        "textType": {
+                                          "type": "string",
+                                          "const": "TITLE"
+                                        },
+                                        "mainTitle": {
+                                          "type": "string"
+                                        },
+                                        "subTitle": {
+                                          "type": ["string", "null"]
+                                        }
+                                      },
+                                      "required": ["type", "textType", "mainTitle", "subTitle"],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "const": "introStepText"
+                                        },
+                                        "textType": {
+                                          "type": "string",
+                                          "const": "BREAKDOWN"
+                                        },
+                                        "lines": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      "required": ["type", "textType", "lines"],
+                                      "additionalProperties": false
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "const": "introStepControl"
+                                    },
+                                    "controlType": {
+                                      "type": "string",
+                                      "enum": ["NEXT_STEP_BUTTON", "FINISH_INTRO_BUTTON"]
+                                    },
+                                    "controlKind": {
+                                      "type": "string",
+                                      "enum": ["PRIMARY", "SECONDARY"]
+                                    },
+                                    "text": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": ["type", "controlType", "controlKind", "text"],
+                                  "additionalProperties": false
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "required": ["type", "components"],
+                        "additionalProperties": false
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "required": ["type", "actions", "steps"],
+                  "additionalProperties": false
+                },
+                {
+                  "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/branch"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "if"
+                    },
+                    "check": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "checkAspect"
+                        },
+                        "check": {
+                          "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/branch/properties/options/items/properties/aspectCheck/anyOf/0/properties/check"
+                        }
+                      },
+                      "required": ["type", "check"],
+                      "additionalProperties": false
+                    },
+                    "actions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items"
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "required": ["type", "check", "actions"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "audio"
+                    },
+                    "audioAlias": {
+                      "type": "string"
+                    },
+                    "audioDescription": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["type", "audioAlias", "audioDescription"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "setLocation"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "backgroundAudio": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/properties/passages/items/properties/commands/items/anyOf/3"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "imageAlias": {
+                      "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/lines/items/properties/imageAlias"
+                    },
+                    "imageDescription": {
+                      "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1/properties/lines/items/properties/imageDescription"
+                    }
+                  },
+                  "required": ["type", "name", "backgroundAudio", "imageAlias", "imageDescription"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "leaveLocation"
+                    },
+                    "leaveType": {
+                      "type": ["number", "null"]
+                    }
+                  },
+                  "required": ["type", "leaveType"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "passwordGuesser"
+                    },
+                    "presentation": {
+                      "type": "string",
+                      "enum": ["PHONE_PIN"]
+                    },
+                    "guessList": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "passwordGuess"
+                          },
+                          "value": {
+                            "type": ["string", "null"]
+                          },
+                          "actions": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items"
+                            },
+                            "minItems": 1
+                          }
+                        },
+                        "required": ["type", "value", "actions"],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": ["type", "presentation", "guessList"],
+                  "additionalProperties": false
+                },
+                {
+                  "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/1"
+                },
+                {
+                  "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/0/anyOf/0"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "createAspect"
+                    },
+                    "aspect": {
+                      "type": "string"
+                    },
+                    "aspectType": {
+                      "type": "string",
+                      "enum": ["string", "number", "boolean"]
+                    },
+                    "nullable": {
+                      "type": "boolean"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["type", "aspect", "aspectType", "nullable", "value"],
+                  "additionalProperties": false
+                },
+                {
+                  "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items/anyOf/0/anyOf/1"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["trigger"]
+                    },
+                    "targets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "triggerType": {
+                            "type": "string",
+                            "enum": [
+                              "VIEW",
+                              "FIRST-VIEW",
+                              "AFTER-VIEW",
+                              "AFTER-FIRST-VIEW",
+                              "INTERACTION",
+                              "FIRST-INTERACTION",
+                              "REVEALED",
+                              "UNLOCKED",
+                              "LOCKED",
+                              "HIDDEN"
+                            ]
+                          },
+                          "evidenceTarget": {
+                            "type": "string"
+                          },
+                          "evidenceAlias": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["triggerType", "evidenceTarget", "evidenceAlias"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "actions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items"
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "required": ["type", "targets", "actions"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["chatTrigger"]
+                    },
+                    "triggerType": {
+                      "type": "string",
+                      "enum": ["EXACT", "AI-PROMPT"]
+                    },
+                    "identifier": {
+                      "type": "string"
+                    },
+                    "targetText": {
+                      "type": "string"
+                    },
+                    "actions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/passages/items/properties/commands/items/anyOf/0/properties/actions/items"
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "required": ["type", "triggerType", "identifier", "targetText", "actions"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["chatTriggerOff"]
+                    },
+                    "identifier": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["type", "identifier"],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": ["uid", "name", "description", "tags", "commands"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["passages"],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
