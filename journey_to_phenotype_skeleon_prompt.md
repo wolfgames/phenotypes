@@ -507,6 +507,7 @@ PROCEDURE FindNextEntryPointID(current_index, detailed_journey, id_to_index_map,
 - // Basic case information like title, suspects, evidence types
 - {{synopsis}} 
 
+
 ---/DATA---
 
 ---EXAMPLE---
@@ -876,3 +877,118 @@ PROCEDURE FindNextEntryPointID(current_index, detailed_journey, id_to_index_map,
     ]
   }
 }
+---/SCHEMA---
+---COMMAND---
+Generate the JSON output according to the schema and instructions provided. Follow the four-pass process outlined in the INSTRUCTIONS section. Ensure every step includes a valid `entry_point_id`. Ensure every `next_steps` array contains only valid `entry_point_id`s corresponding to the designated entry steps of target conceptual clusters. Verify reachability for all entry points before finalizing the output. Produce only the raw JSON  as specified in the OUTPUT FORMAT.
+
+
+graph TD
+    A[Start: Receive Detailed Journey & Case Metadata] --> B(Phase 1: Deconstruct Input)
+    B --> C(Break down journey into numbered steps)
+    C --> D(Extract raw data per step: Title, Description, Clues, Options, Action)
+    D --> E{Analyze EACH step's content}
+    E --> F{Determine Primary Narrative Purpose?}
+    F --> G{Identify Core Player Interaction Type?}
+    G --> H(Assign Initial Phenotype Tag)
+    H --> I{Does step combine multiple actions/purposes? (e.g., Collect & Examine)}
+    I -- Yes --> J(Split into Multiple Phenotype Nodes)
+    I -- No --> K(Keep as single Node)
+    J --> K
+    K --> L(Generate Clean Step Description)
+    L --> M(Assign Unique Internal Node ID & Index)
+    M --> N{Is this node a logical Navigation Target?}
+    N -- Yes --> O(Map Conceptual Name to Node ID)
+    N -- No --> P(Proceed)
+    O --> P
+    P --> E
+    E --> Q{All steps processed?}
+    Q -- Yes --> R(Phase 2: Define Entry Points)
+    R --> S(Identify Key Entry Nodes: Hub, Lists, Start of major paths/collections)
+    S --> T(Assign Self as Entry Point for Key Nodes)
+    T --> U(For ALL other nodes: Assign Self as Entry Point)
+    U --> V{Map Conceptual Targets to Entry Point IDs?}
+    V -- Yes --> W(Update Conceptual Name Map with Entry IDs)
+    V -- No --> X(Proceed)
+    W --> X
+    X --> Y(Phase 3: Map Relationships - Edges)
+    Y --> Z(For EACH Node:)
+    Z --> AA{Analyze ACTION field?}
+    AA -- Yes --> AB(Extract explicit Navigation Targets/Triggers)
+    AA -- No --> AC(Proceed)
+    AB --> AC
+    AC --> AD{Apply Phenotype Default Navigation Rules?}
+    AD -- Yes --> AE(Infer implicit targets based on type: Exam/Profile back to Hub/List; List to Profile/Exam; Success/Fail back to source/Hub etc.)
+    AD -- No --> AF(Proceed)
+    AE --> AF
+    AF --> AG(Map Conceptual/Node Targets to Target Entry Point IDs)
+    AG --> AH(Record potential Edges: Source Node ID -> Target Entry Point ID)
+    AH --> Z
+    Z --> AI{All nodes mapped?}
+    AI -- Yes --> AJ(Phase 4: Validate & Refine Graph)
+    AJ --> AK(Collect All Defined Entry Point IDs)
+    AK --> AL(Perform Reachability Check from Hook/Intro)
+    AL --> AM{Are there Orphaned Entry Points?}
+    AM -- Yes --> AN(Add default Edges from INVESTIGATION_HUB to Orphans)
+    AM -- No --> AO(Proceed)
+    AN --> AO
+    AO --> AP(Consolidate & Validate Edge List)
+    AP --> AQ(Remove illogical/redundant edges: e.g., Resolution -> anything)
+    AQ --> AR(Phase 5: Final Assembly)
+    AR --> AS(Structure Nodes & Edges into Schema Format)
+    AS --> AT(Assign Final Sequential step_index for output order)
+    AT --> AU(Generate JSON Output)
+    AU --> B_END(End)
+
+
+Generalized Tree of Thought / Internal Strategy:
+
+Deconstruction & Atomization:
+
+Goal: Break down the potentially linear or branched input text into discrete, atomic units of player interaction or narrative delivery.
+
+Process: Read through the input step-by-step, but think of each point as a description of a potential game state or interaction, not just the next item in a list.
+
+Key Questioning: What is the player doing here? What information are they receiving? What decision are they making? What type of game activity does this represent (exploring, reading, solving, talking, concluding)? Does this single description cover multiple distinct actions (like finding something and immediately solving a puzzle about it)? If so, identify where the logical split points are.
+
+Phenotype Identification & Description:
+
+Goal: Classify each atomic unit according to the predefined phenotype types and create a clear, implementable description.
+
+Process: Map the identified player activity/narrative purpose to the most appropriate phenotype tag (CASE_HOOK, EVIDENCE_COLLECTION, DEDUCTION_PUZZLE, SUSPECT_PROFILE, BREAKTHROUGH, etc.). Ignore implementation details (like "CREATE ADA_IntroScreen") in the description, focusing on the player's experience ("Engage with the initial report"). Determine where the content for this step originates in the source data for the description reference.
+
+Identify Navigation Targets & Entry Points:
+
+Goal: Define stable, reliable points in the narrative graph that other nodes can link to.
+
+Process: Scan the identified phenotypes for types that typically serve as destinations: the main investigation area/hub, lists of items/suspects, the start of specific investigation branches (like entering a new location for collection), specific suspect profiles, or key deduction puzzles/breakthroughs. Assign these nodes their own ID as their entry_point_id. For nodes that are part of a sequence within a larger conceptual unit (e.g., examining file A, then file B, then file C within the Vet Clinic), their entry_point_id conceptually might tie back to the start of that sequence (EVIDENCE_COLLECTION_VetClinic), but for implementable distinctness, each node often gets its own ID as its entry point, allowing deep linking or specific targeting if needed. The key conceptual entry points (HUB, Lists, major collection areas) are explicitly noted and mapped by a conceptual name ("Case_Board", "Suspect_List_View") for easier targeting.
+
+Map Potential Connections (Edges):
+
+Goal: Determine where the player can go from each node based on their choices, unlocked content, or logical flow.
+
+Process: Examine the ACTION field and OPTIONS within the source data for explicit navigation commands (NAVIGATE TO, TRIGGER). Translate these into directed edges from the current node to the entry_point_id of the target node(s). Supplement explicit links with phenotype-based default navigation:
+
+From decision points (like INTRO_SEQUENCE options or Hypothesis checks), link to the start of the consequent branches (often EVIDENCE_COLLECTION nodes).
+
+From information-gathering nodes (EVIDENCE_EXAMINATION, SUSPECT_PROFILE, Deduction Success/Failure outcomes), link back to the main INVESTIGATION_HUB or potentially a relevant list (SUSPECT_LIST, etc.) to allow continued investigation.
+
+From list nodes (SUSPECT_LIST, perhaps EVIDENCE_COLLECTION if it lists items), link to the associated examination/profile nodes.
+
+From nodes requiring follow-up actions (like EVIDENCE_EXAMINATION prompting a search for a full log), link to the HUB or relevant collection area.
+
+Ensure success/failure branches from DEDUCTION_PUZZLEs lead to distinct outcome nodes (DEDUCTION_SUCCESS/FAILURE) and then potentially diverge from there (e.g., Success leads forward, Failure loops back or returns to hub).
+
+Connect major progression points: Breakthroughs often lead to Confrontation, Confrontation leads to Accusation, Accusation leads to Resolution.
+
+Validate Graph Structure:
+
+Goal: Ensure the resulting network of nodes and edges forms a coherent, navigable structure where key objectives are reachable.
+
+Process: Mentally (or computationally) traverse the graph. Can a player starting at the beginning reach all significant investigative branches, all suspect profiles, all breakthrough moments, the confrontation, accusation, and resolution states? If key entry points are unreachable from the starting path or the main HUB, add default edges (typically from the HUB) to connect them, ensuring all major content clusters are accessible. Remove any illogical links (e.g., a Case Resolution node shouldn't lead anywhere within the case).
+
+This thought process prioritizes the player's experience and agency, breaking down the source material into the fundamental building blocks (phenotypes) and then rebuilding them into a flexible, connected graph that supports non-linear exploration while guiding the player towards the case resolution.
+
+Output expanded information following ONLY the player journey below. Output the exact number of steps described in the text:
+
+{{player_journey}} 
+---/COMMAND---

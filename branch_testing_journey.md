@@ -120,7 +120,7 @@
 
 * **Test Cases & Phenotypes:**
 
-    88. **Test Case:** Branch Presentation Setup
+    8. **Test Case:** Branch Presentation Setup
         * **Purpose:** Initialize testing of branch presentation types.
         * **Diagnostic Phenotype:** `DIAGNOSTIC_ENTRY_POINT`
         * **Inputs:**
@@ -132,7 +132,7 @@
             * `nextPassageID`: "TC03_OPTION_LIST"
         * **Technical Validation Goal:** System is prepared for branch presentation tests.
 
-    2. **Test Case:** Option List Presentation
+    9. **Test Case:** Option List Presentation
         * **Purpose:** Test the "option-list" branch presentation.
         * **Custom Branch Test Implementation:**
         ```
@@ -145,7 +145,7 @@
         ```
         * **Technical Validation Goal:** System correctly displays options in list format.
 
-    3. **Test Case:** Card Panel Presentation
+    10. **Test Case:** Card Panel Presentation
         * **Purpose:** Test the "card-panel" branch presentation.
         * **Custom Branch Test Implementation:**
         ```
@@ -158,7 +158,7 @@
         ```
         * **Technical Validation Goal:** System correctly displays options as cards with images.
 
-    4. **Test Case:** Block Panel Presentation
+    11. **Test Case:** Block Panel Presentation
         * **Purpose:** Test the "block-panel" branch presentation.
         * **Custom Branch Test Implementation:**
         ```
@@ -179,7 +179,7 @@
 
 * **Test Cases & Phenotypes:**
 
-    1. **Test Case:** Branch Integration Setup
+    12. **Test Case:** Branch Integration Setup
         * **Purpose:** Initialize testing of branch integration types.
         * **Diagnostic Phenotype:** `DIAGNOSTIC_ENTRY_POINT`
         * **Inputs:**
@@ -191,7 +191,7 @@
             * `nextPassageID`: "TC04_BLOCKING"
         * **Technical Validation Goal:** System is prepared for branch integration tests.
 
-    2. **Test Case:** Blocking Integration
+    13. **Test Case:** Blocking Integration
         * **Purpose:** Test the "blocking" integration type.
         * **Custom Branch Test Implementation:**
         ```
@@ -202,7 +202,7 @@
         ```
         * **Technical Validation Goal:** System correctly displays branch that blocks progression until selected.
 
-    3. **Test Case:** Inline Integration
+    14. **Test Case:** Inline Integration
         * **Purpose:** Test the "inline" integration type.
         * **Custom Branch Test Implementation:**
         ```
@@ -213,7 +213,7 @@
         ```
         * **Technical Validation Goal:** System correctly displays branch inline with content.
 
-    4. **Test Case:** ADA Integration
+    15. **Test Case:** ADA Integration
         * **Purpose:** Test the "ada" integration type.
         * **Custom Branch Test Implementation:**
         ```
@@ -232,7 +232,7 @@
 
 * **Test Cases & Phenotypes:**
 
-    1. **Test Case:** Branch Option Parameters Setup
+    16. **Test Case:** Branch Option Parameters Setup
         * **Purpose:** Initialize testing of branch option parameters.
         * **Diagnostic Phenotype:** `DIAGNOSTIC_ENTRY_POINT`
         * **Inputs:**
@@ -248,7 +248,7 @@
             * `nextPassageID`: "TC05_IMAGE_TEST"
         * **Technical Validation Goal:** System is prepared for branch option parameter tests.
 
-    2. **Test Case:** Image Alias and Description
+    17. **Test Case:** Image Alias and Description
         * **Purpose:** Test branch options with image alias and description.
         * **Custom Branch Test Implementation:**
         ```
@@ -261,7 +261,7 @@
         ```
         * **Technical Validation Goal:** System correctly displays branch options with and without images.
 
-    3. **Test Case:** Aspect Check Parameter (Conditional Options)
+    18. **Test Case:** Aspect Check Parameter (Conditional Options)
         * **Purpose:** Test branch options with aspect check conditions.
         * **Custom Branch Test Implementation:**
         ```
@@ -276,7 +276,7 @@
         ```
         * **Technical Validation Goal:** System correctly displays or hides branch options based on conditions.
 
-    4. **Test Case:** Conditional Options Setup
+    19. **Test Case:** Conditional Options Setup
         * **Purpose:** Set up state for testing conditional options.
         * **Diagnostic Phenotype:** `DIAGNOSTIC_LINEAR_TEST`
         * **Inputs:**
@@ -289,7 +289,7 @@
             * `nextPassageID`: "TC05_ASPECT_CHECK_RETEST"
         * **Technical Validation Goal:** System correctly updates state to enable conditional options.
 
-    5. **Test Case:** Aspect Check Retest
+    20. **Test Case:** Aspect Check Retest
         * **Purpose:** Test branch options with modified aspect conditions.
         * **Custom Branch Test Implementation:**
         ```
@@ -312,7 +312,7 @@
 
 * **Test Cases & Phenotypes:**
 
-    1. **Test Case:** Advanced Parameters Setup
+    21. **Test Case:** Advanced Parameters Setup
         * **Purpose:** Initialize testing of advanced branch parameters.
         * **Diagnostic Phenotype:** `DIAGNOSTIC_ENTRY_POINT`
         * **Inputs:**
@@ -328,7 +328,7 @@
             * `nextPassageID`: "TC06_REPLAY_TEST"
         * **Technical Validation Goal:** System is prepared for advanced branch parameter tests.
 
-    2. **Test Case:** Replay Ability Test
+    22. **Test Case:** Replay Ability Test
         * **Purpose:** Test different branch replay types (once, re-playable, re-executable).
         * **Custom Branch Test Implementation:**
         ```
@@ -348,7 +348,7 @@
         ```
         * **Technical Validation Goal:** System correctly handles different replay ability settings.
 
-    3. **Test Case:** Compound Condition Test
+    23. **Test Case:** Compound Condition Test
         * **Purpose:** Test branch options with compound conditions (AND/OR/NOT).
         * **Diagnostic Phenotype:** `DIAGNOSTIC_COMPOUND_CONDITION`
         * **Inputs:**
@@ -364,7 +364,7 @@
             * `falsePassageID`: "TC06_CONDITION_FALSE"
         * **Technical Validation Goal:** Compound logical condition evaluation works correctly.
 
-    4. **Test Case:** Compound Condition Results
+    24. **Test Case:** Compound Condition Results
         * **Purpose:** Record results from compound condition paths.
         * **Custom Linear Test Implementations:**
         ```
@@ -387,7 +387,7 @@
 
 * **Test Cases & Phenotypes:**
 
-    1. **Test Case:** Action Sequence Setup
+    25. **Test Case:** Action Sequence Setup
         * **Purpose:** Initialize testing of branch action sequences.
         * **Diagnostic Phenotype:** `DIAGNOSTIC_ENTRY_POINT`
         * **Inputs:**
@@ -399,7 +399,7 @@
             * `nextPassageID`: "TC07_MULTI_ACTION"
         * **Technical Validation Goal:** System is prepared for branch action sequence tests.
 
-    2. **Test Case:** Multi-Action Branch Options
+    26. **Test Case:** Multi-Action Branch Options
         * **Purpose:** Test branch options with multiple sequential actions.
         * **Custom Branch Test Implementation:**
         ```
@@ -412,7 +412,7 @@
         ```
         * **Technical Validation Goal:** System correctly processes multiple sequential actions in branch options.
 
-    3. **Test Case:** Action Sequence Result
+    27. **Test Case:** Action Sequence Result
         * **Purpose:** Verify results from multi-action branch options.
         * **Custom Linear Test Implementation:**
         ```
@@ -435,7 +435,7 @@
 
 * **Test Cases & Phenotypes:**
 
-    1. **Test Case:** Branch Testing Summary
+    28. **Test Case:** Branch Testing Summary
         * **Purpose:** Initialize final test summary.
         * **Diagnostic Phenotype:** `DIAGNOSTIC_ENTRY_POINT`
         * **Inputs:**
@@ -447,7 +447,7 @@
             * `nextPassageID`: "TC08_EXIT"
         * **Technical Validation Goal:** System is prepared for test completion.
 
-    2. **Test Case:** Test Completion
+    29. **Test Case:** Test Completion
         * **Purpose:** Validate proper test termination and result recording.
         * **Diagnostic Phenotype:** `DIAGNOSTIC_EXIT_POINT`
         * **Inputs:**
