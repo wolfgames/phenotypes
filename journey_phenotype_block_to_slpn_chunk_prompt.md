@@ -374,23 +374,43 @@ You understand that SLPN is a highly compact, symbolic format designed to repres
 Now, generate your section of the SLPN:
 
 {# Extract phenotype content for the current step #}
-{% set start_marker = '{# PHENOTYPE: ' + phenotype_tag + ' #}' %}
-{% set end_marker = '{# END_PHENOTYPE: ' + phenotype_tag + ' #}' %}
-{% set start_index = phenotype_list.find(start_marker) + start_marker|length %}
-{% set end_index = phenotype_list.find(end_marker) %}
+{# Loop through the provided phenotype tags and accumulate content #}
+{% set combined_phenotype_content = [] %}
+{% set found_tags_list = [] %}
+{% for tag in phenotype_tags %}
+  {% set start_marker = '{# PHENOTYPE: ' + tag + ' #}' %}
+  {% set end_marker = '{# END_PHENOTYPE: ' + tag + ' #}' %}
+  {% set start_index = phenotype_list.find(start_marker) %}
+  {% set end_index = phenotype_list.find(end_marker) %}
+
+  {# If this tag is found #}
+  {% if start_index > -1 and end_index > -1 %}
+    {% set start_index = start_index + start_marker|length %}
+    {% set content_block = phenotype_list[start_index:end_index]|trim %}
+    {% if content_block %}
+      {# Append the content block to the list #}
+      {% set _ = combined_phenotype_content.append(content_block) %}
+      {# Add the tag to our list of found tags #}
+      {% if tag not in found_tags_list %}
+          {% set _ = found_tags_list.append(tag) %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
 
 {# Output the step with its index and description #}
-{% if start_index > -1 and end_index > -1 %}
-## Step {{ step_index }}: {{ phenotype_tag }}
+{% if found_tags_list %}
+## Step {{ step_index }}: {{ found_tags_list|join(', ') }} (Source Tags: {{ phenotype_tags|join(', ') }})
 
 {{ step_description }}
 
 ```
-{{ phenotype_list[start_index:end_index]|trim }}
+{# Join the collected content blocks with double newlines #}
+{{ combined_phenotype_content|join('\\n\\n') }}
 ```
 {% else %}
-{# Handle case where phenotype block is not found #}
-Phenotype block for "{{ phenotype_tag }}" not found in phenotype_list.
+{# Handle case where no matching phenotype block is found #}
+Phenotype block for any of tags "{{ phenotype_tags|join('", "') }}" not found in phenotype_list.
 {% endif %}
 
 ---/INSTRUCTIONS---
@@ -464,7 +484,7 @@ The discovery of encrypted messages on Luna's phone reveals a custody battle esc
 {
   "phenotype_tag": "CASE_HOOK",
   "step": 0,
-  "slpn": "PSG:uid=CASE_HOOK_0;nam=\"Obsessive Alliance\";CNT;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=bloody_hammer;imd=\"Bloodied hammer next to a custody court document\";cmp=CMP:typ=introStepText;txt=TITLE;mnt=\"Obsessive Alliance\";sbt=\"Bay Area politician and boyfriend found BLUDGEONED in her apartment. The custody battle she won turned deadly.\";cmp=CMP:typ=introStepControl;ctt=NEXT_STEP_BUTTON;ctk=PRIMARY;tex=\"Continue...\";brn=BRN:bds=\"Incoming Case\";brp=once;bpr=block-panel;bit=blocking;ops=BOP:onm=\"Continue...\";img=\"bloody_hammer\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CASE_HOOK_0_context;\n\nPSG:uid=CASE_HOOK_0_context;nam=\"Obsessive Alliance - Initial Context\";CNT;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=case_file_summary;imd=\"Case file with initial details\";cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin=\"[SEE: Case file summary] [LEARN: Luna Grayson, a Bay Area politician, and her boyfriend, Ryan SanAquino, were found dead in her North Beach apartment. Initial suspicion falls on Carlos Hernandez, Luna's ex-partner, due to their escalating custody battle.] [DO: Consider if you want to take this case]\";cmp=CMP:typ=introStepControl;ctt=NEXT_STEP_BUTTON;ctk=PRIMARY;tex=\"Proceed\";brn=BRN:bds=\"Case Briefing\";brp=once;bpr=block-panel;bit=blocking;ops=BOP:onm=\"Proceed\";img=\"case_file_summary\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CASE_HOOK_0_choice;\n\nPSG:uid=CASE_HOOK_0_choice;nam=\"Obsessive Alliance - Take the Case?\";CNT;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=case_decision;imd=\"Decision point interface\";cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin=\"[DO: Accept the challenge or decline?]\";cmp=CMP:typ=introStepControl;ctt=DECISION_BUTTONS;ctk=PRIMARY;tex=\"Make Your Choice\";brn=BRN:bds=\"Decision Point\";brp=once;bpr=block-panel;bit=blocking;ops=BOP:onm=\"Accept Case\";img=\"accept_case\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CASE_HOOK_0_confirm_ACCEPT|BOP:onm=\"Decline Case\";img=\"decline_case\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CASE_HOOK_0_confirm_DECLINE;\n\nPSG:uid=CASE_HOOK_0_confirm_ACCEPT;nam=\"Obsessive Alliance - Decision Made (Accepted)\";CNT;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=case_accepted;imd=\"Evidence drive preparation\";cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin=\"[LEARN: Case accepted. Preparing evidence drive...]\";cmp=CMP:typ=introStepControl;ctt=FINISH_INTRO_BUTTON;ctk=PRIMARY;tex=\"Start Investigation\";brn=BRN:bds=\"Case Accepted\";brp=once;bpr=block-panel;bit=blocking;ops=BOP:onm=\"Start Investigation\";img=\"start_investigation\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=INVESTIGATION_HUB_1;\n\nPSG:uid=CASE_HOOK_0_confirm_DECLINE;nam=\"Obsessive Alliance - Decision Made (Declined)\";CNT;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=case_declined;imd=\"Return to main menu\";cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin=\"[LEARN: Case declined. Returning to main menu...]\";cmp=CMP:typ=introStepControl;ctt=FINISH_INTRO_BUTTON;ctk=PRIMARY;tex=\"Okay\";brn=BRN:bds=\"Case Declined\";brp=once;bpr=block-panel;bit=blocking;ops=BOP:onm=\"Okay\";img=\"return_to_menu\";act=ACT:aty=MOVE;amt=AMT:typ=application;tgt=HOME;"
+  "slpn": "PSG:uid=CASE_HOOK_0;nam=\"Obsessive Alliance\";tag=NARRATIVE|INTRO;cmd=CMD:typ=intro;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CASE_HOOK_0_context;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=bloody_hammer;imd=\"Bloodied hammer next to a custody court document\";cmp=CMP:typ=introStepText;txt=TITLE;mnt=\"Obsessive Alliance\";sbt=\"Bay Area politician and boyfriend found BLUDGEONED in her apartment. The custody battle she won turned deadly.\";cmp=CMP:typ=introStepControl;ctt=FINISH_INTRO_BUTTON;ctk=PRIMARY;tex=\"Continue...\";\n\nPSG:uid=CASE_HOOK_0_context;nam=\"Obsessive Alliance - Initial Context\";tag=NARRATIVE|INTRO;cmd=CMD:typ=intro;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CASE_HOOK_0_choice;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=case_file_summary;imd=\"Case file with initial details\";cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin=\"[SEE: Case file summary] | [LEARN: Luna Grayson, a Bay Area politician, and her boyfriend, Ryan SanAquino, were found dead in her North Beach apartment. Initial suspicion falls on Carlos Hernandez, Luna's ex-partner, due to their escalating custody battle.] | [DO: Consider if you want to take this case]\";cmp=CMP:typ=introStepControl;ctt=FINISH_INTRO_BUTTON;ctk=PRIMARY;tex=\"Proceed\";\n\nPSG:uid=CASE_HOOK_0_choice;nam=\"Obsessive Alliance - Take the Case?\";tag=NARRATIVE|INTRO|CHOICE;cmd=CMD:typ=branch;bds=\"[DO: Accept the challenge or decline?]\";brp=once;bpr=option-list;bit=blocking;ops=BOP:onm=\"Accept Case\";img=\"accept_case\";imd=\"Accept the case and investigate\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CASE_HOOK_0_confirm_ACCEPT|BOP:onm=\"Decline Case\";img=\"decline_case\";imd=\"Decline the case and return to HQ\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CASE_HOOK_0_confirm_DECLINE;\n\nPSG:uid=CASE_HOOK_0_confirm_ACCEPT;nam=\"Obsessive Alliance - Decision Made (Accepted)\";tag=NARRATIVE|INTRO;cmd=CMD:typ=intro;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=INVESTIGATION_HUB_1;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=case_accepted;imd=\"Evidence drive preparation\";cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin=\"[LEARN: Case accepted. Preparing evidence drive...]\";cmp=CMP:typ=introStepControl;ctt=FINISH_INTRO_BUTTON;ctk=PRIMARY;tex=\"Start Investigation\";\n\nPSG:uid=CASE_HOOK_0_confirm_DECLINE;nam=\"Obsessive Alliance - Decision Made (Declined)\";tag=NARRATIVE|INTRO;cmd=CMD:typ=intro;act=ACT:aty=MOVE;amt=AMT:typ=application;tgt=HOME;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=case_declined;imd=\"Return to main menu\";cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin=\"[LEARN: Case declined. Returning to main menu...]\";cmp=CMP:typ=introStepControl;ctt=FINISH_INTRO_BUTTON;ctk=PRIMARY;tex=\"Okay\";"
 }
 ```
 
@@ -557,6 +577,188 @@ And action can be:
 } 
 - Reveal: ACT:aty=REVEAL;aet=evidence_id
 - Update: UAS:asp=aspect_name;uty=SET;val=new_value
+
+Okay, let's represent the SLPN structure using a pseudocode schema notation that preserves the original abbreviations. We'll use indentation for hierarchy, `?` for optional elements, `*` for lists (multiple occurrences allowed), and `|` for exclusive alternatives. Implicit types like String, Boolean, Number, Enum are assumed based on context.
+
+```pseudocode
+// Top-Level Passage Definition
+PSG {
+  uid: UID                // REQUIRED: Unique Passage Identifier
+  nam: NameString         // REQUIRED: Passage Name
+  tag: TagString?         // Optional: Pipe-separated tags (e.g., "NARRATIVE|INTRO")
+  cnt: Boolean?           // Optional: Presence flag, meaning context-dependent.
+  cmd: Command*           // Optional: List of commands executed by the passage
+  bot: Bot?               // Optional: Text displayed via BOT
+  brn: Branch?            // Optional: Branching choices defined at passage level
+  set: SetCommand*        // Optional: Direct SET commands (often diagnostic)
+  act: Action*            // Optional: Direct ACT commands
+  uas: UpdateAspect*      // Optional: Direct UAS commands
+}
+
+// Command Definition
+Command {
+  typ: CommandTypeEnum    // REQUIRED: Type of command (intro, branch, diagnostic, ...)
+
+  // --- Fields specific to typ=intro ---
+  act: Action*?           // Optional: Actions associated with intro command (e.g., MOVE)
+  stp: Step*?             // Optional: Steps within the intro command
+
+  // --- Fields specific to typ=branch (when ops defined within CMD) ---
+  bds: DescriptionString? // Optional: Branch description
+  brp: BranchRepeatEnum?  // Optional: Repeatability (once, re-playable)
+  bpr: BranchPresentationEnum? // Optional: Presentation style (option-list, block-panel)
+  bit: BranchInteractionEnum? // Optional: Interaction (blocking)
+  ops: BranchOption*?     // Optional: List of branch options defined here
+}
+
+// Step Definition (within intro command)
+Step {
+  typ: StepTypeEnum       // REQUIRED: Type of step (e.g., introStep)
+  cmp: Component*         // REQUIRED: List of components within the step
+}
+
+// Component Definition (within step)
+Component {
+  typ: ComponentTypeEnum  // REQUIRED: Type of component (introStepBG, introStepText, introStepControl)
+
+  // --- Fields for typ=introStepBG ---
+  bgt: BackgroundTypeEnum? // Optional: Type of background (IMAGE)
+  img: ImageAlias?        // Optional: Image alias
+  imd: DescriptionString? // Optional: Image description
+
+  // --- Fields for typ=introStepText ---
+  txt: TextTypeEnum?      // Optional: Type of text (TITLE, BREAKDOWN)
+  mnt: String?            // Optional: Main text/title
+  sbt: String?            // Optional: Subtitle text
+  lin: String?            // Optional: Line content (for BREAKDOWN)
+
+  // --- Fields for typ=introStepControl ---
+  ctt: ControlTypeEnum?   // Optional: Type of control (FINISH_INTRO_BUTTON)
+  ctk: ControlKeyEnum?    // Optional: Key/Style (PRIMARY)
+  tex: String?            // Optional: Control text/label
+}
+
+// Branch Definition (usually at passage level via 'brn')
+Branch {
+  bds: DescriptionString  // REQUIRED: Branch description/prompt
+  brp: BranchRepeatEnum   // REQUIRED: Repeatability
+  bpr: BranchPresentationEnum // REQUIRED: Presentation style
+  bit: BranchInteractionEnum // REQUIRED: Interaction type
+  ops: BranchOption*      // REQUIRED: List of branch options
+}
+
+// Branch Option Definition
+BranchOption {
+  onm: String             // REQUIRED: Option display name
+  img: ImageAlias?        // Optional: Image alias
+  imd: DescriptionString? // Optional: Image description
+  ods: DescriptionString? // Optional: Option details/description
+  cnd: ConditionUnion?    // Optional: Condition definition (simple or compound)
+  chk: Check?             // Optional: Check definition (alternative/complementary to cnd)
+  act: Action*?           // Optional: List of actions for this option
+  uas: UpdateAspect*?     // Optional: List of aspect updates for this option
+}
+
+// Action Definition
+Action {
+  aty: ActionTypeEnum     // REQUIRED: Type of action (MOVE, REVEAL, ...)
+
+  // --- Fields for aty=MOVE ---
+  amt: Amount?            // Optional: Target definition for MOVE
+
+  // --- Fields for aty=REVEAL ---
+  aet: AssetID?           // Optional: Asset entity ID (evidence, character) for REVEAL
+  cid: CharacterID?       // Optional: Character ID (maybe specific to REVEAL character?)
+}
+
+// Amount Definition (target for MOVE action)
+Amount {
+  typ: AmountTypeEnum     // REQUIRED: Type of target (passage, application, EVIDENCE, ...)
+  tgt: TargetID           // REQUIRED: Specific target ID (UID, app name)
+}
+
+// Update Aspect Definition
+UpdateAspect {
+  asp: AspectName         // REQUIRED: Name of aspect (variable/flag)
+  uty: UpdateTypeEnum     // REQUIRED: Type of update (SET, INC)
+  val: Value              // REQUIRED: Value to use for update (String | Boolean | Number)
+}
+
+// Condition Definition (Union of Simple and Compound)
+ConditionUnion: Condition | CompoundCondition | CompoundAspectCondition
+
+// Simple Condition Definition (used with 'cnd')
+Condition {
+  typ: ConditionTypeEnum  // REQUIRED: Type (checkAspect)
+  asp: AspectName         // REQUIRED: Aspect name
+  cmp: ComparisonOperatorEnum // REQUIRED: Comparison operator (EQ, NE, LT, ...)
+  val: Value              // REQUIRED: Value to compare against
+}
+
+// Compound Aspect Condition (seen in Deduction Puzzle with 'cad')
+// Note: This structure seems specific and might need refinement.
+CompoundAspectCondition {
+  typ: ConditionTypeEnum  // REQUIRED: Usually 'checkAspect' implicitly (aliased as 'cad_typ' in pydantic)
+  lop: LogicalOperatorEnum // REQUIRED: Logical operator (AND, OR)
+  cnd: Condition*         // REQUIRED: List of simple conditions to combine
+}
+
+// Check Definition (used with 'chk' in BOP, potentially recursive)
+Check {
+  cty: CheckTypeEnum      // REQUIRED: Check type (eq, ne, ..., and, or, not)
+
+  // --- Fields for comparison checks (eq, ne, ...) ---
+  asp: AspectName?        // Optional: Aspect name to check
+  vlu: Value?             // Optional: Value to compare against
+
+  // --- Fields for logical checks (and, or, not) ---
+  chk: Check*?            // Optional: List of nested checks to combine/negate
+}
+
+// Bot Definition
+Bot {
+  lin: String             // REQUIRED: Line of text to display
+}
+
+// Set Command Definition (often diagnostic or top-level)
+SetCommand {
+  evt: EventName | var: VariableName // REQUIRED: Must have either 'evt' or 'var'
+  val: Value              // REQUIRED: Value to set (String | Boolean | Number)
+}
+
+// --- Placeholder Types ---
+// UID: Unique Identifier String (e.g., passage UID)
+// NameString: Display Name String
+// TagString: Pipe-separated String
+// DescriptionString: Descriptive Text String
+// CommandTypeEnum: Enum (intro, branch, diagnostic, ...)
+// StepTypeEnum: Enum (introStep, ...)
+// ComponentTypeEnum: Enum (introStepBG, introStepText, introStepControl, ...)
+// BackgroundTypeEnum: Enum (IMAGE, ...)
+// TextTypeEnum: Enum (TITLE, BREAKDOWN, ...)
+// ControlTypeEnum: Enum (FINISH_INTRO_BUTTON, ...)
+// ControlKeyEnum: Enum (PRIMARY, ...)
+// BranchRepeatEnum: Enum (once, re-playable, ...)
+// BranchPresentationEnum: Enum (option-list, block-panel, ...)
+// BranchInteractionEnum: Enum (blocking, ...)
+// ActionTypeEnum: Enum (MOVE, REVEAL, ...)
+// AmountTypeEnum: Enum (passage, application, EVIDENCE, DEDUCTION, NOTES, MAP, CASE_FILE, ...)
+// UpdateTypeEnum: Enum (SET, INC, ...)
+// ConditionTypeEnum: Enum (checkAspect, ...)
+// ComparisonOperatorEnum: Enum (EQ, NE, LT, GT, LTE, GTE, ...)
+// LogicalOperatorEnum: Enum (AND, OR, NOT, ...)
+// CheckTypeEnum: Enum (eq, ne, lt, gt, lte, gte, and, or, not, ...)
+// ImageAlias: String representing an image resource
+// AspectName: String identifying a variable or flag in the game state
+// Value: String | Boolean | Number
+// AssetID: String identifying an asset (evidence, character)
+// CharacterID: String identifying a character
+// TargetID: String identifying a passage UID or application name
+// EventName: String identifying an event flag
+// VariableName: String identifying a state variable
+```
+
+This pseudocode schema outlines the observed SLPN structure and relationships using the original abbreviations. 
 
 # JSON Output Format
 
@@ -753,7 +955,7 @@ This JSON format will facilitate parallel processing in subsequent steps while p
 {# Current Step Details #}
 Current Step ID: {{ step_id }}
 Step Index: {{ step_index }}
-Phenotype Tag: {{ phenotype_tag }}
+Phenotype Tags: {{ phenotype_tags|join(', ') }}
 Step Description: {{ step_description }}
 Entry Point UID: {{ entry_point_id }}
 
@@ -764,7 +966,8 @@ Next Step IDs:
 {% endfor %}
 
 {# You can use these variables directly when generating SLPN #}
-Example SLPN Start: PSG:uid={{ entry_point_id }};nam="{{ phenotype_tag }} Start";
+{# Use a more generic naming convention example #}
+Example SLPN Start: PSG:uid={{ entry_point_id }};nam=\"{{ entry_point_id }} Start\";
 Example MOVE to Next: act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt={{ next_steps[0] }};
 
 

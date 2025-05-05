@@ -1034,17 +1034,18 @@ PROCEDURE CONVERT_BRN_TO_JSON(CMD, CURRENT_PSG_UID, EVIDENCE_MAP, INTERMEDIATE_L
 PROCEDURE CONVERT_BRN_TO_JSON(CMD, CURRENT_PSG_UID, EVIDENCE_MAP, INTERMEDIATE_LIST, VALID_PASSAGE_UIDS, FALLBACK_PASSAGE_UID, VALID_EVIDENCE_UIDS, FALLBACK_EVIDENCE_UID, IS_NESTED_IN_BOT): JSON_OBJECT {
   -- Convert branch parameters
   VAR BRANCH_DESCRIPTION = CMD.params["bds"] || "Choose an option:";
-  VAR REPLAY_TYPE = "re-executable"; -- CRITICAL: Always use "re-executable" regardless of input
+  VAR REPLAY_TYPE = "re-executable"; -- CRITICAL: Always use "re-executable" regardless of input SLPN 'brp=' value.
   VAR PRESENTATION = CMD.params["bpr"] || "option-list";
   
-  -- CRITICAL CHANGE: If branch is nested in a bot message, set integrationType to "ada"
-  -- Otherwise use the value from SLPN or default to "blocking"
+  -- CRITICAL RULE: If the branch is nested within a BOT command (IS_NESTED_IN_BOT is true), 
+  -- the integrationType MUST be set to "ada", regardless of the 'bit=' value in the SLPN.
+  -- Otherwise (for standalone BRN commands), use the SLPN 'bit=' value or default to "blocking".
   VAR INTEGRATION_TYPE;
   IF IS_NESTED_IN_BOT == true THEN {
-    INTEGRATION_TYPE = "ada";
-    LOG_INFO("Branch is nested in a BOT command, setting integrationType to 'ada'");
+    INTEGRATION_TYPE = "ada"; // Force 'ada' integration for branches inside bot messages
+    LOG_INFO("Branch is nested in a BOT command, forcing integrationType to 'ada'");
   } ELSE {
-    INTEGRATION_TYPE = CMD.params["bit"] || "blocking";
+    INTEGRATION_TYPE = CMD.params["bit"] || "blocking"; // Use SLPN value or default for standalone branches
   }
   
   -- Parse branch options (BOP commands in "ops" parameter)
@@ -1810,7 +1811,7 @@ PSG:uid=router_log_result;nam="Router Log Results";CNT;BOT:lin="Router logs show
             "description": "Next Step",
             "replayAbility": "re-executable",
             "presentation": "option-list",
-            "integrationType": "blocking",
+            "integrationType": "ada",
             "options": [
               {
                 "type": "branchOption",
@@ -1880,7 +1881,7 @@ PSG:uid=go_to_evidence;nam="Go To Evidence App";CNT;BOT:lin="Let's review the ev
           "type": "bot",
           "lines": [
             {
-              "text": "<insert ADA response based on TOT personality>"",
+              "text": "<insert ADA response based on TOT personality>",
               "imageAlias": "",
               "imageDescription": ""
             }
@@ -1956,6 +1957,7 @@ PSG:uid=suspect_reveal;nam="Suspect Identified";CNT;BOT:lin="Based on the finger
 }
 ```
 
+
 ## Important Processing Notes:
 
 1. **Passage UIDs**: Always preserve exactly as specified in the input SLPN
@@ -2016,7 +2018,7 @@ PSG:uid=update_financial_records_examined_true;nam="Updating Financial Records S
             "description": "Investigation Actions",
             "replayAbility": "re-executable",
             "presentation": "option-list",
-            "integrationType": "blocking",
+            "integrationType": "ada",
             "options": [
               {
                 "type": "branchOption",
@@ -2233,6 +2235,546 @@ PSG:uid=case_introduction;nam="Case Introduction";CNT;CMD:typ=intro;act=ACT:aty=
 5. **Lines Formatting**: When converting from SLPN format:
    - For `txt=TITLE`, create an object with `mainTitle` and `subTitle`
    - For `txt=BREAKDOWN`, convert pipe-separated text (`lin="text1|text2"`) into an array of strings
+
+
+Exmample 8:
+
+## Example 8: SLPN Deduction Puzzle with Limited Attempts and Conditional Logic
+
+### SLPN Input:
+```
+PSG:uid=DEDUCTION_PUZZLE_12;nam="Access Isabella's Phone";CNT;BOT:lin="[SEE: Encrypted phone screen, keypad] [DO: Attempt to guess the passcode] [LEARN: Isabella's phone is locked. Max attempts: 3. Attempts left: {3 - $isabella_phone_attempts}] [FEEL: Challenge]Based on clues from her profile and the case context, what's Isabella's passcode?";brn=BRN:bds="Enter Passcode";brp=re-playable;bpr=option-list;bit=blocking;ops=BOP:onm="FamilyFirst";ods="Try 'FamilyFirst' as the passcode.";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=LT;val=3;act=UAS:asp=isabella_phone_attempts;uty=INC;val=1|UAS:asp=isabella_phone_last_code;uty=SET;val="FamilyFirst"|ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_CHECK_OUTCOME|BOP:onm="ArgMate";ods="Try 'ArgMate' as the passcode.";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=LT;val=3;act=UAS:asp=isabella_phone_attempts;uty=INC;val=1|UAS:asp=isabella_phone_last_code;uty=SET;val="ArgMate"|ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_CHECK_OUTCOME|BOP:onm="TariffPayoff";ods="Try 'TariffPayoff' as the passcode.";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=LT;val=3;act=UAS:asp=isabella_phone_attempts;uty=INC;val=1|UAS:asp=isabella_phone_last_code;uty=SET;val="TariffPayoff"|ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_CHECK_OUTCOME|BOP:onm="No Attempts Left";ods="The phone is locked.";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=GE;val=3;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_LOCKOUT;
+
+PSG:uid=DEDUCTION_PUZZLE_12_CHECK_OUTCOME;nam="Passcode Check";CNT;BOT:lin="[SEE: Processing feedback] [LEARN: Verifying entered passcode...] [DO: Wait] [FEEL: Tension]System verifying passcode.";brn=BRN:bds="Processing Attempt";brp=once;bpr=option-list;bit=blocking;ops=BOP:onm="Correct Path";ods="Hidden option for correct answer.";cnd=CND:typ=checkAspect;asp=isabella_phone_last_code;cmp=EQ;val="TariffPayoff";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=EVIDENCE_EXAMINATION_13|BOP:onm="Incorrect Path (Retry)";ods="Hidden option for incorrect answer with retries left.";cnd=CAD:typ=checkAspect;lop=AND;cnd=CND:typ=checkAspect;asp=isabella_phone_last_code;cmp=NE;val="TariffPayoff";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=LT;val=3;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12|BOP:onm="Incorrect Path (Lockout)";ods="Hidden option for incorrect answer with no retries left.";cnd=CAD:typ=checkAspect;lop=AND;cnd=CND:typ=checkAspect;asp=isabella_phone_last_code;cmp=NE;val="TariffPayoff";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=GE;val=3;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_LOCKOUT;
+
+PSG:uid=DEDUCTION_PUZZLE_12_LOCKOUT;nam="Phone Locked";CNT;BOT:lin="[SEE: Locked phone screen] [LEARN: You have exceeded the maximum attempts. Isabella's phone is now locked and inaccessible.] [DO: Return to Investigation Hub] [FEEL: Frustration]The device is permanently locked due to too many incorrect attempts.";brn=BRN:bds="Device Locked";brp=once;bpr=option-list;bit=blocking;ops=BOP:onm="Return to Hub";ods="Go back to the main case view.";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=INVESTIGATION_HUB_7;
+```
+
+### Overview
+This example demonstrates a complex deduction puzzle with limited attempts - specifically a phone passcode guessing challenge. Key features:
+
+1. **Limited Attempts Mechanic**: The player has only 3 tries to guess the correct passcode
+2. **State Tracking**: Uses multiple aspects to track attempts (`isabella_phone_attempts`) and last entered code (`isabella_phone_last_code`)
+3. **Complex Conditionals**: Uses aspect checks with `LT` (less than), `GT` (greater than), `EQ` (equals) and `NE` (not equals)
+4. **Separate Update Passages**: Each aspect update happens in dedicated passages to maintain clean state management
+5. **Outcome Validation**: Special outcome checking passage that routes to different results based on combined conditions
+6. **Lockout Mechanism**: If too many incorrect attempts are made, the puzzle becomes inaccessible
+
+### Technical Implementation
+The SLPN transpiler converts this into multiple passages with a clear separation of concerns:
+- Main UI passage with passcode entry options
+- Separate update passages for each aspect change
+- Outcome checking passage with complex conditional routing
+- Lockout passage for failed attempts
+
+This pattern is essential for managing complex state in narrative games while maintaining clean code structure.
+
+### JSON Output:
+```json
+{
+  "passages": [
+    {
+      "uid": "DEDUCTION_PUZZLE_12",
+      "name": "Access Isabella's Phone",
+      "description": "Passage description.",
+      "tags": [
+        {
+          "name": "NARRATIVE",
+          "color": "green"
+        },
+        {
+          "name": "CHOICE",
+          "color": "green"
+        },
+        {
+          "name": "GATE",
+          "color": "orange"
+        }
+      ],
+      "commands": [
+        {
+          "type": "bot",
+          "lines": [
+            {
+              "text": "<insert ADA response based on TOT personality>",
+              "imageAlias": "",
+              "imageDescription": ""
+            }
+          ],
+          "branch": {
+            "type": "branch",
+            "description": "Enter Passcode",
+            "replayAbility": "re-executable",
+            "presentation": "option-list",
+            "integrationType": "ada",
+            "options": [
+              {
+                "type": "branchOption",
+                "name": "FamilyFirst",
+                "aspectCheck": {
+                  "type": "checkAspect",
+                  "check": {
+                    "type": "lt",
+                    "aspect": "isabella_phone_attempts",
+                    "target": 3,
+                    "aspectUid": "isabella_phone_attempts"
+                  }
+                },
+                "description": "Try 'FamilyFirst' as the passcode.",
+                "actions": [
+                  {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                      "type": "passage",
+                      "passageTarget": "update_isabella_phone_attempts_inc_1_FamilyFirst"
+                    }
+                  }
+                ],
+                "imageAlias": "",
+                "imageDescription": ""
+              },
+              {
+                "type": "branchOption",
+                "name": "ArgMate",
+                "aspectCheck": {
+                  "type": "checkAspect",
+                  "check": {
+                    "type": "lt",
+                    "aspect": "isabella_phone_attempts",
+                    "target": 3,
+                    "aspectUid": "isabella_phone_attempts"
+                  }
+                },
+                "description": "Try 'ArgMate' as the passcode.",
+                "actions": [
+                  {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                      "type": "passage",
+                      "passageTarget": "update_isabella_phone_attempts_inc_1_ArgMate"
+                    }
+                  }
+                ],
+                "imageAlias": "",
+                "imageDescription": ""
+              },
+              {
+                "type": "branchOption",
+                "name": "TariffPayoff",
+                "aspectCheck": {
+                  "type": "checkAspect",
+                  "check": {
+                    "type": "lt",
+                    "aspect": "isabella_phone_attempts",
+                    "target": 3,
+                    "aspectUid": "isabella_phone_attempts"
+                  }
+                },
+                "description": "Try 'TariffPayoff' as the passcode.",
+                "actions": [
+                  {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                      "type": "passage",
+                      "passageTarget": "update_isabella_phone_attempts_inc_1_TariffPayoff"
+                    }
+                  }
+                ],
+                "imageAlias": "",
+                "imageDescription": ""
+              },
+              {
+                "type": "branchOption",
+                "name": "No Attempts Left",
+                "aspectCheck": {
+                  "type": "checkAspect",
+                  "check": {
+                    "type": "gte",
+                    "aspect": "isabella_phone_attempts",
+                    "target": 3,
+                    "aspectUid": "isabella_phone_attempts"
+                  }
+                },
+                "description": "The phone is locked.",
+                "actions": [
+                  {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                      "type": "passage",
+                      "passageTarget": "DEDUCTION_PUZZLE_12_LOCKOUT"
+                    }
+                  }
+                ],
+                "imageAlias": "",
+                "imageDescription": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+        "uid": "update_isabella_phone_attempts_inc_1_FamilyFirst",
+        "name": "Increment Phone Attempts (FamilyFirst)",
+        "description": "Passage description.",
+        "tags": [
+            {"name": "NARRATIVE", "color": "green"},
+            {"name": "CODE", "color": "purple"},
+            {"name": "UPDATE_ASPECT", "color": "purple"}
+        ],
+        "commands": [
+            {
+                "type": "updateAspect",
+                "aspect": "isabella_phone_attempts",
+                "operation": "increment",
+                "value": "1"
+            },
+            {
+                "type": "action",
+                "actionType": "MOVE",
+                "moveTarget": {
+                    "type": "passage",
+                    "passageTarget": "update_isabella_phone_last_code_FamilyFirst"
+                }
+            }
+        ]
+    },
+    {
+        "uid": "update_isabella_phone_last_code_FamilyFirst",
+        "name": "Set Last Phone Code (FamilyFirst)",
+        "description": "Passage description.",
+        "tags": [
+            {"name": "NARRATIVE", "color": "green"},
+            {"name": "CODE", "color": "purple"},
+            {"name": "UPDATE_ASPECT", "color": "purple"}
+        ],
+        "commands": [
+            {
+                "type": "updateAspect",
+                "aspect": "isabella_phone_last_code",
+                "operation": "SET",
+                "value": "FamilyFirst"
+            },
+            {
+                "type": "action",
+                "actionType": "MOVE",
+                "moveTarget": {
+                    "type": "passage",
+                    "passageTarget": "DEDUCTION_PUZZLE_12_CHECK_OUTCOME"
+                }
+            }
+        ]
+    },
+    {
+        "uid": "update_isabella_phone_attempts_inc_1_ArgMate",
+        "name": "Increment Phone Attempts (ArgMate)",
+        "description": "Passage description.",
+        "tags": [
+            {"name": "NARRATIVE", "color": "green"},
+            {"name": "CODE", "color": "purple"},
+            {"name": "UPDATE_ASPECT", "color": "purple"}
+        ],
+        "commands": [
+            {
+                "type": "updateAspect",
+                "aspect": "isabella_phone_attempts",
+                "operation": "increment",
+                "value": "1"
+            },
+            {
+                "type": "action",
+                "actionType": "MOVE",
+                "moveTarget": {
+                    "type": "passage",
+                    "passageTarget": "update_isabella_phone_last_code_ArgMate"
+                }
+            }
+        ]
+    },
+    {
+        "uid": "update_isabella_phone_last_code_ArgMate",
+        "name": "Set Last Phone Code (ArgMate)",
+        "description": "Passage description.",
+        "tags": [
+            {"name": "NARRATIVE", "color": "green"},
+            {"name": "CODE", "color": "purple"},
+            {"name": "UPDATE_ASPECT", "color": "purple"}
+        ],
+        "commands": [
+            {
+                "type": "updateAspect",
+                "aspect": "isabella_phone_last_code",
+                "operation": "SET",
+                "value": "ArgMate"
+            },
+            {
+                "type": "action",
+                "actionType": "MOVE",
+                "moveTarget": {
+                    "type": "passage",
+                    "passageTarget": "DEDUCTION_PUZZLE_12_CHECK_OUTCOME"
+                }
+            }
+        ]
+    },
+    {
+        "uid": "update_isabella_phone_attempts_inc_1_TariffPayoff",
+        "name": "Increment Phone Attempts (TariffPayoff)",
+        "description": "Passage description.",
+        "tags": [
+            {"name": "NARRATIVE", "color": "green"},
+            {"name": "CODE", "color": "purple"},
+            {"name": "UPDATE_ASPECT", "color": "purple"}
+        ],
+        "commands": [
+            {
+                "type": "updateAspect",
+                "aspect": "isabella_phone_attempts",
+                "operation": "increment",
+                "value": "1"
+            },
+            {
+                "type": "action",
+                "actionType": "MOVE",
+                "moveTarget": {
+                    "type": "passage",
+                    "passageTarget": "update_isabella_phone_last_code_TariffPayoff"
+                }
+            }
+        ]
+    },
+    {
+        "uid": "update_isabella_phone_last_code_TariffPayoff",
+        "name": "Set Last Phone Code (TariffPayoff)",
+        "description": "Passage description.",
+        "tags": [
+            {"name": "NARRATIVE", "color": "green"},
+            {"name": "CODE", "color": "purple"},
+            {"name": "UPDATE_ASPECT", "color": "purple"}
+        ],
+        "commands": [
+            {
+                "type": "updateAspect",
+                "aspect": "isabella_phone_last_code",
+                "operation": "SET",
+                "value": "TariffPayoff"
+            },
+            {
+                "type": "action",
+                "actionType": "MOVE",
+                "moveTarget": {
+                    "type": "passage",
+                    "passageTarget": "DEDUCTION_PUZZLE_12_CHECK_OUTCOME"
+                }
+            }
+        ]
+    },
+    {
+      "uid": "DEDUCTION_PUZZLE_12_CHECK_OUTCOME",
+      "name": "Passcode Check",
+      "description": "Passage description.",
+      "tags": [
+        {
+          "name": "NARRATIVE",
+          "color": "green"
+        },
+        {
+          "name": "CHOICE",
+          "color": "green"
+        },
+        {
+          "name": "GATE",
+          "color": "orange"
+        },
+         {
+          "name": "CODE",
+          "color": "purple"
+        }
+      ],
+      "commands": [
+        {
+          "type": "bot",
+          "lines": [
+            {
+              "text": "<insert ADA response based on TOT personality>",
+              "imageAlias": "",
+              "imageDescription": ""
+            }
+          ],
+          "branch": {
+            "type": "branch",
+            "description": "Processing Attempt",
+            "replayAbility": "re-executable",
+            "presentation": "option-list",
+            "integrationType": "ada",
+            "options": [
+              {
+                "type": "branchOption",
+                "name": "Correct Path",
+                "aspectCheck": {
+                  "type": "checkAspect",
+                  "check": {
+                    "type": "eq",
+                    "aspect": "isabella_phone_last_code",
+                    "target": "TariffPayoff",
+                    "aspectUid": "isabella_phone_last_code"
+                  }
+                },
+                "description": "Hidden option for correct answer.",
+                "actions": [
+                  {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                      "type": "passage",
+                      "passageTarget": "EVIDENCE_EXAMINATION_13"
+                    }
+                  }
+                ],
+                "imageAlias": "",
+                "imageDescription": ""
+              },
+              {
+                "type": "branchOption",
+                "name": "Incorrect Path (Retry)",
+                "aspectCheck": {
+                  "type": "checkAspect",
+                  "check": {
+                    "type": "and",
+                    "target": [
+                      {
+                        "type": "ne",
+                        "aspect": "isabella_phone_last_code",
+                        "target": "TariffPayoff",
+                        "aspectUid": "isabella_phone_last_code"
+                      },
+                      {
+                        "type": "lt",
+                        "aspect": "isabella_phone_attempts",
+                        "target": 3,
+                        "aspectUid": "isabella_phone_attempts"
+                      }
+                    ]
+                  }
+                },
+                "description": "Hidden option for incorrect answer with retries left.",
+                "actions": [
+                  {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                      "type": "passage",
+                      "passageTarget": "DEDUCTION_PUZZLE_12"
+                    }
+                  }
+                ],
+                "imageAlias": "",
+                "imageDescription": ""
+              },
+              {
+                "type": "branchOption",
+                "name": "Incorrect Path (Lockout)",
+                "aspectCheck": {
+                  "type": "checkAspect",
+                  "check": {
+                    "type": "and",
+                    "target": [
+                      {
+                        "type": "ne",
+                        "aspect": "isabella_phone_last_code",
+                        "target": "TariffPayoff",
+                        "aspectUid": "isabella_phone_last_code"
+                      },
+                      {
+                        "type": "gte",
+                        "aspect": "isabella_phone_attempts",
+                        "target": 3,
+                        "aspectUid": "isabella_phone_attempts"
+                      }
+                    ]
+                  }
+                },
+                "description": "Hidden option for incorrect answer with no retries left.",
+                "actions": [
+                  {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                      "type": "passage",
+                      "passageTarget": "DEDUCTION_PUZZLE_12_LOCKOUT"
+                    }
+                  }
+                ],
+                "imageAlias": "",
+                "imageDescription": ""
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "uid": "DEDUCTION_PUZZLE_12_LOCKOUT",
+      "name": "Phone Locked",
+      "description": "Passage description.",
+      "tags": [
+        {
+          "name": "NARRATIVE",
+          "color": "green"
+        },
+        {
+          "name": "CHOICE",
+          "color": "green"
+        }
+      ],
+      "commands": [
+        {
+          "type": "bot",
+          "lines": [
+            {
+              "text": "<insert ADA response based on TOT personality>",
+              "imageAlias": "",
+              "imageDescription": ""
+            }
+          ],
+          "branch": {
+            "type": "branch",
+            "description": "Device Locked",
+            "replayAbility": "re-executable",
+            "presentation": "option-list",
+            "integrationType": "ada",
+            "options": [
+              {
+                "type": "branchOption",
+                "name": "Return to Hub",
+                "aspectCheck": null,
+                "description": "Go back to the main case view.",
+                "actions": [
+                  {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                      "type": "passage",
+                      "passageTarget": "INVESTIGATION_HUB_7"
+                    }
+                  }
+                ],
+                "imageAlias": "",
+                "imageDescription": ""
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
 
 ---SCHEMA---
 {{output_schema}}
