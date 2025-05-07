@@ -1,0 +1,1195 @@
+{ "$schema": "./openapi.json",
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Game Data Schema",
+      "version": "1.0.0",
+      "description": "OpenAPI schema for game evidence, passages, and commands."
+    },
+    "components": {
+      "schemas": {
+        "MyGameData": {
+          "type": "object",
+          "properties": {
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/EvidenceItem"
+              }
+            },
+            "passages": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PassageItem"
+              }
+            }
+          },
+          "required": [
+            "evidence",
+            "passages"
+          ],
+          "additionalProperties": false
+        },
+        "EvidenceItem": {
+          "type": "object",
+          "properties": {
+            "uid": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "relatedEvents": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "tier": {
+              "type": "string",
+              "enum": [
+                "tier_3",
+                "tier_2",
+                "tier_1",
+                "tier_0",
+                "Solution"
+              ]
+            }
+          },
+          "required": [
+            "uid",
+            "name",
+            "description",
+            "relatedEvents",
+            "tier"
+          ],
+          "additionalProperties": false
+        },
+        "PassageItem": {
+          "type": "object",
+          "properties": {
+            "uid": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/TagItem"
+              }
+            },
+            "commands": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyCommand"
+              }
+            }
+          },
+          "required": [
+            "uid",
+            "name",
+            "description",
+            "tags",
+            "commands"
+          ],
+          "additionalProperties": false
+        },
+        "TagItem": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string",
+              "enum": [
+                "red",
+                "orange",
+                "yellow",
+                "green",
+                "blue",
+                "purple"
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "color"
+          ],
+          "additionalProperties": false
+        },
+        "AnyCommand": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/IntroCommand"
+            },
+            {
+              "$ref": "#/components/schemas/BranchStructure"
+            },
+            {
+              "$ref": "#/components/schemas/IfCommand"
+            },
+            {
+              "$ref": "#/components/schemas/AudioCommand"
+            },
+            {
+              "$ref": "#/components/schemas/SetLocationCommand"
+            },
+            {
+              "$ref": "#/components/schemas/LeaveLocationCommand"
+            },
+            {
+              "$ref": "#/components/schemas/PasswordGuesserCommand"
+            },
+            {
+              "$ref": "#/components/schemas/BotAction"
+            },
+            {
+              "$ref": "#/components/schemas/HideAllEvidenceAction"
+            },
+            {
+              "$ref": "#/components/schemas/MoveAction"
+            },
+            {
+              "$ref": "#/components/schemas/EvidenceManipulationAction"
+            },
+            {
+              "$ref": "#/components/schemas/CreateAspectCommand"
+            },
+            {
+              "$ref": "#/components/schemas/UpdateAspectAction"
+            },
+            {
+              "$ref": "#/components/schemas/TriggerCommand"
+            },
+            {
+              "$ref": "#/components/schemas/ChatTriggerCommand"
+            },
+            {
+              "$ref": "#/components/schemas/ChatTriggerOffCommand"
+            }
+          ]
+        },
+        "IntroCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "intro"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyAction"
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/IntroStepItem"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "actions",
+            "steps"
+          ],
+          "additionalProperties": false
+        },
+        "BranchStructure": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "branch"
+            },
+            "description": {
+              "type": "string"
+            },
+            "replayAbility": {
+              "type": "string",
+              "enum": [
+                "once",
+                "re-playable",
+                "re-executable"
+              ]
+            },
+            "presentation": {
+              "type": "string",
+              "enum": [
+                "option-list",
+                "passable",
+                "block-panel",
+                "button-list"
+              ]
+            },
+            "integrationType": {
+              "type": "string",
+              "enum": [
+                "standalone",
+                "blocking"
+              ]
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/BranchOptionItem"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "description",
+            "replayAbility",
+            "presentation",
+            "integrationType",
+            "options"
+          ],
+          "additionalProperties": false
+        },
+        "IfCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "if"
+            },
+            "check": {
+              "$ref": "#/components/schemas/AspectCheckWrapper"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyAction"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "check",
+            "actions"
+          ],
+          "additionalProperties": false
+        },
+        "AudioCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "audio"
+            },
+            "audioAlias": {
+              "type": "string"
+            },
+            "audioDescription": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "audioAlias",
+            "audioDescription"
+          ],
+          "additionalProperties": false
+        },
+        "SetLocationCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "setLocation"
+            },
+            "name": {
+              "type": "string"
+            },
+            "backgroundAudio": {
+              "anyOf": [
+                { "$ref": "#/components/schemas/AudioCommand" },
+                { "type": "null" }
+              ]
+            },
+            "imageAlias": {
+              "type": "string"
+            },
+            "imageDescription": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "name",
+            "backgroundAudio",
+            "imageAlias",
+            "imageDescription"
+          ],
+          "additionalProperties": false
+        },
+        "LeaveLocationCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "leaveLocation"
+            },
+            "leaveType": {
+              "type": ["number", "null"]
+            }
+          },
+          "required": [
+            "type",
+            "leaveType"
+          ],
+          "additionalProperties": false
+        },
+        "PasswordGuesserCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "passwordGuesser"
+            },
+            "presentation": {
+              "type": "string",
+              "enum": [
+                "PHONE_PIN"
+              ]
+            },
+            "guessList": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PasswordGuessItem"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "presentation",
+            "guessList"
+          ],
+          "additionalProperties": false
+        },
+        "PasswordGuessItem": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "passwordGuess"
+            },
+            "value": {
+              "type": ["string", "null"]
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyAction"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "value",
+            "actions"
+          ],
+          "additionalProperties": false
+        },
+        "CreateAspectCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "createAspect"
+            },
+            "aspect": {
+              "type": "string"
+            },
+            "aspectType": {
+              "type": "string",
+              "enum": [
+                "string",
+                "number",
+                "boolean"
+              ]
+            },
+            "nullable": {
+              "type": "boolean"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "aspect",
+            "aspectType",
+            "nullable",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "TriggerCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "trigger"
+              ]
+            },
+            "targets": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/TriggerTargetItem"
+              }
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyAction"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "targets",
+            "actions"
+          ],
+          "additionalProperties": false
+        },
+        "TriggerTargetItem": {
+          "type": "object",
+          "properties": {
+            "triggerType": {
+              "type": "string",
+              "enum": [
+                "VIEW",
+                "FIRST-VIEW",
+                "AFTER-VIEW",
+                "AFTER-FIRST-VIEW",
+                "INTERACTION",
+                "FIRST-INTERACTION",
+                "REVEALED",
+                "UNLOCKED",
+                "LOCKED",
+                "HIDDEN"
+              ]
+            },
+            "evidenceTarget": {
+              "type": "string"
+            },
+            "evidenceAlias": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "triggerType",
+            "evidenceTarget",
+            "evidenceAlias"
+          ],
+          "additionalProperties": false
+        },
+        "ChatTriggerCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "chatTrigger"
+              ]
+            },
+            "triggerType": {
+              "type": "string",
+              "enum": [
+                "EXACT",
+                "AI-PROMPT"
+              ]
+            },
+            "identifier": {
+              "type": "string"
+            },
+            "targetText": {
+              "type": "string"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyAction"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "triggerType",
+            "identifier",
+            "targetText",
+            "actions"
+          ],
+          "additionalProperties": false
+        },
+        "ChatTriggerOffCommand": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "chatTriggerOff"
+              ]
+            },
+            "identifier": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "identifier"
+          ],
+          "additionalProperties": false
+        },
+        "AnyAction": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/HideAllEvidenceAction"
+            },
+            {
+              "$ref": "#/components/schemas/MoveAction"
+            },
+            {
+              "$ref": "#/components/schemas/EvidenceManipulationAction"
+            },
+            {
+              "$ref": "#/components/schemas/UpdateAspectAction"
+            },
+            {
+              "$ref": "#/components/schemas/BotAction"
+            }
+          ]
+        },
+        "HideAllEvidenceAction": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "action"
+            },
+            "actionType": {
+              "type": "string",
+              "const": "HIDE_ALL_EVIDENCE"
+            }
+          },
+          "required": [
+            "type",
+            "actionType"
+          ],
+          "additionalProperties": false
+        },
+        "MoveAction": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "action"
+            },
+            "actionType": {
+              "type": "string",
+              "const": "MOVE"
+            },
+            "moveTarget": {
+              "$ref": "#/components/schemas/MoveTarget"
+            }
+          },
+          "required": [
+            "type",
+            "actionType",
+            "moveTarget"
+          ],
+          "additionalProperties": false
+        },
+        "MoveTarget": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/MoveTargetPassage"
+            },
+            {
+              "$ref": "#/components/schemas/MoveTargetApplication"
+            },
+            {
+              "$ref": "#/components/schemas/MoveTargetEvidence"
+            }
+          ]
+        },
+        "MoveTargetPassage": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "passage"
+            },
+            "passageTarget": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "passageTarget"
+          ],
+          "additionalProperties": false
+        },
+        "MoveTargetApplication": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "application"
+            },
+            "applicationTarget": {
+              "type": "string",
+              "enum": [
+                "HOME",
+                "ADA",
+                "DOSSIER",
+                "EVIDENCE"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "applicationTarget"
+          ],
+          "additionalProperties": false
+        },
+        "MoveTargetEvidence": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "evidence"
+            },
+            "evidenceTarget": {
+              "type": "string"
+            },
+            "evidenceAlias": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "evidenceTarget",
+            "evidenceAlias"
+          ],
+          "additionalProperties": false
+        },
+        "EvidenceManipulationAction": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "action"
+            },
+            "actionType": {
+              "type": "string",
+              "enum": [
+                "REVEAL",
+                "UNLOCK",
+                "LOCK",
+                "HIDE",
+                "HIGHLIGHT"
+              ]
+            },
+            "evidenceTarget": {
+              "type": "string"
+            },
+            "evidenceAlias": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "actionType",
+            "evidenceTarget",
+            "evidenceAlias"
+          ],
+          "additionalProperties": false
+        },
+        "UpdateAspectAction": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "updateAspect"
+            },
+            "aspect": {
+              "type": "string"
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "SET",
+                "increment",
+                "decrement"
+              ]
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "aspect",
+            "operation",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "BotAction": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "bot"
+              ]
+            },
+            "lines": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/LineItem"
+              }
+            },
+            "branch": {
+              "anyOf": [
+                { "$ref": "#/components/schemas/BranchStructure" },
+                { "type": "null" }
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "lines"
+          ],
+          "additionalProperties": false
+        },
+        "LineItem": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "imageAlias": {
+              "type": "string"
+            },
+            "imageDescription": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text",
+            "imageAlias",
+            "imageDescription"
+          ],
+          "additionalProperties": false
+        },
+        "BranchOptionItem": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "branchOption"
+            },
+            "name": {
+              "type": "string"
+            },
+            "aspectCheck": {
+              "anyOf": [
+                { "$ref": "#/components/schemas/AspectCheckWrapper" },
+                { "type": "null" }
+              ]
+            },
+            "description": {
+              "type": "string"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyAction"
+              },
+              "minItems": 1
+            },
+            "imageAlias": {
+              "type": "string"
+            },
+            "imageDescription": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "name",
+            "aspectCheck",
+            "description",
+            "actions",
+            "imageAlias",
+            "imageDescription"
+          ],
+          "additionalProperties": false
+        },
+        "AspectCheckWrapper": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "checkAspect"
+            },
+            "check": {
+              "$ref": "#/components/schemas/AnyAspectCheckCondition"
+            }
+          },
+          "required": [
+            "type",
+            "check"
+          ],
+          "additionalProperties": false
+        },
+        "AnyAspectCheckCondition": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/EqualityAspectCheckCondition"
+            },
+            {
+              "$ref": "#/components/schemas/InclusionAspectCheckCondition"
+            },
+            {
+              "$ref": "#/components/schemas/LogicalAspectCheckCondition"
+            },
+            {
+              "$ref": "#/components/schemas/NegationAspectCheckCondition"
+            }
+          ]
+        },
+        "EqualityAspectCheckCondition": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "eq",
+                "lt",
+                "lte",
+                "gt",
+                "gte",
+                "ne",
+                "like",
+                "ilike"
+              ]
+            },
+            "aspectUid": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "target": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "aspect": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "aspectUid",
+            "target",
+            "aspect"
+          ],
+          "additionalProperties": false
+        },
+        "InclusionAspectCheckCondition": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "in",
+                "nin"
+              ]
+            },
+            "target": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "aspect": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "target",
+            "aspect"
+          ],
+          "additionalProperties": false
+        },
+        "LogicalAspectCheckCondition": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "and",
+                "or"
+              ]
+            },
+            "target": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyAspectCheckCondition"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "target"
+          ],
+          "additionalProperties": false
+        },
+        "NegationAspectCheckCondition": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "not"
+            },
+            "target": {
+              "$ref": "#/components/schemas/AnyAspectCheckCondition"
+            }
+          },
+          "required": [
+            "type",
+            "target"
+          ],
+          "additionalProperties": false
+        },
+        "IntroStepItem": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "introStep"
+            },
+            "components": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnyIntroStepComponent"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "components"
+          ],
+          "additionalProperties": false
+        },
+        "AnyIntroStepComponent": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/IntroStepBGImage"
+            },
+            {
+              "$ref": "#/components/schemas/IntroStepBGVideo"
+            },
+            {
+              "$ref": "#/components/schemas/IntroStepTextTitle"
+            },
+            {
+              "$ref": "#/components/schemas/IntroStepTextBreakdown"
+            },
+            {
+              "$ref": "#/components/schemas/IntroStepControl"
+            }
+          ]
+        },
+        "IntroStepBGImage": {
+          "type": "object",
+          "properties": {
+            "imageAlias": {
+              "type": "string"
+            },
+            "imageDescription": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "introStepBG"
+            },
+            "backgroundType": {
+              "type": "string",
+              "const": "IMAGE"
+            }
+          },
+          "required": [
+            "imageAlias",
+            "imageDescription",
+            "type",
+            "backgroundType"
+          ],
+          "additionalProperties": false
+        },
+        "IntroStepBGVideo": {
+          "type": "object",
+          "properties": {
+            "videoAlias": {
+              "type": "string"
+            },
+            "videoDescription": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "introStepBG"
+            },
+            "backgroundType": {
+              "type": "string",
+              "const": "VIDEO"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "SOUND_ON",
+                "SOUND_OFF"
+              ]
+            }
+          },
+          "required": [
+            "videoAlias",
+            "videoDescription",
+            "type",
+            "backgroundType",
+            "mode"
+          ],
+          "additionalProperties": false
+        },
+        "IntroStepTextTitle": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "introStepText"
+            },
+            "textType": {
+              "type": "string",
+              "const": "TITLE"
+            },
+            "mainTitle": {
+              "type": "string"
+            },
+            "subTitle": {
+              "type": ["string", "null"]
+            }
+          },
+          "required": [
+            "type",
+            "textType",
+            "mainTitle",
+            "subTitle"
+          ],
+          "additionalProperties": false
+        },
+        "IntroStepTextBreakdown": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "introStepText"
+            },
+            "textType": {
+              "type": "string",
+              "const": "BREAKDOWN"
+            },
+            "lines": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "textType",
+            "lines"
+          ],
+          "additionalProperties": false
+        },
+        "IntroStepControl": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "introStepControl"
+            },
+            "controlType": {
+              "type": "string",
+              "enum": [
+                "NEXT_STEP_BUTTON",
+                "FINISH_INTRO_BUTTON"
+              ]
+            },
+            "controlKind": {
+              "type": "string",
+              "enum": [
+                "PRIMARY",
+                "SECONDARY"
+              ]
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "controlType",
+            "controlKind",
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  }

@@ -104,7 +104,7 @@ PROCEDURE GenerateIntroductionHook(stepIDPrefix, entry_point_id, caseTitle, crim
 
     // Format the SLPN using CMD:typ=branch
     DEFINE slpnPassage3 = "PSG:uid=" + choicePassageUID + ";nam=\"" + choiceName + "\";tag=NARRATIVE|INTRO|CHOICE;" +
-                           "cmd=CMD:typ=branch;bds=\"" + choiceDescription + "\";brp=once;bpr=option-list;bit=blocking;" + choiceOptions // Use option-list for explicit choices
+                           "cmd=CMD:typ=branch;bds=\"" + choiceDescription + "\";brp=once;bpr=option-list;bit=ada;" + choiceOptions // Use option-list for explicit choices
 
     // == Passage 4: Confirmation / Transition ==
     // Two versions of this passage: one for accept, one for decline.
@@ -259,7 +259,7 @@ PROCEDURE GenerateIntroSequenceWithTheories(stepIDPrefix, entry_point_id, caseTi
         }
         // Format the SLPN using CMD:typ=branch
         RETURN "PSG:uid=" + uid + ";nam=\"" + name + "\";tag=NARRATIVE|INTRO|CHOICE;" +
-               "cmd=CMD:typ=branch;bds=\"" + choicePrompt + "\";brp=once;bpr=option-list;bit=blocking;ops=" + branchOptions
+               "cmd=CMD:typ=branch;bds=\"" + choicePrompt + "\";brp=once;bpr=option-list;bit=ada;ops=" + branchOptions
     }
 
     DEFINE slpnChoicePassage = CreateTheoryChoicePassage(finalChoiceUID, choiceName, theories, choicePrompt)
@@ -275,6 +275,132 @@ PROCEDURE GenerateIntroSequenceWithTheories(stepIDPrefix, entry_point_id, caseTi
     }
 
     ValidateTheoryIntroSequence(passageCounter, theories)
+
+    RETURN allPassages
+}
+{# END_PHENOTYPE: INTRO_SEQUENCE #}
+
+{# PHENOTYPE: INTRO_SEQUENCE #}
+PROCEDURE GenerateIntroSequence(stepIDPrefix, entry_point_id, sequenceTitle, introSlides, finalChoice_Optional) {
+    // Primary goal: Create a flexible intro/cutscene sequence with variable number of slides and optional choice at the end
+    // Structure: 1. First Slide -> 2...N. Middle Slides -> Optional: N+1. Choice Branch
+    // Input: introSlides is a list of objects: { id, name, backgroundImage, imageDescription, content, buttonText }
+    // Input: finalChoice_Optional is an optional object: { prompt, options: [{ name, description, image, targetPassageID }] }
+
+    // --- Input Validation ---
+    VALIDATE introSlides.length >= 1 // Need at least one slide
+    // Ensure each slide has the required fields
+    FOR EACH slide IN introSlides {
+        VALIDATE slide.id AND slide.name AND slide.backgroundImage AND slide.imageDescription AND slide.content
+        // buttonText is optional, will use default if not provided
+    }
+    // --- End Validation ---
+
+    DEFINE allPassages = ""
+    DEFINE passageCounter = 0
+
+    // Define UIDs
+    DEFINE slideUIDs = []
+    FOR EACH slide IN introSlides INDEX i {
+        IF i == 0 {
+            slideUIDs[i] = entry_point_id // First slide uses the entry_point_id
+        } ELSE {
+            slideUIDs[i] = stepIDPrefix + "_SLIDE_" + slide.id
+        }
+    }
+    
+    // Create final choice UID if needed
+    DEFINE finalChoiceUID = null
+    IF finalChoice_Optional {
+        finalChoiceUID = stepIDPrefix + "_FINAL_CHOICE"
+    }
+
+    // == Generate all slides ==
+    FOR EACH slide IN introSlides INDEX i {
+        DEFINE slideUID = slideUIDs[i]
+        DEFINE slideName = sequenceTitle + " - " + slide.name
+        
+        // Determine the next passage
+        DEFINE isLastSlide = i == introSlides.length - 1
+        DEFINE nextPassageUID = IF isLastSlide THEN 
+                                  (finalChoice_Optional ? finalChoiceUID : slide.targetPassageID) 
+                                ELSE slideUIDs[i + 1]
+        
+        // Use provided button text or defaults
+        DEFINE buttonText = slide.buttonText || (isLastSlide ? 
+                            (finalChoice_Optional ? "Make Your Choice" : "Continue") : 
+                            "Continue")
+
+        PROCEDURE CreateIntroSlide(uid, name, slide, nextPassageUID, buttonText) {
+            // Create the single step for the intro command
+            DEFINE slideStep = "STP:typ=introStep;" +
+                             "cmp=CMP:typ=introStepBG;bgt=IMAGE;img=" + slide.backgroundImage + ";imd=\"" + slide.imageDescription + "\";" +
+                             "cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin=\"" + slide.content + "\";" +
+                             "cmp=CMP:typ=introStepControl;ctt=FINISH_INTRO_BUTTON;ctk=PRIMARY;tex=\"" + buttonText + "\";"
+            
+            // Define the move action at the command level
+            DEFINE slideAction = "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
+            
+            // Combine into the intro command
+            RETURN "PSG:uid=" + uid + ";nam=\"" + name + "\";tag=NARRATIVE|INTRO;" +
+                   "cmd=CMD:typ=intro;" + slideAction + ";" + slideStep
+        }
+
+        DEFINE slpnSlidePassage = CreateIntroSlide(slideUID, slideName, slide, nextPassageUID, buttonText)
+        
+        IF i > 0 {
+            allPassages += "\n\n"
+        }
+        allPassages += slpnSlidePassage
+        passageCounter++
+    }
+
+    // == Generate final choice passage if needed ==
+    IF finalChoice_Optional {
+        DEFINE choiceName = sequenceTitle + " - " + (finalChoice_Optional.name || "Your Decision")
+
+        PROCEDURE CreateChoicePassage(uid, name, choiceData) {
+            DEFINE branchOptions = ""
+            
+            FOR EACH option IN choiceData.options INDEX j {
+                IF j > 0 { branchOptions += "|" }
+                branchOptions += "BOP:onm=\"" + option.name + "\";" +
+                               (option.image ? "img=\"" + option.image + "\";" : "") +
+                               (option.description ? "ods=\"" + option.description + "\";" : "") +
+                               "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + option.targetPassageID
+            }
+            
+            // Format the SLPN using CMD:typ=branch
+            RETURN "PSG:uid=" + uid + ";nam=\"" + name + "\";tag=NARRATIVE|INTRO|CHOICE;" +
+                   "cmd=CMD:typ=branch;bds=\"" + choiceData.prompt + "\";brp=once;bpr=option-list;bit=ada;ops=" + branchOptions
+        }
+
+        DEFINE slpnChoicePassage = CreateChoicePassage(finalChoiceUID, choiceName, finalChoice_Optional)
+        allPassages += "\n\n" + slpnChoicePassage
+        passageCounter++
+    }
+
+    // Final Validation
+    PROCEDURE ValidateIntroSequence(passageCounter, introSlides, hasFinalChoice) {
+        DEFINE expectedPassages = introSlides.length + (hasFinalChoice ? 1 : 0)
+        VALIDATE passageCounter == expectedPassages
+        
+        // Verify sequential linkage between slides
+        FOR EACH slide IN introSlides INDEX i {
+            IF i < introSlides.length - 1 {
+                VALIDATE allPassages CONTAINS slideUIDs[i] AND slideUIDs[i+1]
+            }
+        }
+        
+        // Verify final slide links to choice or external target
+        IF hasFinalChoice {
+            VALIDATE allPassages CONTAINS finalChoiceUID
+        } ELSE {
+            VALIDATE allPassages CONTAINS introSlides[introSlides.length-1].targetPassageID
+        }
+    }
+
+    ValidateIntroSequence(passageCounter, introSlides, finalChoice_Optional != null)
 
     RETURN allPassages
 }
@@ -396,7 +522,7 @@ PROCEDURE GenerateInvestigationHub(stepIDPrefix, entry_point_id, caseStatus, cur
     DEFINE statusSummary = CreateStatusSummary(SummarizeCase(caseStatus)) // Use summarized version for main hub
     DEFINE navigationOptions = CreateNavigationOptions(availableLocations, unlockedFeatures, conditionalPaths, briefingUID, objectivesUID, notesUID, hubUID) // Pass derived UIDs
     DEFINE slpnHubPassage = "PSG:uid=" + hubUID + ";nam=\\\"" + hubName + "\\\";CNT;BOT:lin=\\\"" + 
-                           statusSummary + "\\\";brn=BRN:bds=\\\"Investigation Options\\\";brp=re-playable;bpr=block-panel;bit=blocking;ops=" + 
+                           statusSummary + "\\\";brn=BRN:bds=\\\"Investigation Options\\\";brp=re-playable;bpr=block-panel;bit=ada;ops=" + 
                            navigationOptions + ";"
     allPassages += slpnHubPassage
 
@@ -406,7 +532,7 @@ PROCEDURE GenerateInvestigationHub(stepIDPrefix, entry_point_id, caseStatus, cur
         DEFINE learn = "[LEARN: Full Case Details: " + fullCaseStatus + "]"
         DEFINE content = see + " " + learn
         DEFINE options = "BOP:onm=\"Return to Hub\";ods=\"Go back to main investigation view\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + returnHubUID // Ensure target is the main hub UID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Case Briefing\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Case Briefing\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnBriefingPassage = CreateBriefingPassage(briefingUID, briefingName, caseStatus, hubUID) // Use full caseStatus here
     allPassages += "\n\n" + slpnBriefingPassage
@@ -417,7 +543,7 @@ PROCEDURE GenerateInvestigationHub(stepIDPrefix, entry_point_id, caseStatus, cur
         DEFINE learn = "[LEARN: Objectives: " + FormatObjectives(objectivesList) + "]" // Needs FormatObjectives helper
         DEFINE content = see + " " + learn
         DEFINE options = "BOP:onm=\"Return to Hub\";ods=\"Go back to main investigation view\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + returnHubUID // Ensure target is the main hub UID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Current Objectives\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Current Objectives\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnObjectivesPassage = CreateObjectivesPassage(objectivesUID, objectivesName, currentObjectives, hubUID)
     allPassages += "\n\n" + slpnObjectivesPassage
@@ -429,7 +555,7 @@ PROCEDURE GenerateInvestigationHub(stepIDPrefix, entry_point_id, caseStatus, cur
         DEFINE do = "[DO: Review, add, or organize your notes]"
         DEFINE content = see + " " + do + " [INFO: Notes are managed by the application]"
         DEFINE options = "BOP:onm=\"Return to Hub\";ods=\"Close notebook and return to hub\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + returnHubUID // Ensure target is the main hub UID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Investigator Notes\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Investigator Notes\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnNotesPassage = CreateNotesPassage(notesUID, notesName, hubUID)
     allPassages += "\n\n" + slpnNotesPassage
@@ -490,7 +616,7 @@ FUNCTION FormatObjectives(objectivesList) {
 }
 
 // Example output:
-// PSG:uid=INVESTIGATION_HUB_2;nam="Investigation Hub";CNT;BOT:lin="[SEE: Investigation board with evidence and leads] [DO: Select your next investigative focus] [LEARN: Victim found dead in recording studio. Time of death: between 9-11 PM. Key evidence: bloodied microphone, studio access logs...]";brn=BRN:bds="Investigation Options";brp=re-playable;bpr=block-panel;bit=blocking;ops=BOP:onm="Crime Scene";ods="Return to the studio";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=EVIDENCE_COLLECTION_3|BOP:onm="Interview Witnesses";ods="Speak with people present that night";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=SUSPECT_LIST_4|BOP:onm="Forensic Analysis";ods="Check lab results";cnd=CND:typ=checkAspect;asp=forensic_samples_collected;cmp=EQ;val=true;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=EVIDENCE_VERIFICATION_8|BOP:onm="Review Evidence";ods="Examine collected evidence";act=ACT:aty=MOVE;amt=AMT:typ=application;tgt=EVIDENCE;
+// PSG:uid=INVESTIGATION_HUB_2;nam="Investigation Hub";CNT;BOT:lin="[SEE: Investigation board with evidence and leads] [DO: Select your next investigative focus] [LEARN: Victim found dead in recording studio. Time of death: between 9-11 PM. Key evidence: bloodied microphone, studio access logs...]";brn=BRN:bds="Investigation Options";brp=re-playable;bpr=block-panel;bit=ada;ops=BOP:onm="Crime Scene";ods="Return to the studio";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=EVIDENCE_COLLECTION_3|BOP:onm="Interview Witnesses";ods="Speak with people present that night";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=SUSPECT_LIST_4|BOP:onm="Forensic Analysis";ods="Check lab results";cnd=CND:typ=checkAspect;asp=forensic_samples_collected;cmp=EQ;val=true;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=EVIDENCE_VERIFICATION_8|BOP:onm="Review Evidence";ods="Examine collected evidence";act=ACT:aty=MOVE;amt=AMT:typ=application;tgt=EVIDENCE;
 {# END_PHENOTYPE: INVESTIGATION_HUB #}
 
 {# PHENOTYPE: EVIDENCE_COLLECTION #}
@@ -537,7 +663,7 @@ PROCEDURE GenerateEvidenceCollection(stepIDPrefix, entry_point_id, locationScene
 
         // Step 3: Format the SLPN for this specific scene passage
         DEFINE slpnScenePassage = "PSG:uid=" + sceneUID + ";nam=\\\"" + sceneName + "\\\";CNT;BOT:lin=\\\"" + 
-                                 sceneContent + "\\\";brn=BRN:bds=\\\"Examine " + sceneName + "\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + 
+                                 sceneContent + "\\\";brn=BRN:bds=\\\"Examine " + sceneName + "\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + 
                                  sceneOptions + ";"
         
         IF i > 0 { allPassages += "\n\n" }
@@ -565,68 +691,54 @@ PROCEDURE GenerateEvidenceCollection(stepIDPrefix, entry_point_id, locationScene
 {# END_PHENOTYPE: EVIDENCE_COLLECTION #}
 
 {# PHENOTYPE: EVIDENCE_EXAMINATION #}
-PROCEDURE GenerateEvidenceExamination(stepIDPrefix, entry_point_id, evidenceID, evidenceName, evidenceDetails, relevance, returnPassage) {
-    // Primary goal: Create a 4-passage sequence for detailed evidence examination.
-    // Structure: 1. Observe -> 2. Analyze -> 3. Relevance -> 4. Confirm/Note
-    
-    // Define UIDs for the 4 passages
-    DEFINE observeUID = entry_point_id
-    DEFINE analyzeUID = stepIDPrefix + "_analyze"
-    DEFINE relevanceUID = stepIDPrefix + "_relevance"
-    DEFINE confirmUID = stepIDPrefix + "_confirm"
+PROCEDURE GenerateEvidenceExamination(stepIDPrefix, entry_point_id, evidenceID, evidenceName, evidenceDetails, relevance, nextPassage) {
+    // Primary goal: Create a streamlined evidence viewing experience
+    // Structure: 1. Mention -> 2. View -> 3. React/Comment
 
-    DEFINE observeName = "Observe " + evidenceName
-    DEFINE analyzeName = "Analyze " + evidenceName
-    DEFINE relevanceName = "Relevance of " + evidenceName
-    DEFINE confirmName = "Noting " + evidenceName
+    // Define UIDs for the 2 passages
+    DEFINE mentionUID = entry_point_id
+    DEFINE reactUID = stepIDPrefix + "_react"
+
+    DEFINE mentionName = "Discover " + evidenceName
+    DEFINE reactName = "Thoughts on " + evidenceName
 
     DEFINE allPassages = ""
 
-    // == Passage 1: Observe ==
-    PROCEDURE CreateObservePassage(uid, name, evidenceName, nextPassageUID) {
-        DEFINE content = "[SEE: Close-up view of " + evidenceName + "] [DO: Look for details] [LEARN: Initial observations]"
-        DEFINE options = "BOP:onm=\\\"Examine Further\\\";img=\\\"evidence_" + evidenceID + "_closeup\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Initial Observation\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+    // == Passage 1: Mention/Reveal ==
+    PROCEDURE CreateMentionPassage(uid, name, evidenceID, evidenceName, reactUID) {
+        DEFINE content = "[SEE: You notice " + evidenceName + "] [DO: Examine this potential evidence]"
+        // First reveal the evidence to make it available
+        // Also set up the FIRST_VIEW trigger to route to the reaction passage
+        DEFINE options = "BOP:onm=\\\"View " + evidenceName + "\\\";ods=\\\"Examine this evidence closely\\\";" +
+                       "act=ACT:aty=REVEAL;aet=" + evidenceID + "|" +
+                       "TRG:uid=" + evidenceID + "_first_view;trg=FIRST_VIEW;tar=" + evidenceID + ";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + reactUID + "|" +
+                       "ACT:aty=MOVE;amt=AMT:typ=evidence;tgt=" + evidenceID
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Discover Evidence\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
-    DEFINE slpnPassage1 = CreateObservePassage(observeUID, observeName, evidenceName, analyzeUID)
+    DEFINE slpnPassage1 = CreateMentionPassage(mentionUID, mentionName, evidenceID, evidenceName, reactUID)
     allPassages += slpnPassage1
 
-    // == Passage 2: Analyze ==
-    PROCEDURE CreateAnalyzePassage(uid, name, evidenceDetails, nextPassageUID) {
-        DEFINE content = "[LEARN: Findings: '" + FormatClue(evidenceDetails) + "'] [DO: Consider the implications] [SEE: Detailed analysis results]"
-        DEFINE options = "BOP:onm=\\\"Determine Relevance\\\";img=\\\"evidence_" + evidenceID + "_analysis\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Analysis Results\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
-    }
-    DEFINE slpnPassage2 = CreateAnalyzePassage(analyzeUID, analyzeName, evidenceDetails, relevanceUID)
-    allPassages += "\n\n" + slpnPassage2
-
-    // == Passage 3: Relevance ==
-    PROCEDURE CreateRelevancePassage(uid, name, relevance, nextPassageUID) {
-        DEFINE content = "[LEARN: Relevance: '" + FormatRelevance(relevance) + "'] [DO: Decide whether to note this]"
-        DEFINE options = "BOP:onm=\\\"Make Note\\\";ods=\\\"Add this clue to your case file\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Case Relevance\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
-    }
-    // Use relevanceUID (derived) here, target confirmUID (derived)
-    DEFINE slpnPassage3 = CreateRelevancePassage(relevanceUID, relevanceName, relevance, confirmUID)
-    allPassages += "\n\n" + slpnPassage3
-
-    // == Passage 4: Confirm/Note ==
-    PROCEDURE CreateConfirmPassage(uid, name, evidenceID, returnPassage) {
-        DEFINE content = "[INFO: Clue noted. This information is now available in your evidence review.]"
-        // Option to return to the previous location/hub
-        DEFINE options = "BOP:onm=\\\"Return\\\";ods=\\\"Go back\\\";" +
+    // == Passage 2: React/Comment ==
+    PROCEDURE CreateReactPassage(uid, name, evidenceID, evidenceName, evidenceDetails, relevance, nextPassage) {
+        DEFINE content = "[LEARN: '" + FormatClue(evidenceDetails) + "'] [DO: Consider how this relates to your case] [LEARN: Relevance: '" + FormatRelevance(relevance) + "']"
+        // Option to proceed with investigation
+        DEFINE options = "BOP:onm=\\\"Continue Investigation\\\";ods=\\\"Proceed with your investigation\\\";" +
                        "act=UAS:asp=" + evidenceID + "_examined;uty=SET;val=true|" +
-                       "ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + returnPassage
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Clue Recorded\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+                       "ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassage
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Evidence Analysis\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
-    // Use confirmUID (derived) here
-    DEFINE slpnPassage4 = CreateConfirmPassage(confirmUID, confirmName, evidenceID, returnPassage)
-    allPassages += "\n\n" + slpnPassage4
-    
-
+    DEFINE slpnPassage2 = CreateReactPassage(reactUID, reactName, evidenceID, evidenceName, evidenceDetails, relevance, nextPassage)
+    allPassages += "\n\n" + slpnPassage2
     
     RETURN allPassages
 }
+
+// Example output for a bloody knife evidence item:
+/*
+PSG:uid=EVIDENCE_EXAM_01_START;nam="Discover Bloody Knife";CNT;BOT:lin="[SEE: You notice Bloody Knife] [DO: Examine this potential evidence]";brn=BRN:bds="Discover Evidence";brp=once;bpr=option-list;bit=ada;ops=BOP:onm="View Bloody Knife";ods="Examine this evidence closely";act=ACT:aty=REVEAL;aet=bloody_knife|TRG:uid=bloody_knife_first_view;trg=FIRST_VIEW;tar=bloody_knife;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=EVIDENCE_EXAM_01_react|ACT:aty=MOVE;amt=AMT:typ=evidence;tgt=bloody_knife;
+
+PSG:uid=EVIDENCE_EXAM_01_react;nam="Thoughts on Bloody Knife";CNT;BOT:lin="[LEARN: 'Kitchen knife with blood residue on the blade. Partial fingerprint visible on handle.'] [DO: Consider how this relates to your case] [LEARN: Relevance: 'Potential murder weapon - matches wound pattern on victim.']";brn=BRN:bds="Evidence Analysis";brp=once;bpr=option-list;bit=ada;ops=BOP:onm="Continue Investigation";ods="Proceed with your investigation";act=UAS:asp=bloody_knife_examined;uty=SET;val=true|ACT:aty=MOVE;amt=AMT:typ=passage;tgt=CRIME_SCENE_02;
+*/
 {# END_PHENOTYPE: EVIDENCE_EXAMINATION #}
 
 {# PHENOTYPE: SUSPECT_LIST #}
@@ -658,7 +770,7 @@ PROCEDURE GenerateSuspectList(stepIDPrefix, entry_point_id, suspects, returnPass
         options += "|BOP:onm=\\\"Return to Investigation\\\";img=\\\"return_to_hub\\\";" +
                   "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + returnPassage
         
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + overviewContent + "\\\";brn=BRN:bds=\\\"Suspects\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + overviewContent + "\\\";brn=BRN:bds=\\\"Suspects\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnListPassage = CreateListIntroPassage(listUID, listName, suspects, returnPassage)
     allPassages += slpnListPassage
@@ -679,7 +791,7 @@ PROCEDURE GenerateSuspectList(stepIDPrefix, entry_point_id, suspects, returnPass
                            "BOP:onm=\\\"Back to List\\\";img=\\\"back_to_list\\\";" +
                            "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + listUID
                            
-            RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Suspect Details\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + options + ";"
+            RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Suspect Details\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + options + ";"
         }
         
         DEFINE slpnDetailPassage = CreateDetailPassage(detailUID, detailName, suspect, listUID)
@@ -766,7 +878,7 @@ PROCEDURE GenerateSuspectProfile(stepIDPrefix, entry_point_id, suspectID, suspec
     
     // Format the SLPN
     DEFINE slpnProfilePassage = "PSG:uid=" + profileUID + ";nam=\\\"" + profileName + "\\\";CNT;BOT:lin=\\\"" + 
-                             profileContent + "\\\";brn=BRN:bds=\\\"Suspect Profile\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + 
+                             profileContent + "\\\";brn=BRN:bds=\\\"Suspect Profile\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + 
                              profileOptions + ";"
     
     // Validation check
@@ -792,7 +904,7 @@ PROCEDURE GenerateSuspectProfile(stepIDPrefix, entry_point_id, suspectID, suspec
     RETURN slpnProfilePassage
 }
 {# END_PHENOTYPE: SUSPECT_PROFILE #}
-// ... existing code ...
+
 
 {# PHENOTYPE: DEDUCTION_PUZZLE #}
 PROCEDURE GenerateDeductionPuzzle(stepIDPrefix, entry_point_id, puzzleDescription, attemptAspect, maxAttempts, lastAttemptAspect, optionsList, correctAnswer, successStepID, failureStepID, lockoutStepID) { // Modified Inputs
@@ -845,7 +957,7 @@ PROCEDURE GenerateDeductionPuzzle(stepIDPrefix, entry_point_id, puzzleDescriptio
                    "cnd=CND:typ=checkAspect;asp=" + attemptAspect + ";cmp=GE;val=" + maxAttempts + ";" + // Check if locked out
                    "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + lockoutStepID // Move directly to lockout
 
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Make Your Choice\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + options + ";" // Re-playable until locked
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Make Your Choice\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + options + ";" // Re-playable until locked
     }
     DEFINE slpnPassageEntry = CreatePuzzleEntryPassage(entryUID, entryName, puzzleDescription, attemptAspect, maxAttempts, lastAttemptAspect, optionsList, checkOutcomeUID, lockoutStepID)
     allPassages += slpnPassageEntry
@@ -875,7 +987,7 @@ PROCEDURE GenerateDeductionPuzzle(stepIDPrefix, entry_point_id, puzzleDescriptio
                    "cnd=CND:typ=checkAspect;asp=" + attemptAspect + ";cmp=GE;val=" + maxAttempts + ";" + // No attempts remaining
                    "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + lockoutStepID // Move to lockout step
 
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Processing\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";" // Not re-playable, it's a routing passage
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Processing\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";" // Not re-playable, it's a routing passage
     }
     // Note: The failureStepID input isn't directly used here, as failure means returning to the entryUID for another attempt. Lockout handles the final failure state.
     DEFINE slpnPassageCheckOutcome = CreateCheckOutcomePassage(checkOutcomeUID, checkOutcomeName, attemptAspect, maxAttempts, lastAttemptAspect, correctAnswer, successStepID, entryUID, lockoutStepID)
@@ -934,7 +1046,7 @@ PROCEDURE GenerateDeductionSuccess(stepIDPrefix, entry_point_id, suspectID, susp
     PROCEDURE CreateMsgPassage(uid, name, nextPassageUID) {
         DEFINE content = "[SEE: Success feedback] [LEARN: Your deduction was correct.] [FEEL: A step closer to solving the case.]"
         DEFINE options = "BOP:onm=\\\"Continue\\\";ods=\\\"Learn more about the lie\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Correct\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Correct\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage1 = CreateMsgPassage(msgUID, msgName, explainUID)
     allPassages += slpnPassage1
@@ -943,7 +1055,7 @@ PROCEDURE GenerateDeductionSuccess(stepIDPrefix, entry_point_id, suspectID, susp
     PROCEDURE CreateExplainPassage(uid, name, suspectName, nextPassageUID) {
         DEFINE content = "[LEARN: " + suspectName + " lied about their involvement in the crime.] [DO: Understand the implications.]"
         DEFINE options = "BOP:onm=\\\"Reveal New Evidence\\\";ods=\\\"Discover the evidence that exposes the lie\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Lie Exposed\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Lie Exposed\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage2 = CreateExplainPassage(explainUID, explainName, suspectName, unlockUID)
     allPassages += "\n\n" + slpnPassage2
@@ -955,7 +1067,7 @@ PROCEDURE GenerateDeductionSuccess(stepIDPrefix, entry_point_id, suspectID, susp
         DEFINE options = "BOP:onm=\\\"Continue\\\";ods=\\\"Proceed to the next step\\\";" +
                        "act=UAS:asp=" + suspectID + "_new_evidence;uty=SET;val=true|" +
                        "ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"New Evidence\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"New Evidence\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage3 = CreateUnlockPassage(unlockUID, unlockName, suspectID, nextUID)
     allPassages += "\n\n" + slpnPassage3
@@ -968,7 +1080,7 @@ PROCEDURE GenerateDeductionSuccess(stepIDPrefix, entry_point_id, suspectID, susp
                        "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + suspectID + "_NEW_EVIDENCE|" + // Target the new evidence phenotype
                        "BOP:onm=\\\"Return to Investigation\\\";ods=\\\"Continue the investigation\\\";" +
                        "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextStepTarget // Target the investigation hub
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Next Step\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Next Step\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage4 = CreateNextPassage(nextUID, nextName, nextStepTarget)
     allPassages += "\n\n" + slpnPassage4
@@ -1016,7 +1128,7 @@ PROCEDURE GenerateDeductionFailure(stepIDPrefix, entry_point_id, suspectID, susp
     PROCEDURE CreateFailMsgPassage(uid, name, attemptedStatement, nextPassageUID) {
         DEFINE content = "[SEE: Error feedback] [LEARN: The statement '" + attemptedStatement + "' appears consistent with the known evidence.] [FEEL: Reassessment needed.]"
         DEFINE options = "BOP:onm=\\\"Get Hint\\\";ods=\\\"Receive guidance on the analysis\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Incorrect\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Incorrect\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage1 = CreateFailMsgPassage(failUID, failName, attemptedStatement, hintUID)
     allPassages += slpnPassage1
@@ -1025,7 +1137,7 @@ PROCEDURE GenerateDeductionFailure(stepIDPrefix, entry_point_id, suspectID, susp
     PROCEDURE CreateHintPassage(uid, name, hintText, nextPassageUID) {
         DEFINE content = "[LEARN: Hint: '" + hintText + "'] [DO: Re-evaluate the statements and evidence based on this hint.]"
         DEFINE options = "BOP:onm=\\\"Try Again\\\";ods=\\\"Re-attempt the deduction puzzle\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Hint Provided\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Hint Provided\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage2 = CreateHintPassage(hintUID, hintName, hint, retryUID)
     allPassages += "\n\n" + slpnPassage2
@@ -1038,7 +1150,7 @@ PROCEDURE GenerateDeductionFailure(stepIDPrefix, entry_point_id, suspectID, susp
         DEFINE options = "BOP:onm=\\\"Retry Deduction\\\";ods=\\\"Go back to the statement selection\\\";" +
                        "act=UAS:asp=deduction_attempt_" + suspectID + "_made;uty=SET;val=false|" + // Reset attempt flag
                        "ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + puzzleStepID // Link back to the DEDUCTION_PUZZLE *FINAL_CHOICE* passage
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Retry\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Retry\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     // NOTE: This generates only 3 passages for failure, which feels more natural than forcing a 4th.
     DEFINE slpnPassage3 = CreateRetryPassage(retryUID, retryName, puzzleStepID, suspectID)
@@ -1085,7 +1197,7 @@ PROCEDURE GenerateEvidenceVerification(stepIDPrefix, entry_point_id, evidenceID,
     PROCEDURE CreateStartPassage(uid, name, evidenceName, verificationType, nextPassageUID) {
         DEFINE content = "[SEE: Analysis interface for " + evidenceName + "] [LEARN: Verification Type: " + verificationType + "] [DO: Begin detailed analysis]"
         DEFINE options = "BOP:onm=\\\"Review Process\\\";img=\\\"verification_" + evidenceID + "_start\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Verification Start\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Verification Start\\\";brp=once;bpr=block-panel;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage1 = CreateStartPassage(startUID, startName, evidenceName, verificationType, processUID)
     allPassages += slpnPassage1
@@ -1094,7 +1206,7 @@ PROCEDURE GenerateEvidenceVerification(stepIDPrefix, entry_point_id, evidenceID,
     PROCEDURE CreateProcessPassage(uid, name, analysisDetails, nextPassageUID) {
         DEFINE content = "[LEARN: Analysis Process: '" + analysisDetails + "'] [DO: Await results] [SEE: Analysis in progress]"
         DEFINE options = "BOP:onm=\\\"View Findings\\\";img=\\\"verification_" + evidenceID + "_process\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Analysis Details\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Analysis Details\\\";brp=once;bpr=block-panel;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage2 = CreateProcessPassage(processUID, processName, analysisDetails, resultsUID)
     allPassages += "\n\n" + slpnPassage2
@@ -1104,7 +1216,7 @@ PROCEDURE GenerateEvidenceVerification(stepIDPrefix, entry_point_id, evidenceID,
         DEFINE formattedFindings = FormatFindings(verificationType, findings)
         DEFINE content = "[SEE: Analysis results visualization] [LEARN: Findings: '" + formattedFindings + "'] [DO: Confirm and note results]"
         DEFINE options = "BOP:onm=\\\"Confirm Results\\\";img=\\\"verification_" + evidenceID + "_results\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Verification Results\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Verification Results\\\";brp=once;bpr=block-panel;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage3 = CreateResultsPassage(resultsUID, resultsName, findings, verificationType, confirmUID)
     allPassages += "\n\n" + slpnPassage3
@@ -1115,7 +1227,7 @@ PROCEDURE GenerateEvidenceVerification(stepIDPrefix, entry_point_id, evidenceID,
         DEFINE options = "BOP:onm=\\\"Return to Investigation\\\";img=\\\"verification_" + evidenceID + "_complete\\\";" +
                        "act=UAS:asp=" + evidenceID + "_verified;uty=SET;val=true|" +
                        "ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + returnPassage
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Verification Complete\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Verification Complete\\\";brp=once;bpr=block-panel;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage4 = CreateConfirmPassage(confirmUID, confirmName, evidenceID, returnPassage)
     allPassages += "\n\n" + slpnPassage4
@@ -1159,7 +1271,7 @@ PROCEDURE GenerateBreakthroughMoment(stepIDPrefix, entry_point_id, breakthroughI
     PROCEDURE CreateHintPassage(uid, name, breakthroughName, nextPassageUID) {
         DEFINE content = "[FEEL: Mounting tension...] [LEARN: Something isn't adding up regarding " + breakthroughName + ". Let's look closer.]"
         DEFINE options = "BOP:onm=\\\"Examine Connection\\\";ods=\\\"Review the first piece of related evidence\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Developing Lead\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Developing Lead\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage1 = CreateHintPassage(hintUID, hintName, breakthroughName, evidenceAUID)
     allPassages += slpnPassage1
@@ -1168,7 +1280,7 @@ PROCEDURE GenerateBreakthroughMoment(stepIDPrefix, entry_point_id, breakthroughI
     PROCEDURE CreateEvidenceAPassage(uid, name, evidenceAName, nextPassageUID) {
         DEFINE content = "[SEE: Focus on " + evidenceAName + "] [LEARN: Considering this piece of evidence...] [DO: Recall its significance.]"
         DEFINE options = "BOP:onm=\\\"Connect Second Piece\\\";ods=\\\"Bring in the related evidence\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Connecting Evidence\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Connecting Evidence\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage2 = CreateEvidenceAPassage(evidenceAUID, evidenceAName, connectedEvidence.items[0], evidenceBUID)
     allPassages += "\n\n" + slpnPassage2
@@ -1177,7 +1289,7 @@ PROCEDURE GenerateBreakthroughMoment(stepIDPrefix, entry_point_id, breakthroughI
     PROCEDURE CreateEvidenceBPassage(uid, name, evidenceBName, nextPassageUID) {
         DEFINE content = "[SEE: Focus on " + evidenceBName + "] [LEARN: And when combined with this piece...] [DO: What does this reveal?]"
         DEFINE options = "BOP:onm=\\\"The Revelation!\\\";ods=\\\"See the critical connection\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Connecting Evidence\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Connecting Evidence\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage3 = CreateEvidenceBPassage(evidenceBUID, evidenceBName, connectedEvidence.items[1], revealUID)
     allPassages += "\n\n" + slpnPassage3
@@ -1187,7 +1299,7 @@ PROCEDURE GenerateBreakthroughMoment(stepIDPrefix, entry_point_id, breakthroughI
         DEFINE formattedEvidence = FormatConnectedEvidence(connectedEvidence.items) // Reuse existing helper if available, else simple join
         DEFINE content = "[SEE: Dramatic visualization of connection!] [FEEL: Breakthrough!] [LEARN: Critical connection between " + formattedEvidence + " reveals: '" + revelation + "']"
         DEFINE options = "BOP:onm=\\\"Follow This Lead\\\";ods=\\\"Pursue the new direction\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Case Breakthrough!\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Case Breakthrough!\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage4 = CreateRevelationPassage(revealUID, revealName, connectedEvidence, revelation, newPathUID)
     allPassages += "\n\n" + slpnPassage4
@@ -1203,7 +1315,7 @@ PROCEDURE GenerateBreakthroughMoment(stepIDPrefix, entry_point_id, breakthroughI
         actions += "|ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + newPathPassage
 
         DEFINE options = "BOP:onm=\\\"Proceed\\\";ods=\\\"Enter the next stage of investigation\\\";act=" + actions
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"New Lead\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"New Lead\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage5 = CreateNewPathPassage(newPathUID, newPathName, breakthroughID, newPathPassage, connectedEvidence.newEvidenceID)
     allPassages += "\n\n" + slpnPassage5
@@ -1272,7 +1384,7 @@ PROCEDURE GenerateSuspectConfrontation(stepIDPrefix, entry_point_id, suspectID, 
     PROCEDURE CreateApproachPassage(uid, name, suspectName, nextPassageUID) {
         DEFINE content = "[SEE: Preparing to confront " + suspectName + "] [FEEL: Tension, determination] [DO: Initiate the confrontation.]"
         DEFINE options = "BOP:onm=\\\"Confront " + suspectName + "\\\";ods=\\\"Present the evidence directly\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Initiate Confrontation\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Initiate Confrontation\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage1 = CreateApproachPassage(approachUID, approachName, suspectName, presentUID)
     allPassages += slpnPassage1
@@ -1281,7 +1393,7 @@ PROCEDURE GenerateSuspectConfrontation(stepIDPrefix, entry_point_id, suspectID, 
     PROCEDURE CreatePresentPassage(uid, name, evidencePresentedName, suspectName, nextPassageUID) {
         DEFINE content = "[LEARN: You present the \'" + evidencePresentedName + "\' to " + suspectName + ".] [DO: Observe their reaction closely.]"
         DEFINE options = "BOP:onm=\\\"See Reaction\\\";ods=\\\"How do they respond? \\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Evidence Presented\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Evidence Presented\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage2 = CreatePresentPassage(presentUID, presentName, evidencePresentedName, suspectName, reactionUID)
     allPassages += "\n\n" + slpnPassage2
@@ -1290,7 +1402,7 @@ PROCEDURE GenerateSuspectConfrontation(stepIDPrefix, entry_point_id, suspectID, 
     PROCEDURE CreateReactionPassage(uid, name, suspectReaction, nextPassageUID) {
         DEFINE content = "[SEE: " + suspectName + " reacts.] [LEARN: Reaction: '" + suspectReaction + "'] [FEEL: Assess their response - truth, deflection, anger?]"
         DEFINE options = "BOP:onm=\\\"Decide Next Move\\\";ods=\\\"Consider your options\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Suspect Reaction\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Suspect Reaction\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage3 = CreateReactionPassage(reactionUID, reactionName, suspectReaction, optionsUID)
     allPassages += "\n\n" + slpnPassage3
@@ -1312,7 +1424,7 @@ PROCEDURE GenerateSuspectConfrontation(stepIDPrefix, entry_point_id, suspectID, 
         options += "BOP:onm=\\\"Step Back\\\";ods=\\\"Return to investigation, consider implications\\\";" +
                    "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextStepPassage // Target the main hub or next logical step
 
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Confrontation Options\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Confrontation Options\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage4 = CreateOptionsPassage(optionsUID, optionsName, suspectID, nextStepPassage, additionalEvidenceID, finalConfrontationStepID)
     allPassages += "\n\n" + slpnPassage4
@@ -1377,7 +1489,7 @@ PROCEDURE GenerateAccusation(stepIDPrefix, entry_point_id, suspects, requiredEvi
         DEFINE content = "[SEE: Final accusation interface] [LEARN: The time has come to name the culprit.] [DO: Review each suspect one last time before making your final decision.]"
         // Option to start reviewing the first suspect
         DEFINE options = "BOP:onm=\\\"Begin Final Review\\\";ods=\\\"Review the suspects before accusing\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + firstSuspectReviewUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Point of Accusation\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Point of Accusation\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE firstSuspectReviewUID = stepIDPrefix + "_REVIEW_" + suspects[0].id
     DEFINE slpnPassageIntro = CreateAccusationIntro(introUID, introName, suspects, firstSuspectReviewUID)
@@ -1402,7 +1514,7 @@ PROCEDURE GenerateAccusation(stepIDPrefix, entry_point_id, suspects, requiredEvi
                            "BOP:onm=\\\"Review Next / Decide\\\";ods=\\\"Move to the next suspect or the final decision screen\\\";" +
                            "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextReviewUID // Target next review passage or final choice passage
             
-            RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Final Review: " + suspectName + "\\\";brp=re-playable;bpr=option-list;bit=blocking;ops=" + options + ";" // Re-playable to allow revisiting
+            RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Final Review: " + suspectName + "\\\";brp=re-playable;bpr=option-list;bit=ada;ops=" + options + ";" // Re-playable to allow revisiting
         }
         
         DEFINE slpnPassageReview = CreateSuspectReviewPassage(reviewUID, reviewName, suspect.name, evidenceCondition, nextReviewUID, finalChoiceUID)
@@ -1424,7 +1536,7 @@ PROCEDURE GenerateAccusation(stepIDPrefix, entry_point_id, suspects, requiredEvi
                        "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + suspect.resolutionStepID
         }
         
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Who Is Guilty?\\\";brp=once;bpr=option-list;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Who Is Guilty?\\\";brp=once;bpr=option-list;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassageFinalChoice = CreateFinalChoicePassage(finalChoiceUID, finalChoiceName, suspects, requiredEvidenceMap)
     allPassages += "\n\n" + slpnPassageFinalChoice
@@ -1470,7 +1582,7 @@ PROCEDURE GenerateCaseResolution(stepIDPrefix, entry_point_id, culpritID, culpri
     PROCEDURE CreateVerdictPassage(uid, name, culpritName, nextPassageUID) {
         DEFINE content = "[SEE: Conclusion scene with " + culpritName + " facing justice] [LEARN: The culprit has been identified: " + culpritName + "] [DO: Review the case resolution]"
         DEFINE options = "BOP:onm=\\\"Hear Full Story\\\";img=\\\"verdict_" + culpritID + "\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Verdict Delivered\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Verdict Delivered\\\";brp=once;bpr=block-panel;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage1 = CreateVerdictPassage(verdictUID, verdictName, culpritName, explainUID)
     allPassages += slpnPassage1
@@ -1480,7 +1592,7 @@ PROCEDURE GenerateCaseResolution(stepIDPrefix, entry_point_id, culpritID, culpri
         DEFINE formattedExplanation = FormatLongText(caseExplanation, 240) 
         DEFINE content = "[LEARN: The Full Story: '" + formattedExplanation + "'] [DO: Review the evidence that sealed the case] [SEE: Timeline of the crime]"
         DEFINE options = "BOP:onm=\\\"Review Key Evidence\\\";img=\\\"explanation_" + culpritID + "\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Full Explanation\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Full Explanation\\\";brp=once;bpr=block-panel;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage2 = CreateExplanationPassage(explainUID, explainName, caseExplanation, recapUID)
     allPassages += "\n\n" + slpnPassage2
@@ -1490,7 +1602,7 @@ PROCEDURE GenerateCaseResolution(stepIDPrefix, entry_point_id, culpritID, culpri
         DEFINE formattedConnections = String.join(evidenceConnections, ", ")
         DEFINE content = "[SEE: Visualization of connected evidence] [LEARN: Key Evidence: '" + formattedConnections + "'] [DO: Conclude the investigation]"
         DEFINE options = "BOP:onm=\\\"Case Closed\\\";img=\\\"evidence_recap_" + culpritID + "\\\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageUID
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Evidence Recap\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Evidence Recap\\\";brp=once;bpr=block-panel;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage3 = CreateRecapPassage(recapUID, recapName, evidenceConnections, endUID)
     allPassages += "\n\n" + slpnPassage3
@@ -1503,7 +1615,7 @@ PROCEDURE GenerateCaseResolution(stepIDPrefix, entry_point_id, culpritID, culpri
         DEFINE options = "BOP:onm=\\\"Finish\\\";img=\\\"epilogue_complete\\\";" +
                        "act=UAS:asp=case_complete;uty=SET;val=true|" +
                        "ACT:aty=MOVE;amt=AMT:typ=application;tgt=" + endTarget
-        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Case Closed\\\";brp=once;bpr=block-panel;bit=blocking;ops=" + options + ";"
+        RETURN "PSG:uid=" + uid + ";nam=\\\"" + name + "\\\";CNT;BOT:lin=\\\"" + content + "\\\";brn=BRN:bds=\\\"Case Closed\\\";brp=once;bpr=block-panel;bit=ada;ops=" + options + ";"
     }
     DEFINE slpnPassage4 = CreateEndPassage(endUID, endName, epilogueText)
     allPassages += "\n\n" + slpnPassage4
@@ -1534,6 +1646,230 @@ FUNCTION FormatLongText(text, maxLength) {
 # Narrative Delivery Phenotype Dictionary
 
 This dictionary defines the composable building blocks for presenting narrative information (derived from Story Phenotypes: Definitions, Propositions, Axioms) to the player within the gameplay flow. These phenotypes describe *how* story elements are delivered, integrating with the Gameplay Phenotypes and functioning as connectable sub-graphs within the overall gameplay journey. **Core Principle: Show, Don't Tell - Reveal evidence, guide player interpretation.**
+
+{# PHENOTYPE: NARRATIVE_DIALOGUE_SEQUENCE #}
+
+PROCEDURE GenerateDialogueSequence(stepIDPrefix, entry_point_id, sequenceTitle, dialogueExchanges, nextPassageID) {
+    // Primary goal: Create immersive dialogue/monologue scenes using the intro sequence functionality.
+    // Integration: Builds on INTRO_SEQUENCE to deliver character interactions, flashbacks, and internal monologues.
+    // Structure: Converts series of dialogue exchanges into a sequence of slides ending with transition to next gameplay step.
+
+    // --- Generation Context ---
+    // Entry Point Construction: The primary passage will use the provided entry_point_id as targetable entry point.
+    // Targeting Requirements: The nextPassageID MUST be a valid subsequent passage UID or application target for the final slide transition.
+    // Graph Structure: Linear sequence of connected dialogue slides, potentially ending with transition to gameplay.
+
+    // --- Input Parameters ---
+    // stepIDPrefix: (String) Base prefix for generating unique passage UIDs.
+    // entry_point_id: (String) Entry point ID for the first slide in the sequence.
+    // sequenceTitle: (String) Title for the overall dialogue sequence.
+    // dialogueExchanges: (List) List of dialogue exchange objects with structure:
+    //   { 
+    //     speakerName: (String) Character name speaking the line,
+    //     speakerImage: (String) Optional image alias for character portrait,
+    //     dialogue: (String) The spoken text,
+    //     backgroundImage: (String) Image for the slide background,
+    //     backgroundDescription: (String) Description of the scene,
+    //     emotion: (String) Optional emotional tone for context,
+    //     isThought: (Boolean) Optional flag for internal thoughts vs spoken dialogue
+    //   }
+    // nextPassageID: (String) The passage to transition to after the dialogue sequence.
+
+    // --- Logic ---
+    // 1. Convert dialogue exchanges to intro slides format
+    DEFINE introSlides = []
+    
+    FOR EACH exchange IN dialogueExchanges INDEX i {
+        DEFINE slide = {}
+        
+        // Generate a unique ID for this dialogue slide
+        slide.id = "dialogue_" + i
+        
+        // Use speaker name for slide name
+        slide.name = exchange.speakerName
+        
+        // Use provided background image
+        slide.backgroundImage = exchange.backgroundImage
+        slide.imageDescription = exchange.backgroundDescription
+        
+        // Format dialogue content with appropriate tags
+        DEFINE dialoguePrefix = IF exchange.isThought THEN "[THINK: " ELSE "[HEAR: "
+        DEFINE formattedDialogue = dialoguePrefix + exchange.speakerName + ": \"" + exchange.dialogue + "\"]"
+        
+        // Add visual and emotional context
+        DEFINE visualContext = "[SEE: " + (exchange.speakerImage ? exchange.speakerName + " " + exchange.speakerImage : slide.backgroundDescription) + "]"
+        DEFINE emotionalContext = exchange.emotion ? "[FEEL: " + exchange.emotion + "]" : ""
+        
+        // Combine all content elements
+        slide.content = formattedDialogue + " " + visualContext + " " + emotionalContext
+        
+        // Add target passage ID to last slide only
+        IF i == dialogueExchanges.length - 1 {
+            slide.targetPassageID = nextPassageID
+        }
+        
+        // Add to slides collection
+        introSlides[i] = slide
+    }
+    
+    // 2. Use the standard intro sequence generator
+    RETURN GenerateIntroSequence(stepIDPrefix, entry_point_id, sequenceTitle, introSlides, null)
+}
+
+// Example usage:
+/*
+DEFINE detectiveDialogue = []
+DEFINE exchange1 = {}
+exchange1.speakerName = "Detective Chen"
+exchange1.speakerImage = "concerned"
+exchange1.dialogue = "Where were you on the night of the murder?"
+exchange1.backgroundImage = "interrogation_room"
+exchange1.backgroundDescription = "Stark interrogation room with single light above table"
+exchange1.emotion = "tension"
+detectiveDialogue[0] = exchange1
+
+DEFINE exchange2 = {}
+exchange2.speakerName = "James Reynolds"
+exchange2.speakerImage = "nervous"
+exchange2.dialogue = "I told you already. I was at the cinema alone."
+exchange2.backgroundImage = "interrogation_room_suspect"
+exchange2.backgroundDescription = "Suspect fidgeting with handcuffs"
+exchange2.emotion = "anxiety"
+detectiveDialogue[1] = exchange2
+
+GenerateDialogueSequence("CASE_01_INTERROGATION", "ENTRY_POINT_3", "First Interrogation", detectiveDialogue, "SUSPECT_PROFILE_4")
+*/
+{# END_PHENOTYPE: NARRATIVE_DIALOGUE_SEQUENCE #}
+
+
+{# PHENOTYPE: NARRATIVE_CUTSCENE_SEQUENCE #}
+
+PROCEDURE GenerateCutsceneSequence(stepIDPrefix, entry_point_id, sequenceTitle, cutsceneShots, nextPassageID) {
+    // Primary goal: Create cinematic, omniscient narrative cutscenes showing story context, montages, or emotional moments.
+    // Integration: Builds on INTRO_SEQUENCE to deliver impactful, director-style narrative scenes with third-person perspective.
+    // Structure: Linear sequence of emotionally charged shots that reveal story elements not directly witnessed by the player.
+
+    // --- Generation Context ---
+    // Entry Point Construction: The primary passage will use the provided entry_point_id as targetable entry point.
+    // Targeting Requirements: The nextPassageID MUST be a valid subsequent passage UID or application target for the final slide transition.
+    // Graph Structure: Linear sequence of connected cinematic shots, creating a montage with narrative impact.
+
+    // --- Input Parameters ---
+    // stepIDPrefix: (String) Base prefix for generating unique passage UIDs.
+    // entry_point_id: (String) Entry point ID for the first slide in the sequence.
+    // sequenceTitle: (String) Title for the overall cutscene sequence.
+    // cutsceneShots: (List) List of cinematic shot objects with structure:
+    //   { 
+    //     shotName: (String) Brief descriptor of the shot,
+    //     narration: (String) Omniscient narrator text describing the scene or context,
+    //     backgroundImage: (String) Image for the slide background,
+    //     imageDescription: (String) Description of the visual scene,
+    //     emotionalTone: (String) The emotional impact intended (suspense, dread, hope, etc.),
+    //     timeContext: (String) Optional temporal context (past, present, future, specific time)
+    //   }
+    // nextPassageID: (String) The passage to transition to after the cutscene sequence.
+
+    // --- Logic ---
+    // 1. Convert cutscene shots to intro slides format
+    DEFINE introSlides = []
+    
+    FOR EACH shot IN cutsceneShots INDEX i {
+        DEFINE slide = {}
+        
+        // Generate a unique ID for this cutscene shot
+        slide.id = "cutscene_" + i
+        
+        // Use shot name for slide name
+        slide.name = shot.shotName
+        
+        // Use provided background image
+        slide.backgroundImage = shot.backgroundImage
+        slide.imageDescription = shot.imageDescription
+        
+        // Format content with appropriate tags
+        DEFINE narrativeContext = "[LEARN: " + shot.narration + "]"
+        DEFINE visualContext = "[SEE: " + shot.imageDescription + "]"
+        DEFINE emotionalContext = shot.emotionalTone ? "[FEEL: " + shot.emotionalTone + "]" : ""
+        DEFINE temporalContext = shot.timeContext ? "[TIME: " + shot.timeContext + "]" : ""
+        
+        // Combine all content elements
+        slide.content = narrativeContext + " " + visualContext + " " + emotionalContext + " " + temporalContext
+        
+        // Create a dramatic button text for transitions between shots
+        DEFINE buttonText = ""
+        IF i == cutsceneShots.length - 1 {
+            // Last shot
+            buttonText = "Continue"
+        } ELSE {
+            // Choose a dramatic transition based on emotional tone
+            buttonText = ChooseDramaticTransition(shot.emotionalTone)
+        }
+        slide.buttonText = buttonText
+        
+        // Add target passage ID to last slide only
+        IF i == cutsceneShots.length - 1 {
+            slide.targetPassageID = nextPassageID
+        }
+        
+        // Add to slides collection
+        introSlides[i] = slide
+    }
+    
+    // 2. Use the standard intro sequence generator
+    RETURN GenerateIntroSequence(stepIDPrefix, entry_point_id, sequenceTitle, introSlides, null)
+}
+
+// Helper function for choosing dramatic transition text based on emotional tone
+FUNCTION ChooseDramaticTransition(emotionalTone) {
+    IF emotionalTone == "suspense" OR emotionalTone == "tension" OR emotionalTone == "mystery" {
+        RETURN "And then..."
+    } ELSE IF emotionalTone == "dread" OR emotionalTone == "fear" OR emotionalTone == "horror" {
+        RETURN "Suddenly..."
+    } ELSE IF emotionalTone == "revelation" OR emotionalTone == "realization" {
+        RETURN "It becomes clear..."
+    } ELSE IF emotionalTone == "sadness" OR emotionalTone == "grief" {
+        RETURN "Meanwhile..."
+    } ELSE IF emotionalTone == "hope" OR emotionalTone == "triumph" {
+        RETURN "But then..."
+    } ELSE {
+        RETURN "Next"
+    }
+}
+
+// Example usage:
+/*
+DEFINE crimeMontage = []
+
+DEFINE shot1 = {}
+shot1.shotName = "Empty Street"
+shot1.narration = "The city sleeps as midnight approaches, unaware of what's about to unfold."
+shot1.backgroundImage = "empty_street_night"
+shot1.imageDescription = "An empty street illuminated only by flickering streetlights, rain falling gently"
+shot1.emotionalTone = "suspense"
+shot1.timeContext = "11:45 PM, Night of the Murder"
+crimeMontage[0] = shot1
+
+DEFINE shot2 = {}
+shot2.shotName = "Apartment Window"
+shot2.narration = "In apartment 4B, the light still burns as shadows move across the curtains."
+shot2.backgroundImage = "apartment_window_night"
+shot2.imageDescription = "Apartment window with silhouettes visible through thin curtains"
+shot2.emotionalTone = "tension"
+crimeMontage[1] = shot2
+
+DEFINE shot3 = {}
+shot3.shotName = "The Aftermath"
+shot3.narration = "By morning, everything has changed. What remains tells only part of the story."
+shot3.backgroundImage = "crime_scene_morning"
+shot3.imageDescription = "Police tape across an apartment door, officers gathering outside"
+shot3.emotionalTone = "mystery"
+shot3.timeContext = "7:30 AM, Next Morning"
+crimeMontage[2] = shot3
+
+GenerateCutsceneSequence("CASE_01_INTRO", "ENTRY_POINT_1", "The Night Of", crimeMontage, "INVESTIGATION_HUB_1")
+*/
+{# END_PHENOTYPE: NARRATIVE_CUTSCENE_SEQUENCE #}
+
 
 {# PHENOTYPE: NARRATIVE_EVIDENCE_SNIPPET (Revised from INFO_SNIPPET) #}
 
@@ -1920,7 +2256,7 @@ PROCEDURE GenerateDiagnosticBranchTestBinary(stepIDPrefix, entry_point_id, testC
     
     // Create two branch options for true and false conditions
     DEFINE slpnPassage = "BOT:lin=\"" + branchContent + "\";\n" +
-                        "brn=BRN:bds=\"Condition Evaluation\";brp=once;bpr=option-list;bit=blocking;" +
+                        "brn=BRN:bds=\"Condition Evaluation\";brp=once;bpr=option-list;bit=ada;" +
                         "ops=BOP:onm=\"If " + conditionVar + " = " + conditionValue + "\";chk=CHK:asp=" + conditionVar + ";cty=eq;vlu=" + conditionValue + ";" +
                         "act=ACT:aty=MOVE;amt=AMT:typ=PASSAGE;tgt=" + pathAPassageID + ";" +
                         "ops=BOP:onm=\"If " + conditionVar + " ≠ " + conditionValue + "\";chk=CHK:asp=" + conditionVar + ";cty=ne;vlu=" + conditionValue + ";" +
@@ -1965,7 +2301,7 @@ PROCEDURE GenerateDiagnosticBranchTestMulti(stepIDPrefix, entry_point_id, testCa
     
     // Start with the branch header and bot line
     DEFINE slpnPassage = "BOT:lin=\"" + branchContent + "\";\n" +
-                        "brn=BRN:bds=\"Condition Evaluation\";brp=once;bpr=option-list;bit=blocking;"
+                        "brn=BRN:bds=\"Condition Evaluation\";brp=once;bpr=option-list;bit=ada;"
     
     // Loop through conditions to create branch options
     FOR EACH condition IN conditions {
@@ -2092,7 +2428,7 @@ PROCEDURE GenerateDiagnosticEvidenceExamination(stepIDPrefix, entry_point_id, te
     DEFINE startContent = CreateStartContent()
     DEFINE startPassage = "PSG:uid=" + examineUID + ";nam=\"" + examineName + "\";\n" +
                          "BOT:lin=\"" + startContent + "\";\n" +
-                         "brn=BRN:bds=\"Start Test Step\";brp=once;bpr=option-list;bit=blocking;" +
+                         "brn=BRN:bds=\"Start Test Step\";brp=once;bpr=option-list;bit=ada;" +
                          "ops=BOP:onm=\"Begin Examination Test\";ods=\"Proceed to the next step in the diagnostic sequence\";" +
                          "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + setStateUID + ";"
     
@@ -2108,7 +2444,7 @@ PROCEDURE GenerateDiagnosticEvidenceExamination(stepIDPrefix, entry_point_id, te
     DEFINE checkContent = CreateCheckContent()
     DEFINE checkStatePassage = "PSG:uid=" + checkStateUID + ";nam=\"Verify Evidence State\";\n" +
                               "BOT:lin=\"" + checkContent + "\";\n" +
-                              "brn=BRN:bds=\"Verify State\";brp=once;bpr=option-list;bit=blocking;" +
+                              "brn=BRN:bds=\"Verify State\";brp=once;bpr=option-list;bit=ada;" +
                               "ops=BOP:onm=\"Success Path\";chk=CHK:asp=" + evidenceID + "_EXAMINED;cty=eq;vlu=true;" +
                               "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + successUID + ";" +
                               "ops=BOP:onm=\"Failure Path\";chk=CHK:asp=" + evidenceID + "_EXAMINED;cty=ne;vlu=true;" +
@@ -2188,7 +2524,7 @@ PROCEDURE GenerateDiagnosticMergePoint(stepIDPrefix, entry_point_id, testCaseID,
     DEFINE slpnPassage = "BOT:lin=\"" + mergeContent + "\";\n" +
                          originTracking +
                          "UAS:asp=MERGE_POINT_REACHED;uty=SET;val=true;\n" +
-                         "brn=BRN:bds=\"Proceed to Next Test\";brp=once;bpr=option-list;bit=blocking;" +
+                         "brn=BRN:bds=\"Proceed to Next Test\";brp=once;bpr=option-list;bit=ada;" +
                          "ops=BOP:onm=\"Continue\";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + nextPassageID + ";"
     
     // Validation check
@@ -2236,14 +2572,14 @@ PROCEDURE GenerateDiagnosticLoopTest(stepIDPrefix, entry_point_id, testCaseID, l
     // First passage - increment the counter
     DEFINE slpnPassage = "BOT:lin=\"" + loopContent + "\";\n" +
                          "UAS:asp=" + loopVarName + ";uty=SET;val=$" + loopVarName + " + 1;\n" +
-                         "brn=BRN:bds=\"Loop Control\";brp=once;bpr=option-list;bit=blocking;" +
+                         "brn=BRN:bds=\"Loop Control\";brp=once;bpr=option-list;bit=ada;" +
                          "ops=BOP:onm=\"Proceed\";ods=\"Continue to next step\";" +
                          "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + checkPassageUID + ";"
     
     // Check passage - evaluate and branch
     DEFINE checkPassage = "PSG:uid=" + checkPassageUID + ";nam=\"" + loopName + " - Check\";\n" +
                          "BOT:lin=\"Evaluating loop condition...\";\n" +
-                         "brn=BRN:bds=\"Loop Evaluation\";brp=once;bpr=option-list;bit=blocking;" +
+                         "brn=BRN:bds=\"Loop Evaluation\";brp=once;bpr=option-list;bit=ada;" +
                          "ops=BOP:onm=\"Exit Loop\";chk=CHK:asp=" + loopVarName + ";cty=gte;vlu=" + maxIterations + ";" +
                          "UAS:asp=LOOP_TEST_COMPLETE;uty=SET;val=true;" +
                          "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + exitPassageID + ";" +
@@ -2367,7 +2703,7 @@ PROCEDURE GenerateDiagnosticExitPoint(stepIDPrefix, entry_point_id, testCaseID, 
     
     DEFINE slpnPassage = "BOT:lin=\"" + exitContent + "\";\n" +
                          resultCommands + "\n" +
-                         "brn=BRN:bds=\"Test Complete\";brp=once;bpr=option-list;bit=blocking;ops=BOP:onm=\"Finalize Test\";act=ACT:aty=MOVE;amt=AMT:typ=application;tgt=HOME;"
+                         "brn=BRN:bds=\"Test Complete\";brp=once;bpr=option-list;bit=ada;ops=BOP:onm=\"Finalize Test\";act=ACT:aty=MOVE;amt=AMT:typ=application;tgt=HOME;"
     
     // Validation check
     PROCEDURE ValidateExitPoint(slpnPassage, testCaseID, testOutcome, resultData) {
@@ -2450,7 +2786,7 @@ PROCEDURE GenerateDiagnosticCompoundCondition(stepIDPrefix, entry_point_id, test
     DEFINE conditionCheck = CreateCompoundConditionCheck(logicalOperator, conditions)
     
     DEFINE slpnPassage = "BOT:lin=\"" + compoundContent + "\";\n" +
-                        "brn=BRN:bds=\"Compound Condition Evaluation\";brp=once;bpr=option-list;bit=blocking;" +
+                        "brn=BRN:bds=\"Compound Condition Evaluation\";brp=once;bpr=option-list;bit=ada;" +
                         "ops=BOP:onm=\"True Path\";" + conditionCheck +
                         "act=ACT:aty=MOVE;amt=AMT:typ=PASSAGE;tgt=" + truePassageID + ";" +
                         "ops=BOP:onm=\"False Path\";act=ACT:aty=MOVE;amt=AMT:typ=PASSAGE;tgt=" + falsePassageID + ";"
@@ -2815,7 +3151,7 @@ PROCEDURE GenerateDiagnosticComplexCondition(stepIDPrefix, entry_point_id, testC
     DEFINE startContent = CreateStartContent()
     DEFINE startPassage = "PSG:uid=" + startUID + ";nam=\"Complex Condition Test\";\n" +
                          "BOT:lin=\"" + startContent + "\";\n" +
-                         "brn=BRN:bds=\"Set Variables or Check\";brp=re-playable;bpr=option-list;bit=blocking;"
+                         "brn=BRN:bds=\"Set Variables or Check\";brp=re-playable;bpr=option-list;bit=ada;"
     
     // Add options for setting each variable true/false
     FOR EACH varName IN conditionVars {
@@ -2838,7 +3174,7 @@ PROCEDURE GenerateDiagnosticComplexCondition(stepIDPrefix, entry_point_id, testC
         DEFINE trueSetPassage = "PSG:uid=" + varSetUIDs[varName + "_true"] + ";nam=\"Set " + varName + " True\";\n" +
                                 "BOT:lin=\"" + trueContent + "\";\n" +
                                 "UAS:asp=" + varName + ";uty=SET;val=true;\n" +
-                                "brn=BRN:bds=\"Return to Test\";brp=once;bpr=option-list;bit=blocking;" +
+                                "brn=BRN:bds=\"Return to Test\";brp=once;bpr=option-list;bit=ada;" +
                                 "ops=BOP:onm=\"Continue\";ods=\"Return to test options\";" +
                                 "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + startUID + ";"
         
@@ -2847,7 +3183,7 @@ PROCEDURE GenerateDiagnosticComplexCondition(stepIDPrefix, entry_point_id, testC
         DEFINE falseSetPassage = "PSG:uid=" + varSetUIDs[varName + "_false"] + ";nam=\"Set " + varName + " False\";\n" +
                                 "BOT:lin=\"" + falseContent + "\";\n" +
                                 "UAS:asp=" + varName + ";uty=SET;val=false;\n" +
-                                "brn=BRN:bds=\"Return to Test\";brp=once;bpr=option-list;bit=blocking;" +
+                                "brn=BRN:bds=\"Return to Test\";brp=once;bpr=option-list;bit=ada;" +
                                 "ops=BOP:onm=\"Continue\";ods=\"Return to test options\";" +
                                 "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + startUID + ";"
         
@@ -2858,7 +3194,7 @@ PROCEDURE GenerateDiagnosticComplexCondition(stepIDPrefix, entry_point_id, testC
     DEFINE checkContent = CreateCheckContent()
     DEFINE checkPassage = "PSG:uid=" + checkUID + ";nam=\"Evaluate " + logicalOperator + " Condition\";\n" +
                          "BOT:lin=\"" + checkContent + "\";\n" +
-                         "brn=BRN:bds=\"Condition Check\";brp=once;bpr=option-list;bit=blocking;"
+                         "brn=BRN:bds=\"Condition Check\";brp=once;bpr=option-list;bit=ada;"
     
     // Add success branch with complex condition check
     checkPassage += "ops=BOP:onm=\"True Path\";"
@@ -2900,14 +3236,14 @@ PROCEDURE GenerateDiagnosticComplexCondition(stepIDPrefix, entry_point_id, testC
     DEFINE trueContent = CreateResultContent("TRUE")
     DEFINE trueResultPassage = "PSG:uid=" + trueResultUID + ";nam=\"Complex Check: TRUE\";\n" +
                               "BOT:lin=\"" + trueContent + "\";\n" +
-                              "brn=BRN:bds=\"Continue\";brp=once;bpr=option-list;bit=blocking;" +
+                              "brn=BRN:bds=\"Continue\";brp=once;bpr=option-list;bit=ada;" +
                               "ops=BOP:onm=\"Proceed\";ods=\"Continue to next test\";" +
                               "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + truePassageID + ";"
     
     DEFINE falseContent = CreateResultContent("FALSE")
     DEFINE falseResultPassage = "PSG:uid=" + falseResultUID + ";nam=\"Complex Check: FALSE\";\n" +
                                "BOT:lin=\"" + falseContent + "\";\n" +
-                               "brn=BRN:bds=\"Continue\";brp=once;bpr=option-list;bit=blocking;" +
+                               "brn=BRN:bds=\"Continue\";brp=once;bpr=option-list;bit=ada;" +
                                "ops=BOP:onm=\"Proceed\";ods=\"Continue to next test\";" +
                                "act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=" + falsePassageID + ";"
     
@@ -2946,3 +3282,4 @@ PROCEDURE GenerateDiagnosticComplexCondition(stepIDPrefix, entry_point_id, testC
 }
 
 {# END_PHENOTYPE: DIAGNOSTIC_COMPLEX_CONDITION #} 
+

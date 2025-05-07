@@ -1,4 +1,3 @@
-
 # SLPN Narrative Phenotypes Guide: Delivering Rich Narrative in Crime Investigation Cases
 
 ## Introduction
@@ -104,6 +103,50 @@ ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app;
 BOT:lin="You recall the suspect's reaction during questioning.";
 ACT:aty=REVEAL;aet=detective_observations;
 ACT:aty=MOVE;amt=AMT:typ=DEDUCTION;tgt=character_analysis_puzzle;
+```
+
+### NARRATIVE_DIALOGUE_SEQUENCE
+
+**Purpose**: Creates immersive dialogue or monologue scenes using intro sequence functionality.
+
+**Structure**:
+- Series of connected dialogue slides 
+- Character portraits and background imagery
+- Optional emotional tone indicators
+- Transition to next gameplay step
+
+**Example**:
+```
+// Example of dialogue exchange slides
+// First slide - Detective
+BOT:lin="[HEAR: Detective Chen: \"Where were you on the night of the murder?\"] [SEE: Detective Chen concerned] [FEEL: tension]";
+ACT:aty=NEXT;tgt=dialogue_1;
+
+// Second slide - Suspect response
+BOT:lin="[HEAR: James Reynolds: \"I told you already. I was at the cinema alone.\"] [SEE: Suspect fidgeting with handcuffs] [FEEL: anxiety]";
+ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=SUSPECT_PROFILE_4;
+```
+
+### NARRATIVE_CUTSCENE_SEQUENCE
+
+**Purpose**: Creates cinematic, omniscient narrative cutscenes showing story context, montages, or emotional moments.
+
+**Structure**:
+- Linear sequence of cinematic shots
+- Omniscient narrator text with visual descriptions
+- Emotional tone indicators and temporal context
+- Dramatic transitions between shots
+
+**Example**:
+```
+// Example of cutscene sequence slides
+// First shot - Setting the scene
+BOT:lin="[LEARN: The city sleeps as midnight approaches, unaware of what's about to unfold.] [SEE: An empty street illuminated only by flickering streetlights, rain falling gently] [FEEL: suspense] [TIME: 11:45 PM, Night of the Murder]";
+ACT:aty=NEXT;tgt=cutscene_1;btn="And then...";
+
+// Second shot - Buildup
+BOT:lin="[LEARN: In apartment 4B, the light still burns as shadows move across the curtains.] [SEE: Apartment window with silhouettes visible through thin curtains] [FEEL: tension]";
+ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=INVESTIGATION_HUB_1;btn="Continue";
 ```
 
 ## Implementation Guidelines

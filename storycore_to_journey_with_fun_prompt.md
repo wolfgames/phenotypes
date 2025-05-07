@@ -19,6 +19,13 @@ CONTENT REQUIREMENTS:
 6. All text MUST be concise, engaging, and in present tense.
 7. Ensure that all evidence and narrative elements used exist within the provided case data and align with defined **Story Phenotypes**.
 8. There MUST be a clear path of discoveries that leads to the culprit, enriched by understanding character motivations and histories.
+9. Include at least one NARRATIVE_DIALOGUE_SEQUENCE during Phase 4 that reveals character under pressure through tense confrontation with **detailed character reactions, verbal/non-verbal cues, and shifting power dynamics**.
+10. Implement at least one NARRATIVE_CUTSCENE_SEQUENCE in Phase 3 showing a **specific, visually distinct flashback to a pivotal moment** between key characters that fundamentally changes our understanding of their relationship.
+11. The CASE_RESOLUTION MUST include **comprehensive character epilogues** showing both legal outcomes and emotional states, clear moral/ethical implications of the crime and its resolution, and emotional aftermath for all involved parties.
+12. Every character interaction should reveal psychological depth and create emotional investment rather than merely advancing the plot.
+13. **MANDATORY:** Include detailed physical/behavioral manifestations of emotional states (microexpressions, body language, voice modulation) in all dialogue sequences.
+14. **MANDATORY:** Flashbacks must employ distinct visual/tonal treatment (altered color palette, different framing, atmospheric shifts) to create emotional resonance.
+15. **MANDATORY:** Resolution must transcend mere factual closure to create emotional catharsis through reflection on human motivations and moral complexity.
 
 TECHNICAL GUIDANCE:
 1. ACTION directives should be implementable with basic game logic **and include narrative triggers where appropriate (e.g., `TRIGGER Revelation(RevelationID)`).**
@@ -27,10 +34,27 @@ TECHNICAL GUIDANCE:
 4. Confirm that each **Gameplay** phenotype is used appropriately for its intended purpose.
 5. Verify that each interaction type aligns with its associated **Gameplay** phenotype.
 6. Ensure triggered **Story Phenotype** elements are logically connected to the current gameplay context.
+7. NARRATIVE_DIALOGUE_SEQUENCE steps should include detailed character reactions, microexpressions, and emotional subtext.
+8. NARRATIVE_CUTSCENE_SEQUENCE scenes require clear visual direction and emotional tone specifications.
+9. The emotional arc of the case should build through deliberate placement of revelation moments, with each phase deepening character understanding.
+10. When implementing confrontation scenes, include detailed power dynamics and emotional escalation as specified in the PHENOTYPE_SEQUENCE purpose descriptions.
+11. **EXEMPLAR - DIALOGUE SEQUENCE:** When implementing a NARRATIVE_DIALOGUE_SEQUENCE in Phase 4, include explicit descriptions like "hands trembling slightly," "voice catching on certain words," "maintaining eye contact too intently," or "shoulders tensing when topic shifts." Power dynamics should evolve within the scene (e.g., "suspect initially confident but growing defensive as questioning continues").
+12. **EXEMPLAR - FLASHBACK SEQUENCE:** When implementing a NARRATIVE_CUTSCENE_SEQUENCE flashback in Phase 3, specify visual treatment clearly: "Scene transitions to desaturated colors with slight blur at edges, rain falling as a younger Emi confronts Zoe at the design school competition." Include emotional revelations that recontextualize present actions.
+13. **EXEMPLAR - RESOLUTION:** CASE_RESOLUTION should dedicate substantial detail to each character's emotional/psychological closure, not just legal outcomes. Include explicit moral questions raised by the case, emotional aftermath for secondary characters, and reflective elements about human motivations that transcend the specific crime.
 
 Follow the **Gameplay** phenotype sequence defined in the PHENOTYPE_SEQUENCE constant, ensuring that each phenotype is used at least once where appropriate and in the correct phase. **Interlace Story Phenotype reveals strategically within the actions of these Gameplay Phenotypes.** The final output must be a cohesive, playable investigation experience that leads the player through discovery, analysis, and resolution within the specified timeframe, fostering emotional connection to the characters and story.
 
-Generate compact, functional directives that maintain the consistent style shown in the example.
+Generate compact, functional directives that maintain the consistent style shown in the example, while prioritizing emotional depth and character psychology. Your case design should make players care about the people involved, not just solving the puzzle. The most compelling investigations reveal the human story beneath the crime, transforming a standard whodunit into a powerful exploration of motivation, relationship, and the complex psychology that drives human action.
+
+**CRITICAL QUALITY NOTE:** The success of your case design will be evaluated primarily on three key narrative elements:
+
+1. **Emotionally Revelatory Dialogue** - Confrontation scenes must show character psychology through detailed physical and verbal cues, with clear power dynamics that shift during the interaction.
+
+2. **Visually Distinct, Emotionally Resonant Flashbacks** - Flashback cutscenes must employ distinctive visual treatment and reveal pivotal moments that transform our understanding of character relationships.
+
+3. **Psychologically Complete Resolution** - Case resolution must provide comprehensive emotional closure for all characters, explore moral implications, and offer reflective insight into human motivation that transcends the specific crime.
+
+These three elements are not optional flourishes but fundamental requirements that transform a mechanical investigation into a meaningful human story.
 ---/SYSTEM---
 
 ---ROLE---
@@ -66,168 +90,412 @@ FUNCTION DesignCase():
 12. **Consistency & Clarity**: Uniform UI for choices, clear presentation of Risk/Reward **and narrative triggers.**
 13. **Emotional Investment**: Use early `Revelation_Proposition`s or `Backstory_Unfold` snippets to make players care about the characters.
 
-## I. CASE INITIATION & FRAMING: The Hypothesis-Driven Hook
+## I. CASE INITIATION & FRAMING: Character-Driven Narrative Hook
 
 ```
-FUNCTION CreateHypothesisHook(): // [Lens #13: Curiosity]
-    // Present Initial Ambiguous Clues
-    PRESENT 2-3 core_clues WHERE:
-        EACH clue hints at different potential victim_identity OR core_motive
-        INCLUDE at least one red_herring_clue
+FUNCTION CreateCharacterDrivenHook(): // [Lens #13: Curiosity + #19: Story]
+    // Define Key Dramatic Moment to Open Case
+    DEFINE OpeningScene = CREATE_EMOTIONAL_IMPACT_MOMENT() WHERE:
+        ESTABLISH character_stakes, emotional_tone, visual_hook
+        EMBED underlying_theme_or_question affecting key_character  
         
-    // Define Initial Hypotheses
-    DEFINE hypotheses = GENERATE_PLAUSIBLE_THEORIES(core_clues) // e.g., Journalist, Activist, Socialite
+    // Create Opening Narrative Sequence
+    IMPLEMENT NARRATIVE_CUTSCENE_SEQUENCE WITH:
+        MomentType: "haunting_discovery" OR "interrupted_normalcy" OR "ticking_clock"
+        EmotionalBeat: primary_emotion_to_evoke_in_player
+        VisualCues: strong_opening_image, environment_mood, lighting_details
+        CinematicFraming: closeup_of_key_detail OR overhead_establishing_shot
+        
+    // Introduce Character Emotional Stakes
+    IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE WITH:
+        SpeakingCharacter: first_responder OR detective OR witness OR victim_echo
+        EmotionalState: shock OR determination OR suspicion OR grief
+        DialogueStyle: terse_professional OR emotionally_raw OR cryptic_hints
+        CharacterReveals: hint_at_personal_stakes OR relationship_to_case
     
-    // Frame as Risk/Reward Decision
+    // Present Initial Ambiguous Evidence Through Character Lens
+    PRESENT 2-3 core_clues WHERE:
+        EACH clue reflects_character_perspective OR reveals_character_stakes
+        EACH clue hints at different potential victim_identity OR core_motive
+        INCLUDE at least one red_herring_clue with personal_resonance
+        
+    // Define Initial Hypotheses with Character Implications
+    DEFINE hypotheses = GENERATE_THEORIES_WITH_CHARACTER_IMPACT(core_clues) WHERE:
+        EACH theory connects_to_character_motivation
+        EACH theory implies_different_emotional_tone for investigation
+    
+    // Frame as Risk/Reward Decision with Relationship Stakes
     MAP hypotheses TO options WITH:
         Hypothesis: theory_name
-        Risk: describe_potential_misdirection (e.g., "May overlook corporate angle")
-        Reward: describe_initial_investigation_focus (e.g., "Prioritize press archives")
+        Risk: describe_potential_misunderstanding_of_character (e.g., "Misjudge victim's relationship with suspect")
+        Reward: describe_potential_character_insight (e.g., "Understand victim's final emotional state")
+        CharacterElement: describe_which_character_relationship_is_central_to_theory
         
-    DISPLAY options clearly
-    // Action can potentially trigger initial 'World_Axiom' or 'Case_Axiom' reveal
+    // Potential Dramatic Beat to End Sequence
+    IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE AS epilogue_hook WITH:
+        SpeakingCharacter: authority_figure OR primary_detective
+        DialogueContent: case_acceptance_statement
+        EmotionalBeat: determination_despite_odds OR personal_connection_hint
+        TransitionType: sharp_cut OR lingering_question OR ominous_warning
+        
+    DISPLAY options clearly, framed by character perspectives
+    // Action triggers narrative reveals to establish character relationships
+    // and emotional stakes alongside standard game flow
     
-    RETURN initial_hypothesis_choice_that_gates_phase_2
+    RETURN initial_hypothesis_choice_that_gates_phase_2_and_establishes_character_focus
 ```
 
-## II. DYNAMIC INVESTIGATION START: Branching Paths
+## II. DYNAMIC INVESTIGATION START: Character Relationship Pathways
 
 ```
-FUNCTION InitiateBranchedInvestigation(chosenHypothesis):
-    // Determine Initial Order based on Hypothesis
-    DEFINE suspectOrder = DETERMINE_SUSPECT_ORDER(chosenHypothesis, allSuspects)
-    DEFINE evidenceOrder = DETERMINE_EVIDENCE_ORDER(chosenHypothesis, foundationalEvidence)
+FUNCTION InitiateCharacterDrivenInvestigation(chosenHypothesis):
+    // Determine Initial Order based on Hypothesis & Character Relationships
+    DEFINE suspectOrder = DETERMINE_SUSPECT_ORDER_BY_RELATIONSHIP(chosenHypothesis, allSuspects)
+    DEFINE evidenceOrder = DETERMINE_EVIDENCE_ORDER_BY_EMOTIONAL_IMPACT(chosenHypothesis, foundationalEvidence)
     
-    // Present First Set of Risk/Reward Choices
+    // Create Early Character Moment to Deepen Emotional Stakes
+    IMPLEMENT NARRATIVE_CUTSCENE_SEQUENCE WITH:
+        Focus: key_location_establishing_shot WITH emotional_resonance
+        Contrast: present_crime_scene VS implied_previous_normalcy
+        Tone: establish_investigation_tone (clinical, frantic, methodical)
+        
+    // OR Create Initial Character Dialogue for Witness/Expert
+    IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE WITH:
+        Character: first_responder OR key_witness OR forensic_expert
+        DialogueFunction: preliminary_findings OR eyewitness_account OR professional_assessment
+        CharacterTrait: nervous_tic OR professional_demeanor OR personal_connection
+        DialogueSubtext: hint_at_hidden_information OR personal_stake
+    
+    // Present First Set of Risk/Reward Choices Framed Through Characters
     CREATE SuspectChoiceScreen WITH:
-        OPTIONS = MAP suspectOrder TO {Name, Risk, Reward}
+        OPTIONS = MAP suspectOrder TO {Name, Risk, Reward, CharacterConnection}
+        WHERE CharacterConnection = emotional_or_relationship_tie_to_case
     
     CREATE EvidenceChoiceScreen WITH:
-        OPTIONS = MAP evidenceOrder TO {Name, Risk, Reward}
+        OPTIONS = MAP evidenceOrder TO {Name, Risk, Reward, EmotionalImpact}
+        WHERE EmotionalImpact = potential_revelation_about_character
     
-    RETURN distinct_starting_path_based_on_hypothesis
+    RETURN distinct_starting_path_based_on_hypothesis_and_character_focus
 ```
 
-## III. GATED PROGRESSION & HYPOTHESIS CHECKING
+## III. GATED PROGRESSION & CHARACTER-DRIVEN REVELATIONS
 
 ```
-FUNCTION ImplementHypothesisCheckPuzzle(): // [Lens #28 Problem Solving + #13 Curiosity]
-    // Introduce Contradictory Clue
-    REVEAL new_clue WHERE its_interpretation_depends_on_chosenHypothesis
-    
-    // Frame Interpretations as Risk/Reward
-    DEFINE correctInterpretation = GET_TRUE_INTERPRETATION(new_clue)
-    DEFINE incorrectInterpretations = GENERATE_PLAUSIBLE_BUT_WRONG(new_clue, chosenHypothesis)
+FUNCTION ImplementDramaticHypothesisCheck(): // [Lens #28 Problem Solving + #19 Story + #13 Curiosity]
+    // Create Character Confrontation or Dramatic Discovery
+    IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE OR NARRATIVE_CUTSCENE_SEQUENCE WHERE:
+        RelevantCharacter: witness_with_key_insight OR suspect_under_pressure OR expert_with_revelation
+        DramaticContext: unexpected_meeting OR tense_confrontation OR discovery_of_hidden_truth
+        EmotionalStakes: personal_doubt OR mounting_tension OR dawning_realization
+        VisualMoment: character_physical_tell OR environmental_mood_shift OR evidence_in_dramatic_lighting
+        
+    // Introduce Contradictory Evidence Through Character Perspective
+    REVEAL new_clue WHERE:
+        Its_interpretation_requires character_insight
+        It_challenges player's_current_hypothesis
+        It_reveals character_motivation OR troubled_history OR hidden_relationship
+        
+    // Expert Character Analysis Sequence (Optional)
+    IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE WITH expert_character WHERE:
+        DialogueFunction: professional_analysis OR reluctant_revelation
+        CharacterQuirk: nervous_habit OR professional_thoroughness  
+        SubtextHint: character_has_personal_stake OR knowledge_beyond_statement
+        
+    // Frame Interpretations as Risk/Reward with Character Stakes
+    DEFINE correctInterpretation = GET_TRUE_INTERPRETATION_WITH_CHARACTER_INSIGHT(new_clue)
+    DEFINE incorrectInterpretations = GENERATE_PLAUSIBLE_BUT_WRONG_WITH_CHARACTER_BIAS(new_clue, chosenHypothesis)
     
     MAP interpretations TO options WITH:
         Interpretation: interpretation_text
-        Risk: describe_consequence_of_being_wrong (e.g., "Leads down wrong path, sent back")
-        Reward: describe_benefit_of_being_right (e.g., "Confirms theory, proceed")
+        Risk: describe_misreading_of_character_or_relationship (e.g., "Misjudge the victim's true relationship with suspect")
+        Reward: describe_insight_into_character_psychology (e.g., "Understand the psychological pressure that drove key decisions")
+        CharacterImpact: how_this_choice_affects_view_of_key_character
         
-    // Consequence for Failure
+    // Consequence Sequence for Success or Failure
+    ON correct_choice:
+        IMPLEMENT brief_revelation_sequence showing character_reaction OR evidence_significance
+        UNLOCK next_investigation_path with character_context
+        
     ON incorrect_choice:
-        PROVIDE brief_feedback
-        RESET relevant_flags
-        NAVIGATE_BACK to initial_hypothesis_choice OR relevant_earlier_stage
+        IMPLEMENT brief_disappointment_sequence showing investigative_setback
+        TRIGGER character_doubt_moment OR evidence_recontextualization
+        NAVIGATE_BACK to reconsider_approach with new_character_insight
         
-    RETURN gated_puzzle_that_validates_player_path
+    RETURN gated_puzzle_with_character_stakes_and_emotional_payoff
 ```
 
-## IV. CORE INVESTIGATION & EVIDENCE GATHERING
+## IV. CORE INVESTIGATION & EMOTIONAL DISCOVERY
 
 ```
-FUNCTION EnableActiveInvestigation(): // [Lens #15: Fun-Per-Second]
-    // Standard evidence interaction
-    IMPLEMENT interactive_evidence_hotspots
+FUNCTION EnableCharacterDrivenInvestigation(): // [Lens #15: Fun-Per-Second + #19: Story]
+    // Create Character-Focused Environmental Storytelling
+    IMPLEMENT scene_exploration_with_character_echoes WHERE:
+        Environment: contains_character_traces_and_personality
+        Objects: reflect_relationships_and_emotional_states
+        Atmosphere: establishes_mood_relevant_to_character_truths
     
-    // Gated Evidence (Example: Passcode Trial)
-    IMPLEMENT locked_evidence_discovery
+    // Implement Interactive Evidence-Character Connections
+    CREATE interactive_evidence_hotspots WITH:
+        EachHotspot: reveals_character_insight_alongside_factual_clue
+        ContextualReactions: investigator_voiceover_with_emotional_response
+        LayeredMeaning: initial_factual_discovery THEN deeper_character_implication
+    
+    // Potentially Implement Narrative Flashback on Evidence Discovery
+    ON key_evidence_interaction:
+        IMPLEMENT NARRATIVE_CUTSCENE_SEQUENCE showing:
+            PastEvent: related_to_evidence_and_character_decision
+            CinematicTreatment: altered_color_palette_for_past OR blurred_edges
+            EmotionalTone: reveal_character_vulnerability OR pivotal_decision
+            Duration: brief_but_impactful_moment (5-10 seconds)
+    
+    // Gated Evidence Through Character Understanding (Example: Personal Code)
+    IMPLEMENT locked_evidence_requiring_character_insight WHERE:
+        Solution: requires_understanding_character_psychology_or_history
+        Hint: found_in_character_belongings_or_statements_or_relationships
+        
     ON attempt_access:
-        PRESENT PasscodeTrialPuzzle WITH:
-            Hints: based_on_previous_clues
+        IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE showing:
+            CharacterFocus: investigator_internal_monologue OR expert_consultant
+            DialogueFunction: analyzing_character_mindset OR connecting_patterns
+            EmotionalStakes: growing_understanding OR mounting_frustration
+        
+        PRESENT CharacterInsightPuzzle WITH:
+            Challenge: deduce_password_from_character_knowledge
+            Hints: based_on_previously_discovered_character_details
             Attempts: limited_number
-            Risk: lockout_or_penalty
-            Reward: access_to_breakthrough_info
+            Risk: momentary_setback_and_character_doubt
+            Reward: deeper_character_truth_and_case_progression
         
-    RETURN investigation_with_both_standard_and_gated_discovery
+    RETURN emotionally_resonant_investigation_with_character_discoveries
 
-FUNCTION PrioritizeClarity(): // [Lens #68: Information]
-    // As before, but emphasize clarity of Risk/Reward
-    ENSURE Risk_Reward_clearly_communicated_for_each_major_choice
-    FORMAT text for conciseness
-    MAINTAIN consistent visual language for choices
+FUNCTION WeaveCharacterReactions(): // [Lens #68: Information + #19: Story]
+    // Implement Realistic Character Responses to Key Discoveries
+    ON significant_evidence_found:
+        TRIGGER appropriate_character_reaction:
+            FromWitness: nervous_reaction OR sudden_recollection
+            FromSuspect: defensive_posture OR revealing_slip
+            FromVictim: echo_of_past_fear OR implied_knowledge
+            
+    // Create Interactive Dialogue Options with Character Insight
+    PRESENT dialogue_choice_with_character_insight WHERE:
+        Options: reflect_growing_understanding_of_character_psychology
+        Risk: potential_to_misread_character_or_alienate_witness
+        Reward: deeper_revelation_or_emotional_breakthrough
+        
+    // Prioritize Character Truth Alongside Investigation Clarity
+    ENSURE each_discovery_has:
+        FactualLayer: clear_evidence_relevance
+        CharacterLayer: what_this_means_for_understanding_people_involved
+        EmotionalLayer: how_this_affects_player's_connection_to_characters
+        
+    FORMAT interactions to:
+        Highlight_character_moments_visually (expressions, movements)
+        Balance_procedural_clarity_with_emotional_depth
+        Maintain_consistent_character_voices_and_reactions
+        
+    RETURN investigation_enriched_by_authentic_character_responses
 ```
 
-## V. CORE DEDUCTION & BREAKTHROUGHS (Risk/Reward Integrated)
+## V. CORE DEDUCTION & CHARACTER REVELATIONS
 
 ```
-FUNCTION ImplementRiskRewardDeduction(): // [Lens #28 Problem Solving + #30 Reward]
-    // Example: Statement Analysis
-    PRESENT suspect_statements VS evidence_snippets
+FUNCTION ImplementCharacterDrivenDeduction(): // [Lens #28 Problem Solving + #19 Story + #30 Reward]
+    // Create Deduction Framed by Character Understanding
+    IMPLEMENT deduction_puzzle_with_character_insight WHERE:
+        PuzzleContext: understand_character_motivation_to_spot_inconsistencies
+        ChallengeType: statement_analysis OR behavioral_pattern_recognition
+        CharacterDepth: statements_reveal_psychological_state_and_history
     
+    // Example: Emotionally-Charged Statement Analysis
+    PRESENT suspect_statements WITH:
+        SubtextLayer: emotional_state_beneath_statements
+        TellElements: character_specific_verbal_tics_or_body_language
+        MotivationalClues: what_drives_character_honesty_or_deception
+        
+    // Create Dialogue Sequence for Witness/Suspect Confrontation
+    IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE showing:
+        SuspectReactions: defensive_posture OR revealing_microexpressions
+        InvestigatorTechnique: empathetic_approach OR pressure_tactics
+        PowerDynamic: shifting_control_in_conversation
+        EmotionalEscalation: building_tension_or_breakthrough_moment
+    
+    // Frame Final Deduction as Emotional/Psychological Insight 
     FRAME final_choice AS:
-        Identify_Lie (Risk: Penalty/Delay; Reward: Unlock_Key_Evidence + **Trigger Narrative Revelation**)
-        Identify_Truth (Risk: No Progress; Reward: Confirm Fact)
+        Identify_Character_Lie (Risk: Misread_Psychology; Reward: Character_Breakdown_Revelation)
+        Identify_Character_Truth (Risk: Miss_Critical_Insight; Reward: Confirm_Human_Dimension)
+        Identify_Character_Blind_Spot (Risk: Overinterpretation; Reward: Understand_Motivation)
         
-    RETURN deduction_puzzle_with_clear_stakes
-
-FUNCTION TriggerBreakthroughMoment(unlockedEvidence): // [Lens #19 Story + #30 Reward]
-    // Revelation based on gated/earned evidence
-    DISPLAY dramatic_revelation based on unlockedEvidence // **This IS a major Narrative Revelation**
+    // Consequence Sequence for Successful Deduction
+    ON successful_deduction:
+        IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE OR NARRATIVE_CUTSCENE_SEQUENCE showing:
+            CharacterReaction: emotional_breakthrough OR defensive_collapse
+            RevealsAbout: hidden_shame OR secret_motivation OR personal_trauma
+            EmotionalImpact: player_connection_to_character_deepens
     
-    // Post-Breakthrough Strategic Choice
-    PRESENT choice WITH:
-        OptionA: Confront_Immediately (Risk: Tip him off; Reward: Direct challenge)
-        OptionB: Gather_More_Proof (Risk: Lose momentum; Reward: Strengthen case)
+    RETURN deduction_puzzle_with_emotional_and_psychological_depth
+
+FUNCTION OrchestrateDramaticBreakthrough(unlockedEvidence): // [Lens #19 Story + #30 Reward]
+    // Create Cinematic Breakthrough Sequence
+    IMPLEMENT NARRATIVE_CUTSCENE_SEQUENCE WHERE:
+        VisualTreatment: dramatic_lighting_shift OR extreme_closeup_on_evidence
+        AudioTreatment: heart_beat_sound OR sudden_silence_then_revelation
+        EmotionalBeat: dawning_understanding OR shocked_realization
+    
+    // Character-Centered Revelation
+    DISPLAY dramatic_revelation WHERE:
+        EvidenceReveals: character_true_nature OR hidden_relationship OR buried_trauma
+        EmotionalContext: makes_character_actions_suddenly_understandable
+        NarrativeSignificance: recontextualizes_entire_case_through_human_lens
+    
+    // Emotional Processing Moment
+    IMPLEMENT investigator_reaction_beat showing:
+        InternalProcess: connecting_human_dots OR emotional_response_to_truth
+        CharacterGrowth: changes_in_investigator_perspective_or_emotional_state
         
-    RETURN impactful_reveal_leading_to_strategic_choice
+    // Post-Breakthrough Character Dilemma
+    PRESENT emotionally_charged_choice WITH:
+        OptionA: Confront_Character_With_Empathy (Risk: Vulnerability_To_Manipulation; Reward: Authentic_Confession)
+        OptionB: Confront_Character_With_Evidence (Risk: Defensive_Shutdown; Reward: Legal_Certainty)
+        OptionC: Gather_More_Context (Risk: Delayed_Justice; Reward: Fuller_Understanding)
+        
+    RETURN emotionally_powerful_revelation_with_character_stakes
 ```
 
-## VI. CLIMAX & RESOLUTION
+## VI. CLIMAX & EMOTIONAL RESOLUTION
 
 ```
-FUNCTION BuildToFinalChoice(): // [Lens #19: Story]
-    // Confrontation leads here or directly to Accusation
-    PRESENT final_confrontation_options WITH clear_stakes
+FUNCTION BuildToDramaticConfrontation(): // [Lens #19: Story + #13: Curiosity]
+    // Create Escalating Character Tension
+    IMPLEMENT pre_confrontation_mood_setting WHERE:
+        Environment: reflects_emotional_stakes (storm_brewing, lights_failing)
+        AudioCues: heartbeat, strained_breathing, escalating_music
+        VisualCues: closeups_of_nervous_hands, shifting_glances, evidence_items
     
+    // Character-Centered Confrontation Sequence
+    IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE OR NARRATIVE_CUTSCENE_SEQUENCE WHERE:
+        Suspect: reveals_true_emotional_state_under_pressure
+        Detective: employs_psychological_insight_from_investigation
+        PowerShift: control_transfers_between_characters_based_on_revelations
+        EmotionalBeats: denial, anger, bargaining, breakdown, acceptance
+    
+    // Final Evidence Presentation with Character Impact
+    PRESENT final_confrontation_options WITH:
+        EachOption: reveals_different_understanding_of_character_psychology
+        ApproachStyle: compassionate, accusatory, manipulative, analytical
+        EmotionalStakes: chance_for_redemption OR justice_without_mercy
+    
+    // Implement Character-Driven Accusation Mechanism
     IMPLEMENT AccusationScreen WITH:
-        Clear_evidence_summary per_suspect
-        Final_accusation_options
-        Confirmation_prompt
+        Character-Based Evidence Summary:
+            For_Each_Suspect: psychological_profile AND evidence_summary
+            Motivation_Analysis: human_needs_driving_criminal_behavior
+            Relationship_Map: connections_between_characters_emotional_landscape
+        Final_accusation_options with emotional_framing:
+            Each_Option: represents_different_understanding_of_human_nature
+        Confirmation_prompt framed_as_moral_choice:
+            Justice_vs_Mercy OR Truth_vs_Peace
 
-FUNCTION ProvideResolution(): // [Lens #30: Reward]
-    // As before: Clear Feedback, Outcome Sequence, Next Steps
-    DISPLAY immediate_feedback
-    SHOW success_or_failure_sequence
-    PRESENT clear_next_action
+    RETURN character_driven_confrontation_with_emotional_depth
+    
+FUNCTION CraftCatharticResolution(): // [Lens #30: Reward + #19: Story]
+    // Design Multi-layered Resolution Sequence
+    IMPLEMENT NARRATIVE_CUTSCENE_SEQUENCE WITH:
+        Resolution_Structure:
+            Justice_Moment: legal_consequences_shown_visually
+            Emotional_Closure: character_reactions_to_truth
+            Investigator_Growth: reflection_on_lessons_learned
+        Visual_Treatment:
+            Scene_Transitions: from_crime_scene_to_resolution_setting
+            Lighting_Evolution: dark_to_light OR tension_to_release
+            Character_Focus: closeups_of_emotional_reactions
+    
+    // Create Character Epilogues
+    IMPLEMENT character_coda_sequence WHERE:
+        For_Each_Key_Character:
+            Final_Status: legal_outcome OR emotional_state
+            Lingering_Question: unresolved_psychological_thread
+            Future_Implication: hint_at_life_after_case
+            
+    // Provide Emotional Payoff for Player Investment
+    DISPLAY case_outcome_sequence WITH:
+        Factual_Layer: evidence_summary_and_legal_outcome
+        Psychological_Layer: character_motivations_explained
+        Moral_Layer: ethical_implications_of_case_resolution
+        Emotional_Layer: aftermath_feelings_for_all_involved
+        
+    // Potential Investigator Character Development
+    IMPLEMENT NARRATIVE_DIALOGUE_SEQUENCE showing:
+        InvestigatorGrowth: reflection_on_case_impact
+        PersonalInsight: how_this_case_changed_perspective
+        EmotionalClosure: processing_of_difficult_truths
+        
+    // Transition to Next Experience
+    PRESENT clear_next_action WITH emotional_closure_and_forward_momentum
+    
+    RETURN cathartic_resolution_with_emotional_resonance_and_character_closure
 ```
 
-## VII. OVERARCHING PRINCIPLES & PLAYTESTING (Revised)
+## VII. OVERARCHING PRINCIPLES & NARRATIVE PLAYTESTING
 
 ```
-FUNCTION MaximizeFunPerSecond(): // [Lens #15]
-    FOCUS on engaging choices and reveals
-    MINIMIZE passive reading
-
-FUNCTION MaintainCuriosity(): // [Lens #13]
-    USE gated content and hypothesis checks effectively
-
-FUNCTION EmpowerThroughDeduction():
-    MAKE deduction feel earned through navigating risk/reward
-
-FUNCTION OptimizeForMobile():
-    ENSURE clear choice presentation (large tap targets, contrast)
-
-FUNCTION MaintainConsistency():
-    USE standard format for Risk/Reward presentation
-
-FUNCTION TestAndIterate():
+FUNCTION CraftEmotionallyResonantJourney(): // [Lens #15 + #19]
+    FOCUS on:
+        Character_Arcs: growth, revelations, and transformations
+        Emotional_Pacing: tension, release, buildup, catharsis
+        Narrative_Integration: evidence reveals character, not just facts
+        
+    MINIMIZE:
+        Exposition_Without_Emotion: all facts must connect to human stakes
+        Passive_Character_Moments: every dialogue/cutscene must advance relationship or reveal
+        Purely_Mechanical_Challenges: puzzles should reveal character psychology
+        
+FUNCTION SustainNarrativeCuriosity(): // [Lens #13]
+    USE:
+        Character_Mysteries: personal secrets drive investigation alongside facts
+        Emotional_Subtext: what characters don't say is as important as what they do
+        Relationship_Revelations: connections between people drive dramatic moments
+        
+    GRADUALLY_REVEAL:
+        Character_Layers: peel back facades to reveal true natures
+        Motivational_Complexity: simple motives evolve into complex human needs
+        Emotional_Truth: beneath facts lies the human story that resonates
+        
+FUNCTION BalanceEmotionAndDeduction():
+    MAKE character_understanding essential to:
+        Puzzle_Solutions: interpreting character psychology unlocks progress
+        Evidence_Interpretation: seeing through emotional filters reveals truth
+        Investigative_Success: empathy and analysis work together
+        
+    REWARD both:
+        Emotional_Intelligence: understanding human behavior and motivation
+        Deductive_Reasoning: connecting evidence to build logical case
+        Moral_Judgment: weighing justice against mercy, truth against peace
+        
+FUNCTION CraftCinematicExperience():
+    ENSURE:
+        Visual_Storytelling: environments reflect character states
+        Audio_Emotional_Cues: music and sound design signal emotional shifts
+        Character_Physicality: body language and expressions tell stories
+        Dramatic_Pacing: quiet moments contrast with intense confrontations
+        
+FUNCTION MaintainNarrativeConsistency():
+    ENSURE:
+        Character_Continuity: behaviors align with established psychology
+        Emotional_Truth: reactions reflect genuine human responses
+        Thematic_Cohesion: case explores consistent themes throughout
+        
+FUNCTION TestForEmotionalImpact():
     PLAYTEST focusing on:
-        Clarity of Risk/Reward
-        Difficulty of gated puzzles
-        Player understanding of hypothesis impact
-        Balance of different paths
-    ADJUST based on feedback
+        Character_Investment: do players care about these people?
+        Emotional_Response: do revelations evoke genuine feelings?
+        Narrative_Satisfaction: does the resolution feel earned and meaningful?
+        Dramatic_Pacing: does tension build and release effectively?
+        Moral_Complexity: are choices meaningfully difficult?
+        
+    ADJUST based on:
+        Character_Feedback: strengthen motivation, clarify psychology
+        Emotional_Arcs: ensure proper buildup to key moments
+        Narrative_Coherence: eliminate plot holes while preserving mystery
 ```
 
 ---/GUIDELINES---
@@ -247,35 +515,34 @@ DEFINE LOCKED_EVIDENCE_COUNT = 2; // Target number of initially locked key evide
 DEFINE DEDUCTION_MECHANIC = "Two Truths and a Lie"; // Define the core puzzle type
 
 // --- Phenotype Mapping ---
-// --- Gameplay Phenotype Sequence ---
+// --- Character-Driven Phenotype Sequence ---
 DEFINE PHENOTYPE_SEQUENCE = [
-    // Phase 1: Introduction & Hook
-    { Phase: 1, Phenotype: "CASE_HOOK", Purpose: "Create ~5 passage irresistible hook sequence (hook -> context -> choice -> confirm)" },
-    { Phase: 1, Phenotype: "INTRO_SEQUENCE", Purpose: "Present 3 competing theories (T/F+/F-) with evidence, leading to choice branch" },
-    
-    // Phase 2: Initial Investigation State
-    { Phase: 2, Phenotype: "SUSPECT_LIST", Purpose: "Present initial set of suspects and allow selection" },
-    { Phase: 2, Phenotype: "EVIDENCE_COLLECTION", Purpose: "Establish initial evidence collection locations" },
-    
-    // Phase 3: Core Investigation
-    { Phase: 3, Phenotype: "EVIDENCE_EXAMINATION", Purpose: "Detail key evidence findings and relevance" },
-    { Phase: 3, Phenotype: "SUSPECT_PROFILE", Purpose: "Provide detailed suspect information and statement" },
-    // SUSPECT_STATEMENT and WITNESS_STATEMENT removed as they are handled within PROFILE or EVIDENCE_EXAMINATION
-    
-    // Phase 4: Deduction & Analysis
-    { Phase: 4, Phenotype: "DEDUCTION_PUZZLE", Purpose: "Challenge player to find contradictions" },
-    { Phase: 4, Phenotype: "DEDUCTION_SUCCESS", Purpose: "Reward successful deduction with new evidence/progress" },
-    // SUSPECT_ELIMINATION removed as it's a state change reflected elsewhere (e.g., SUSPECT_LIST or HUB)
-    
-    // Phase 5: Confrontation & Resolution
-    { Phase: 5, Phenotype: "SUSPECT_CONFRONTATION", Purpose: "Present key suspect confrontations" },
-    { Phase: 5, Phenotype: "ACCUSATION", Purpose: "Allow player to make final accusation based on evidence" },
-    { Phase: 5, Phenotype: "CASE_RESOLUTION", Purpose: "Deliver case outcome and explanation" }
+    // Phase 1: Emotional Hook & Character Introduction
+    { Phase: 1, Phenotype: "NARRATIVE_CUTSCENE_WITH_HOOK", Purpose: "Immersive opening establishing emotional tone, thematic elements, and a compelling case hook with character stakes." },
+    { Phase: 1, Phenotype: "NARRATIVE_DIALOGUE_WITH_THEORIES", Purpose: "Introduce key character voice/perspective and competing theories with character implications." },
+
+    // Phase 2: Character Context & Initial Investigation
+    { Phase: 2, Phenotype: "EVIDENCE_COLLECTION_AND_REFLECTION", Purpose: "Collect evidence reflecting character personalities and victim's emotional state to humanize them." },
+    { Phase: 2, Phenotype: "SUSPECT_INTRODUCTION_THROUGH_DIALOGUE", Purpose: "Introduce suspects with distinct psychological profiles via witness perspectives adding emotional context." },
+
+    // Phase 3: Relationship Exploration & Character Depth
+    { Phase: 3, Phenotype: "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP", Purpose: "Reveal complex interpersonal dynamics that shape character motivations." },
+    { Phase: 3, Phenotype: "EVIDENCE_EXAMINATION_FOR_MOTIVE", Purpose: "Uncover character insights and connect emotional needs to potential criminal motivation through evidence." },
+    { Phase: 3, Phenotype: "SUSPECT_DEEP_DIVE_FLASHBACK", Purpose: "Flashback revealing pivotal past character moment for a suspect, deep-diving into their psychology, motivations, and vulnerabilities." },
+
+    // Phase 4: Character Deception & Psychological Insight
+    { Phase: 4, Phenotype: "CONFRONTATION_WITH_DEDUCTION", Purpose: "Tense suspect/witness confrontation incorporating a deduction puzzle to identify lies by understanding character psychology." },
+    { Phase: 4, Phenotype: "REVELATION_THROUGH_FLASHBACK", Purpose: "Reward successful character insight with an emotional revelation, contextualized by a flashback or key evidence about past experiences." },
+
+    // Phase 5: Dramatic Confrontation & Emotional Resolution
+    { Phase: 5, Phenotype: "BREAKTHROUGH_CUTSCENE", Purpose: "Deliver powerful character revelation via a cutscene that builds dramatic tension for the final confrontation." },
+    { Phase: 5, Phenotype: "FINAL_CONFRONTATION_AND_ACCUSATION", Purpose: "Emotionally charged final confrontation where suspect's facade crumbles, leading to a moral judgment/accusation." },
+    { Phase: 5, Phenotype: "RESOLUTION_AND_CATHARSIS", Purpose: "Multilayered case resolution providing character closure, emotional catharsis, and addressing all aspects." }
 ];
 
 // --- Available Gameplay Phenotype Summaries ---
 // Use these phenotypes as building blocks for the gameplay outline:
-// - CASE_HOOK: Creates ~5 passage hook sequence (hook, context, choice, accept/decline confirm) using intro/branch cmds. **May trigger initial World/Case Axioms.**
+// - CASE_HOOK: Creates ~5 passage compelling hook sequence (hook, context, immersive introduction) using intro cmds. **May trigger initial World/Case Axioms.**
 // - INTRO_SEQUENCE: Presents 3 theories (TruePositive, FalsePositive, FalseNegative) with evidence via intro steps, ending in a branch choice. **May trigger initial Relationship/Character reveals.**
 // - INVESTIGATION_HUB: Central navigation point for all activities.
 // - EVIDENCE_COLLECTION: Creates interactive locations to find evidence.
@@ -295,6 +562,8 @@ DEFINE PHENOTYPE_SEQUENCE = [
 // - NARRATIVE_EVIDENCE_FOR_MOTIVE: Delivers evidence suggesting or confirming a character's motive, guiding towards interpretation.
 // - NARRATIVE_EVIDENCE_FOR_FLASHBACK: Delivers evidence representing a past event (e.g., diary entry, log), guiding towards examination.
 // - NARRATIVE_EVIDENCE_FOR_REFLECTION: Delivers 'observation' evidence describing a character's likely internal state, guiding towards interpretation/deduction.
+// - NARRATIVE_DIALOGUE_SEQUENCE: Creates immersive dialogue or monologue scenes using intro sequence functionality.
+// - NARRATIVE_CUTSCENE_SEQUENCE: Creates cinematic, omniscient narrative cutscenes showing story context, montages, or emotional moments.
 
 // --- Data Structures (Conceptual) ---
 TYPE EvidenceItem = { Name: TEXT, IsLocked: BOOLEAN, Description: TEXT, Clues: ARRAY<{Hotspot: TEXT, ClueText: TEXT, Relevance: TEXT}>, UnlockedBy: TEXT, **NarrativeLink: TEXT** }; // Link to the specific narrative evidence delivery phenotype ID it triggers
@@ -381,14 +650,17 @@ PROCEDURE GenerateBranchedPhase2(VictimHypothesis, FoundationalEvidence, AllSusp
 
 PROCEDURE GenerateGameplayOutline(Synopsis, Characters, Events) RETURNS ARRAY<GameplayStep>
 {
-    // Overall orchestrator for generating the full gameplay outline.
+    // Overall orchestrator for generating the full character-driven gameplay outline.
 
-    // 1. Identify Key Narrative Elements
+    // 1. Identify Key Narrative Elements and Character Relationships
     VictimData = EXTRACT_VICTIMS(Characters);
     CulpritData = EXTRACT_CULPRIT(Characters);
     RedHerringSuspects = EXTRACT_RED_HERRINGS(Characters);
     FoundationalEvidence = IDENTIFY_FOUNDATIONAL_EVIDENCE(Synopsis, Events);
-    Theories = GENERATE_INITIAL_THEORIES(Synopsis, FoundationalEvidence); // Generate 3 theories (T/F+/F-)
+    CharacterRelationships = EXTRACT_CHARACTER_RELATIONSHIPS(Characters, Events);
+    CharacterBackstories = EXTRACT_CHARACTER_BACKSTORIES(Characters, Events);
+    EmotionalThemes = IDENTIFY_EMOTIONAL_THEMES(Synopsis, Events);
+    Theories = GENERATE_CHARACTER_MOTIVATED_THEORIES(Synopsis, FoundationalEvidence, CharacterRelationships); 
     AllSuspects = [CulpritData] + RedHerringSuspects;
     KnownEvidence = []; // Tracks discovered evidence
     RevealedNarrative = []; // Tracks triggered narrative elements
@@ -396,127 +668,200 @@ PROCEDURE GenerateGameplayOutline(Synopsis, Characters, Events) RETURNS ARRAY<Ga
     GameplaySteps = [];
     CurrentStepNumber = 0;
 
-    // --- Phase 1: Hook & Theory Choice ---
-    // Represent the entire multi-passage phenotypes as single steps in the outline.
-
-    // Step 1: CASE_HOOK
+    // --- Phase 1: Emotional Hook & Character Introduction ---
+    
+    // Step 1: Opening NARRATIVE_CUTSCENE_SEQUENCE
+    OpeningCutsceneData = GENERATE_OPENING_CUTSCENE(Synopsis, VictimData, EmotionalThemes);
     GameplaySteps.Add(ADD_STEP(
-        Phase: 1, StepNumber: ++CurrentStepNumber, PhenotypeTag: "CASE_HOOK",
-        Screen: "Case Introduction Hook",
-        DECISION: "Accept or Decline the Case?",
-        DATA: { HookVisual: "[Generated Visual Alias]", HookText: "[Generated Hook Text]", ContextSummary: "[Generated Context Summary]" },
-        OPTIONS: [ { ChoiceLabel: "Accept Case", Risk: "[Risk Text]", Reward: "[Reward Text]" }, { ChoiceLabel: "Decline Case", Risk: "[Risk Text]", Reward: "[Reward Text]" } ],
-        ACTION: "IF Accept: NAVIGATE INTRO_SEQUENCE_Start ELSE: NAVIGATE HOME" // Simple navigation
+        Phase: 1, 
+        StepNumber: ++CurrentStepNumber, 
+        PhenotypeTag: "NARRATIVE_CUTSCENE_SEQUENCE",
+        Screen: "Opening Scene",
+        DECISION: "Observe the scene unfold...",
+        DATA: { 
+            SceneDescription: OpeningCutsceneData.Description,
+            VisualMoments: OpeningCutsceneData.VisualBeats,
+            EmotionalTone: OpeningCutsceneData.Tone,
+            ThematicElements: OpeningCutsceneData.Themes
+        },
+        OPTIONS: [ { ChoiceLabel: "Continue", Risk: null, Reward: null } ],
+        ACTION: "NAVIGATE TO CASE_HOOK; SET MoodEstablished=true"
     ));
 
-    // Step 2: INTRO_SEQUENCE
-    TheoryChoiceStepData = DesignInitialTheoryChoice(Theories);
+    // Step 2: CASE_HOOK with emotional stakes
     GameplaySteps.Add(ADD_STEP(
-        Phase: 1, StepNumber: ++CurrentStepNumber, PhenotypeTag: "INTRO_SEQUENCE",
-        Screen: "Initial Theory Choice",
+        Phase: 1, 
+        StepNumber: ++CurrentStepNumber, 
+        PhenotypeTag: "CASE_HOOK",
+        Screen: "Character-Driven Case Introduction",
+        DECISION: "Explore the case details...",
+        DATA: { 
+            HookVisual: GENERATE_EMOTIONAL_HOOK_IMAGE(VictimData, EmotionalThemes), 
+            HookText: GENERATE_CHARACTER_FOCUSED_HOOK(VictimData, EmotionalThemes), 
+            CharacterStakes: GENERATE_CHARACTER_STAKES(VictimData, AllSuspects),
+            MoralQuestion: GENERATE_MORAL_QUESTION(Synopsis, EmotionalThemes)
+        },
+        OPTIONS: [ 
+            { ChoiceLabel: "Continue Investigation", Risk: null, Reward: null }
+        ],
+        ACTION: "NAVIGATE TO NARRATIVE_DIALOGUE_SEQUENCE; SET CaseIntroduced=true"
+    ));
+    
+    // Step 3: Initial NARRATIVE_DIALOGUE_SEQUENCE to frame investigation
+    GameplaySteps.Add(ADD_STEP(
+        Phase: 1, 
+        StepNumber: ++CurrentStepNumber, 
+        PhenotypeTag: "NARRATIVE_DIALOGUE_SEQUENCE",
+        Screen: "Initial Briefing",
+        DECISION: "Listen to the initial perspective...",
+        DATA: { 
+            SpeakingCharacter: DETERMINE_INITIAL_NARRATIVE_VOICE(Characters), 
+            DialogueContent: GENERATE_FRAMING_DIALOGUE(Synopsis),
+            CharacterAttitude: GENERATE_CHARACTER_EMOTIONAL_STATE(),
+            SubtextElements: GENERATE_DIALOGUE_SUBTEXT(CharacterRelationships)
+        },
+        OPTIONS: [ { ChoiceLabel: "Ask for clarification", Risk: null, Reward: null }, { ChoiceLabel: "Move to theories", Risk: null, Reward: null } ],
+        ACTION: "NAVIGATE TO INTRO_SEQUENCE; SET InitialContextEstablished=true"
+    ));
+
+    // Step 4: INTRO_SEQUENCE with character motivations
+    TheoryChoiceStepData = DESIGN_CHARACTER_MOTIVATED_THEORY_CHOICE(Theories, CharacterRelationships);
+    GameplaySteps.Add(ADD_STEP(
+        Phase: 1, 
+        StepNumber: ++CurrentStepNumber, 
+        PhenotypeTag: "INTRO_SEQUENCE",
+        Screen: "Character-Driven Theory Choice",
         DECISION: TheoryChoiceStepData.DECISION,
-        DATA: { Theory1: Theories[0].description + " Evidence: " + Theories[0].evidence.details, Theory2: Theories[1].description + " Evidence: " + Theories[1].evidence.details, Theory3: Theories[2].description + " Evidence: " + Theories[2].evidence.details },
+        DATA: { 
+            Theory1: Theories[0].description + " Character Insight: " + Theories[0].characterImplication,
+            Theory2: Theories[1].description + " Character Insight: " + Theories[1].characterImplication,
+            Theory3: Theories[2].description + " Character Insight: " + Theories[2].characterImplication,
+            EvidenceForEach: [ Theories[0].evidence.details, Theories[1].evidence.details, Theories[2].evidence.details ]
+        },
         OPTIONS: TheoryChoiceStepData.OPTIONS,
-        ACTION: "LOCK Phase 2; SET ChosenTheory=<choice>; NAVIGATE Phase2_Start" // Set state, navigate
+        ACTION: "LOCK Phase 2; SET ChosenTheory=<choice>; SET CharacterFocus=TheoryChoiceStepData.GetCharacterFocus(choice); NAVIGATE Phase2_Start"
     ));
     DEFINE ChosenTheory = EXTRACT_THEORY_FROM_CHOICE(TheoryChoiceStepData);
+    DEFINE CharacterFocus = TheoryChoiceStepData.GetCharacterFocus(ChosenTheory);
 
-    // --- Phase 2: Initial Investigation & Narrative Setup ---
-    // Add an early narrative beat about the victim's state of mind
+    // --- Phase 2: Character Context & Initial Investigation ---
+    
+    // Step 5: Early NARRATIVE_EVIDENCE_FOR_REFLECTION about victim
+    VictimInsightData = GENERATE_VICTIM_PSYCHOLOGICAL_INSIGHT(VictimData);
     GameplaySteps.Add(ADD_STEP(
-        Phase: 2, StepNumber: ++CurrentStepNumber, PhenotypeTag: "NARRATIVE_EVIDENCE_FOR_REFLECTION",
-        Screen: "Victim's Mindset",
-        DECISION: "Consider the victim's apparent paranoia. Was it justified?",
-        DATA: { NarrativeContext: "Entering the suite, you notice enhanced security measures...", SupportingEvidenceID: "evidence_victim_paranoia_notes" },
-        OPTIONS: [ { ChoiceLabel: "Focus on Fear", Risk: "Overlook rational motives", Reward: "Prioritize perceived threats" }, { ChoiceLabel: "Focus on Paranoia", Risk: "Dismiss genuine threat", Reward: "Concentrate on concrete evidence" } ],
-        ACTION: "ACT:aty=REVEAL;aet=evidence_victim_paranoia_notes; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; ADD PlayerNote('Consider victim mindset')" // Reveal supporting evidence, navigate player
+        Phase: 2, 
+        StepNumber: ++CurrentStepNumber, 
+        PhenotypeTag: "NARRATIVE_EVIDENCE_FOR_REFLECTION",
+        Screen: "Victim's Psychology",
+        DECISION: "Consider the victim's state of mind. What drove their final actions?",
+        DATA: { 
+            NarrativeContext: VictimInsightData.Context, 
+            PsychologicalProfile: VictimInsightData.Profile,
+            EmotionalState: VictimInsightData.EmotionalState,
+            SupportingEvidenceID: VictimInsightData.EvidenceID 
+        },
+        OPTIONS: [ 
+            { ChoiceLabel: VictimInsightData.Option1.Label, Risk: VictimInsightData.Option1.Risk, Reward: VictimInsightData.Option1.Reward }, 
+            { ChoiceLabel: VictimInsightData.Option2.Label, Risk: VictimInsightData.Option2.Risk, Reward: VictimInsightData.Option2.Reward } 
+        ],
+        ACTION: "ACT:aty=REVEAL;aet=" + VictimInsightData.EvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; ADD PlayerNote('" + VictimInsightData.NoteText + "')"
     ));
-
-    // Generate Branched Phase 2 Gameplay Steps (EVIDENCE_COLLECTION, etc.)
-    Phase2Steps = GenerateBranchedPhase2(ChosenTheory, FoundationalEvidence, AllSuspects);
-    FOR EACH step IN Phase2Steps { step.StepNumber = ++CurrentStepNumber; }
-    GameplaySteps.Append(Phase2Steps);
-
-    // --- Phase 3: Deeper Investigation & Character Context ---
-    // Example: Insert Narrative step about a key relationship after player examines a relevant suspect profile
-    IF PlayerHasExamined(RelevantSuspectProfile) { // Conceptual check
-        GameplaySteps.Add(ADD_STEP(
-            Phase: 3, StepNumber: ++CurrentStepNumber, PhenotypeTag: "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
-            Screen: "Relationship Context",
-            DECISION: "How did the victim's relationship with [Suspect Name] influence events?",
-            DATA: { NarrativeContext: "Background check reveals details of their [e.g., intense rivalry/close bond]...", SupportingEvidenceID: "evidence_relationship_details" },
-            OPTIONS: [ { ChoiceLabel: "View as Primary Factor", Risk: "[Risk Text]", Reward: "[Reward Text]" }, { ChoiceLabel: "View as Secondary Factor", Risk: "[Risk Text]", Reward: "[Reward Text]" } ],
-            ACTION: "ACT:aty=REVEAL;aet=evidence_relationship_details; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app"
-        ));
-    }
-
-    // Add standard Gameplay steps like SUSPECT_LIST, EVIDENCE_EXAMINATION
-    // Example: EVIDENCE_EXAMINATION (No narrative trigger in ACTION)
-    KeyEvidenceItem = GET_NEXT_EVIDENCE_TO_EXAMINE(KnownEvidence);
-    IF KeyEvidenceItem {
-        ExaminationData = GENERATE_EVIDENCE_EXAMINATION_DATA(KeyEvidenceItem);
-        GameplaySteps.Add(ADD_STEP(
-            Phase: 3, // Or determined dynamically
-            StepNumber: ++CurrentStepNumber,
-            PhenotypeTag: "EVIDENCE_EXAMINATION",
-            Screen: "Examine " + KeyEvidenceItem.Name,
-            DECISION: "What stands out about this item?",
-            DATA: ExaminationData.Findings,
-            OPTIONS: ExaminationData.Options, // Options might relate to focus points
-            ACTION: ExaminationData.Action // e.g., "MARK Examined; NAVIGATE Hub" - Pure game logic
-        ));
-    }
-
-    // --- Phase 4: Hypothesis Check & Mid-Game Twists ---
-    HypothesisCheckPuzzleData = GENERATE_HYPOTHESIS_CHECK_DATA(ChosenTheory, KnownEvidence); // Generate puzzle specific to path
+    
+    // Step 6: Character-infused EVIDENCE_COLLECTION
+    LocationData = GENERATE_CHARACTER_INFUSED_LOCATION(ChosenTheory, VictimData);
     GameplaySteps.Add(ADD_STEP(
-        Phase: 4, // Or 3 depending on flow
+        Phase: 2,
         StepNumber: ++CurrentStepNumber,
-        PhenotypeTag: "DEDUCTION_PUZZLE",
-        Screen: "Theory Assessment Puzzle",
-        DECISION: "Interpret new clue based on current hypothesis.",
-        DATA: HypothesisCheckPuzzleData.Clues,
-        OPTIONS: HypothesisCheckPuzzleData.Options, // Risk/Reward options for interpretations
-        ACTION: HypothesisCheckPuzzleData.Action // Includes validation and navigation logic only
+        PhenotypeTag: "EVIDENCE_COLLECTION",
+        Screen: LocationData.Name,
+        DECISION: "This space reflects " + VictimData.Name + "'s life. Where does their story speak loudest?",
+        DATA: { 
+            SceneDesc: LocationData.Description + " " + LocationData.EmotionalAtmosphere, 
+            CharacterTraces: LocationData.PersonalityTraces,
+            Hotspots: LocationData.Hotspots
+        },
+        OPTIONS: LocationData.Options,
+        ACTION: "IF choice=PersonalSpace: TRIGGER EmotionalConnection(VictimInsight); NAVIGATE EvidenceExamination(<choice>)"
     ));
-
-    // Example: Adding a DEDUCTION_PUZZLE for statement analysis (No narrative trigger in ACTION)
-    SuspectToAnalyze = GET_NEXT_SUSPECT_TO_ANALYZE(ChosenTheory, KnownEvidence);
-    IF SuspectToAnalyze {
-        PuzzleData = GENERATE_DEDUCTION_PUZZLE_DATA(SuspectToAnalyze, DEDUCTION_MECHANIC, KnownEvidence);
-        GameplaySteps.Add(ADD_STEP(
-            Phase: 4,
-            StepNumber: ++CurrentStepNumber,
-            PhenotypeTag: "DEDUCTION_PUZZLE",
-            Screen: "Analyze " + SuspectToAnalyze.Name + "'s Statement",
-            DECISION: "Identify the lie.",
-            DATA: PuzzleData.Content,
-            OPTIONS: PuzzleData.Options, // Risk/Reward for choosing lie/truth
-            ACTION: PuzzleData.Action // e.g., "VALIDATE Lie; IF Correct: UNLOCK ClueID; TRIGGER DeductionSuccess ELSE: TRIGGER DeductionFailure" - Game logic only
-        ));
-    }
-
-    // --- Phase 5: Breakthrough & Climax ---
-    // Example: BREAKTHROUGH_MOMENT (ACTION has game logic, not narrative triggers)
-    IF SHOULD_TRIGGER_BREAKTHROUGH(KnownEvidence) {
-         BreakthroughData = GENERATE_BREAKTHROUGH_DATA(KnownEvidence);
-         GameplaySteps.Add(ADD_STEP(
-             Phase: 5,
-             StepNumber: ++CurrentStepNumber,
-             PhenotypeTag: "BREAKTHROUGH_MOMENT",
-             Screen: "Key Revelation", // e.g., "The Hidden Recording"
-             DECISION: "How to proceed after this major revelation?",
-             DATA: BreakthroughData.Clues, // The crucial piece of evidence itself
-             OPTIONS: BreakthroughData.Options, // Strategic Risk/Reward Choice
-             ACTION: BreakthroughData.Action // e.g., "MARK BreakthroughAchieved; NAVIGATE PostBreakthroughChoiceScreen"
-         ));
-    }
-
-    // Add other late-game steps: SUSPECT_CONFRONTATION, ACCUSATION, CASE_RESOLUTION
-    // Ensure their ACTION fields contain only game logic.
-
-    // ... Add placeholders/logic for remaining phenotypes ...
-
+    
+    // Step 7: Character-focused SUSPECT_LIST
+    SuspectOrderData = DETERMINE_SUSPECT_ORDER_BY_RELATIONSHIP(ChosenTheory, AllSuspects, CharacterRelationships);
+    GameplaySteps.Add(ADD_STEP(
+        Phase: 2,
+        StepNumber: ++CurrentStepNumber,
+        PhenotypeTag: "SUSPECT_LIST",
+        Screen: "People in the Victim's Life",
+        DECISION: "These individuals shaped " + VictimData.Name + "'s final days. Whose perspective do you want to understand first?",
+        DATA: {
+            SuspectProfiles: SuspectOrderData.Profiles,
+            RelationshipContext: SuspectOrderData.RelationshipMap,
+            EmotionalDynamics: SuspectOrderData.EmotionalDynamics
+        },
+        OPTIONS: SuspectOrderData.Options,
+        ACTION: "SET CurrentSuspectFocus=<choice>; NAVIGATE SuspectProfile(<choice>)"
+    ));
+    
+    // Step 8: Witness perspective NARRATIVE_DIALOGUE_SEQUENCE
+    WitnessData = IDENTIFY_KEY_WITNESS(Characters, ChosenTheory);
+    DialogueData = GENERATE_WITNESS_DIALOGUE(WitnessData, LocationData);
+    GameplaySteps.Add(ADD_STEP(
+        Phase: 2,
+        StepNumber: ++CurrentStepNumber,
+        PhenotypeTag: "NARRATIVE_DIALOGUE_SEQUENCE",
+        Screen: "Conversation with " + WitnessData.Name,
+        DECISION: "How do you interpret " + WitnessData.Name + "'s emotional state as they recount what they saw?",
+        DATA: {
+            CharacterDescription: WitnessData.Description,
+            DialogueLines: DialogueData.Lines,
+            SubtextHints: DialogueData.Subtext,
+            BodyLanguageNotes: DialogueData.BodyLanguage
+        },
+        OPTIONS: [
+            { ChoiceLabel: "Focus on their nervousness", Risk: "May overinterpret anxiety as deception", Reward: "Might uncover hidden fears" },
+            { ChoiceLabel: "Focus on factual consistency", Risk: "May miss emotional undercurrents", Reward: "Establish reliable timeline" }
+        ],
+        ACTION: "ACT:aty=REVEAL;aet=" + DialogueData.RevealedEvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; SET WitnessInsightGained=true"
+    ));
+    
+    // --- Phase 3: Relationship Exploration & Character Depth ---
+    
+    // Step a: NARRATIVE_EVIDENCE_FOR_RELATIONSHIP
+    KeyRelationshipData = IDENTIFY_KEY_RELATIONSHIP(CharacterRelationships, ChosenTheory);
+    GameplaySteps.Add(ADD_STEP(
+        Phase: 3,
+        StepNumber: ++CurrentStepNumber,
+        PhenotypeTag: "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
+        Screen: "Complex Connection",
+        DECISION: "How would you characterize the relationship between " + KeyRelationshipData.Character1 + " and " + KeyRelationshipData.Character2 + "?",
+        DATA: {
+            RelationshipHistory: KeyRelationshipData.History,
+            EmotionalDynamics: KeyRelationshipData.Dynamics,
+            ConflictPoints: KeyRelationshipData.Conflicts,
+            SupportingEvidenceID: KeyRelationshipData.EvidenceID
+        },
+        OPTIONS: [
+            { ChoiceLabel: KeyRelationshipData.Option1.Label, Risk: KeyRelationshipData.Option1.Risk, Reward: KeyRelationshipData.Option1.Reward },
+            { ChoiceLabel: KeyRelationshipData.Option2.Label, Risk: KeyRelationshipData.Option2.Risk, Reward: KeyRelationshipData.Option2.Reward }
+        ],
+        ACTION: "ACT:aty=REVEAL;aet=" + KeyRelationshipData.EvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; SET RelationshipInsightGained=true"
+    ));
+    
+    // More Phase 3-5 steps would continue with similar character-focused approach...
+    // For brevity, I've implemented the first 8 steps to demonstrate the pattern.
+    // The full implementation would continue through all phases following our PHENOTYPE_SEQUENCE.
+    
+    // The remaining steps would incorporate:
+    // - NARRATIVE_CUTSCENE_SEQUENCE for flashbacks
+    // - Character-driven SUSPECT_PROFILE examinations
+    // - NARRATIVE_EVIDENCE_FOR_MOTIVE revelations
+    // - Tense NARRATIVE_DIALOGUE_SEQUENCE confrontations
+    // - Psychological DEDUCTION_PUZZLEs
+    // - Emotional BREAKTHROUGH_MOMENTs
+    // - Dramatic SUSPECT_CONFRONTATION scenes
+    // - Morally complex ACCUSATION choices
+    // - Cathartic NARRATIVE_DIALOGUE_SEQUENCE closure
+    // - Multilayered CASE_RESOLUTION
+    
     RETURN GameplaySteps;
 }
 
@@ -605,16 +950,17 @@ Events: {{events}} (Array of event objects, potentially linked to characters or 
 
 **(Phase 1: Introduction & Initial Suspicions)**
 
-1.  **CASE_HOOK: Case Introduction & Decision**
-    *   **DECISION:** Accept or Decline the Case: "Viral Echoes"?
+1.  **CASE_HOOK: Case Introduction**
+    *   **DECISION:** Explore the case details...
     *   **CLUES/DATA:**
         - HookVisual: Image of Raj Singh's viral post contrasted with stark crime scene tape at the Argonaut Hotel.
         - HookText: "Tech CEO found dead after crying wolf... or was it a warning? Police saw fireworks, the crime scene suggests otherwise. Unravel the 'Viral Echoes'."
         - ContextSummary: "Raj Singh, controversial GenMat CEO, murdered in his luxury suite. His bizarre 'shooting' claim days earlier adds layers of misdirection. Was it paranoia, publicity, or prelude?"
+        - CharacterStakes: The victim's relationships and enemies, each with motives to silence him.
+        - MoralQuestion: Can truth prevail when both victim and suspects traded in deception?
     *   **OPTIONS:**
-        - Accept Case (Risk: Navigating tech world egos and social media noise; Reward: Solving a high-profile, complex murder)
-        - Decline Case (Risk: Letting a killer exploit the chaos?; Reward: Avoiding a media circus)
-    *   **ACTION:** `IF Accept: NAVIGATE IntroSequence_Start ELSE: NAVIGATE HOME`
+        - Continue Investigation (Risk: null; Reward: null)
+    *   **ACTION:** `NAVIGATE TO NARRATIVE_DIALOGUE_SEQUENCE; SET CaseIntroduced=true`
 
 2.  **INTRO_SEQUENCE: Initial Theory Choice**
     *   **DECISION:** The initial reports point in several directions. Which lead feels strongest right now?
@@ -628,21 +974,9 @@ Events: {{events}} (Array of event objects, potentially linked to characters or 
         - Pursue: Personal Vendetta (Risk: Revenge seekers can be obvious red herrings; Reward: Explore Jack Sullivan's history and movements)
     *   **ACTION:** `LOCK Phase 2; SET ChosenTheory=<choice>; NAVIGATE Phase2_Start`
 
-3.  **NARRATIVE_REFLECTION: The Victim's Paranoia** (Triggered early in Phase 2, perhaps entering the suite)
-    *   **PhenotypeTag:** `NARRATIVE_EVIDENCE_FOR_REFLECTION`
-    *   **DECISION:** Consider the victim's state of mind. How much did his fear play into events?
-    *   **CLUES/DATA:**
-        - Narrative Context: Entering Raj's suite, you see signs of heightened security - extra locks, maybe surveillance tech diagrams. The air feels tense.
-        - Supporting Evidence Revealed: `evidence_victim_paranoia_notes` (aet - e.g., journal snippets or messages expressing fear).
-        - Reflection Prompt: "Raj Singh felt targeted. Was it justified fear, or delusion fueling the drama?"
-    *   **OPTIONS:**
-        - Focus on Fear as Valid (Risk: Overlook rational motives; Reward: Prioritize potential threats Raj perceived)
-        - Focus on Paranoia as Noise (Risk: Dismiss a genuine threat; Reward: Concentrate on concrete evidence, ignore victim's potential misinterpretations)
-    *   **ACTION:** `ACT:aty=REVEAL;aet=evidence_victim_paranoia_notes; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; ADD PlayerNote('Consider victim mindset')`
-
 **(Phase 2: Evidence Gathering & Character Moments)**
 
-4.  **EVIDENCE_COLLECTION: Search Raj's Suite**
+3.  **EVIDENCE_COLLECTION: Search Raj's Suite**
     *   **DECISION:** Where to focus the search in Raj Singh's suite?
     *   **CLUES/DATA:**
         - SceneDesc: Opulent suite, tech gear everywhere. A faint metallic scent near the desk?
@@ -653,79 +987,25 @@ Events: {{events}} (Array of event objects, potentially linked to characters or 
         - Investigate Window Area (Risk: Unlikely murder location; Reward: Check for external signs, forced entry evidence)
     *   **ACTION:** `NAVIGATE EvidenceExamination(<choice>)`
 
-5.  **NARRATIVE_WITNESS_ENCOUNTER: The Nervous Concierge** (Triggered by reviewing initial witness list or hotel context)
-    *   **PhenotypeTag:** `NARRATIVE_EVIDENCE_FOR_REFLECTION` (Focusing on Isabella's state)
-    *   **DECISION:** Evaluate the concierge's testimony. How reliable is Isabella Cruz?
-    *   **CLUES/DATA:**
-        - Narrative Context: You review the initial interview notes with Isabella Cruz. She seemed genuinely frightened, fidgeting, avoiding eye contact when mentioning seeing *someone* familiar near Raj's suite. Fear of losing her job seemed paramount.
-        - Supporting Evidence Revealed: `evidence_isabella_initial_statement` (aet - Captures her nervousness alongside the observation).
-        - Reflection Prompt: "Isabella saw something, but fear clouds her memory. Can her account be trusted fully, or is her anxiety distorting the details?"
-    *   **OPTIONS:**
-        - Trust the Core Observation (Risk: Ignoring potential misidentification due to stress; Reward: Focus on the sighting itself)
-        - Doubt the Details Due to Fear (Risk: Dismissing crucial eyewitness placement; Reward: Seek corroboration before relying heavily on her account)
-    *   **ACTION:** `ACT:aty=REVEAL;aet=evidence_isabella_initial_statement; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; MARK IsabellaReliabilityQuestioned`
-
 **(Phase 3: Uncovering Motives & Relationships)**
 
-6.  **EVIDENCE_EXAMINATION: Custom Tablet Charging Stand**
+4.  **EVIDENCE_EXAMINATION: Custom Tablet Charging Stand**
     *   **DECISION:** Analyze the unusual charging stand. What secrets does it hold?
     *   **CLUES/DATA:** Heavy, custom, GenMat logo. Potential hidden tech.
     *   **OPTIONS:** Physical Inspection, Research Online, Test Voice Commands.
     *   **ACTION:** `IF TestVoiceCommands: NAVIGATE DeductionPuzzle(VoiceCommandTrial) ELSE: MARK StandLogged; NAVIGATE InvestigationHub`
 
-7.  **NARRATIVE_FLASHBACK_FRAGMENT: Seeds of Rivalry** (Triggered by examining Julian's profile or finding GenMat/Cognito mentions)
-    *   **PhenotypeTag:** `NARRATIVE_EVIDENCE_FOR_FLASHBACK` (Representing past context)
-    *   **DECISION:** Consider the history between Raj and Julian. How deep did the animosity run?
-    *   **CLUES/DATA:**
-        - Narrative Context: A background check reveals snippets of past news articles and industry gossip detailing the bitter public clashes and accusations of stolen ideas between Raj Singh and Julian Griffin over the years. It wasn't just business; it felt personal.
-        - Supporting Evidence Revealed: `evidence_rivalry_news_clippings` (aet - montage of past conflicts).
-        - Reflection Prompt: "Years of public feuding. Was this the final, fatal escalation of a long-simmering war?"
-    *   **OPTIONS:**
-        - View as Business Conflict (Risk: Underestimate personal hatred; Reward: Focus on concrete IP theft motive)
-        - View as Personal Vendetta (Risk: Overlook financial drivers; Reward: Consider emotional triggers alongside business)
-    *   **ACTION:** `ACT:aty=REVEAL;aet=evidence_rivalry_news_clippings; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; ADD PlayerNote('Consider personal angle to rivalry')`
-
-8.  **NARRATIVE_EVIDENCE_FOR_MOTIVE: Aria's Political Stakes** (Triggered after viewing Aria's profile or finding texts)
-    *   **PhenotypeTag:** `NARRATIVE_EVIDENCE_FOR_MOTIVE`
-    *   **DECISION:** Understand the pressure Supervisor Shah-Powell faced. How much did Raj's actions threaten her career?
-    *   **CLUES/DATA:**
-        - Narrative Context: You review communications showing Aria's increasing panic about the GenMat pilot program after Raj's viral post. Her political future seemed tied to its success, and Raj was becoming a liability.
-        - Supporting Evidence Revealed: `evidence_aria_pilot_program_memos` (aet - Shows the program's importance to her career).
-        - Reflection Prompt: "Aria needed the GenMat deal. Did Raj's 'stunt' push her to drastic measures to protect her ambition?"
-    *   **OPTIONS:**
-        - See as Strong Motive (Risk: Ignore her solid alibi; Reward: Keep her as a viable suspect based on pressure)
-        - See as Context Only (Risk: Dismiss a potentially ruthless politician; Reward: Focus investigation where opportunity exists)
-    *   **ACTION:** `ACT:aty=REVEAL;aet=evidence_aria_pilot_program_memos; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; MARK AriaPoliticalMotiveConsidered`
-
 **(Phase 4: Cracks in the Facade & Deduction)**
 
-9.  **DEDUCTION_PUZZLE: Jack Sullivan's Movements**
-    *   **DECISION:** Reconcile Jack Sullivan's statement with the physical evidence. Was he just nearby, or casing the hotel?
-    *   **CLUES/DATA:** Statement vs. incomplete bar alibi vs. security footage outside hotel.
-    *   **OPTIONS:** Focus on timeline gaps, lack of informant proof, suspicious proximity.
-    *   **ACTION:** `VALIDATE selection; IF Correct: UPDATE SuspectCredibility(Jack, -1); TRIGGER DeductionSuccess ELSE: TRIGGER DeductionFailure`
-
-10. **NARRATIVE_REFLECTION: Julian's Composure** (Triggered after viewing Julian's initial statement or footage of him)
-    *   **PhenotypeTag:** `NARRATIVE_EVIDENCE_FOR_REFLECTION`
-    *   **DECISION:** Evaluate Julian Griffin's calm demeanor. Is it genuine confidence or a carefully crafted mask?
-    *   **CLUES/DATA:**
-        - Narrative Context: You recall Julian's interview or observe him in security footage from before the murder. He appears cool, collected, almost unnervingly smooth, despite the known rivalry and his company's financial troubles. A flicker of something – anxiety? – in his eyes?
-        - Supporting Evidence Revealed: `evidence_julian_demeanor_observation` (aet - Detective's note on his unsettling composure).
-        - Reflection Prompt: "He seems too calm for someone whose rival was just murdered after a public spat. Is it innocence, or the sign of a meticulous planner who believes he got away with it?"
-    *   **OPTIONS:**
-        - Interpret as Innocence/Confidence (Risk: Falling for the facade; Reward: Prioritize suspects showing more obvious stress)
-        - Interpret as Suspicious Control (Risk: Bias based on intuition; Reward: Increase scrutiny on Julian's actions and alibi)
-    *   **ACTION:** `ACT:aty=REVEAL;aet=evidence_julian_demeanor_observation; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; MARK JulianDemeanorNoted`
-
-11. **DEDUCTION_PUZZLE: Voice Command Trial (Tablet Stand)**
+5.  **DEDUCTION_PUZZLE: Voice Command Trial (Tablet Stand)**
     *   **DECISION:** Attempt to unlock the charging stand's hidden function.
     *   **CLUES/DATA:** GenMat AI link, debug phrases hint.
     *   **OPTIONS:** "GenMat Activate", "GenMat Secure Mode", "GenMat Archive Override Seven".
     *   **ACTION:** `VALIDATE command; IF Correct: UNLOCK HiddenAudioFile; NAVIGATE BreakthroughMoment ELSE: TRIGGER DeductionFailure(VoiceCommandFail)`
 
-**(Phase 5: The Breakthrough & Confrontation)**
+**(Phase 5: The Breakthrough & Climax)**
 
-12. **BREAKTHROUGH_MOMENT: The Fatal Argument** (Triggered by unlocking audio)
+6.  **BREAKTHROUGH_MOMENT: The Fatal Argument** (Triggered by unlocking audio)
     *   **DECISION:** The hidden recording changes everything. How to proceed with this definitive proof?
     *   **CLUES/DATA:**
         - Narrative Context: The chilling audio plays - Julian's smooth voice turning sharp, Raj's defiant threats about exposure, the sickening *thump* of suppressed shots, Julian's ragged breathing. The corporate rivalry wasn't just business; it was motive for murder.
@@ -735,23 +1015,13 @@ Events: {{events}} (Array of event objects, potentially linked to characters or 
         - Secure Warrant & Arrest Team (Risk: Gives him slight window to act; Reward: Safer, standard procedure)
     *   **ACTION:** `MARK BreakthroughAchieved; SET PrimeSuspect=JulianGriffin; NAVIGATE based on choice (e.g., SuspectConfrontation(Julian), SecureWarrantSequence)`
 
-13. **SUSPECT_CONFRONTATION: Facing the Killer** (If confrontation chosen)
-    *   **DECISION:** Present the audio evidence to Julian Griffin. How will he react when his mask shatters?
-    *   **CLUES/DATA:**
-        - Narrative Context: You play the recording. Julian's composure finally breaks - a flash of panic, denial, then perhaps calculation as he weighs his options. The smooth facade melts away, revealing the desperate man beneath.
-        - Presented Evidence: The audio recording.
-    *   **OPTIONS:**
-        - Press for Confession (Risk: Lawyer intervention; Reward: Full admission)
-        - Formal Arrest (Risk: Miss details; Reward: Secure the culprit)
-    *   **ACTION:** `RECORD Reaction; IF Arrest: NAVIGATE AccusationScreen ELSE: CONTINUE InterrogationLoop`
-
-14. **ACCUSATION: Final Decision**
+7.  **ACCUSATION: Final Decision**
     *   **DECISION:** Formally accuse the killer of Raj Singh.
     *   **CLUES/DATA:** Evidence Summary overwhelmingly points to Julian.
     *   **OPTIONS:** Accuse Julian Griffin, Accuse Aria Shah-Powell, Accuse Jack Sullivan.
     *   **ACTION:** `LOCK Investigation; TRIGGER CaseResolution(<choice>)`
 
-15. **CASE_RESOLUTION: Echoes Silenced**
+8.  **CASE_RESOLUTION: Echoes Silenced**
     *   **DECISION:** Review the case conclusion.
     *   **CLUES/DATA:**
         - Verdict: Julian Griffin guilty.
@@ -774,7 +1044,7 @@ The gameplay outline is a sequence of numbered steps, grouped by phase. Each ste
 **PhenotypeTag (Enum):**
 The `PhenotypeTag` for each step MUST be one of the following values:
 **Gameplay Phenotypes:**
-- `CASE_HOOK`: Creates ~5 passage hook sequence (hook, context, choice, accept/decline confirm) using intro/branch cmds. **May trigger initial World/Case Axioms.**
+- `CASE_HOOK`: Creates ~5 passage compelling hook sequence (hook, context, immersive introduction) using intro cmds. **May trigger initial World/Case Axioms.**
 - `INTRO_SEQUENCE`: Presents 3 theories (TruePositive, FalsePositive, FalseNegative) with evidence via intro steps, ending in a branch choice. **May trigger initial Relationship/Character reveals.**
 - `INVESTIGATION_HUB`: Central navigation point for all activities.
 - `EVIDENCE_COLLECTION`: Creates interactive locations to find evidence.
@@ -795,6 +1065,8 @@ The `PhenotypeTag` for each step MUST be one of the following values:
 - `NARRATIVE_EVIDENCE_FOR_MOTIVE`: Reveals evidence suggesting/confirming motive.
 - `NARRATIVE_EVIDENCE_FOR_FLASHBACK`: Reveals evidence representing a past event.
 - `NARRATIVE_EVIDENCE_FOR_REFLECTION`: Reveals evidence describing a character's likely internal state.
+- `NARRATIVE_DIALOGUE_SEQUENCE`: Creates immersive dialogue or monologue scenes using intro sequence functionality.
+- `NARRATIVE_CUTSCENE_SEQUENCE`: Creates cinematic, omniscient narrative cutscenes showing story context, montages, or emotional moments.
 
 **(Phase [Phase Number]: [Phase Name])**
 
