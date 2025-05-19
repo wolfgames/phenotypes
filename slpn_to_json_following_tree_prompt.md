@@ -83,7 +83,6 @@ PROCEDURE GENERATE_GAME_JSON (FULL_SLPN: STRING, ASSIGNED_CHUNK: STRING, STORY_C
   DEFINE RULE_UPDATE_ASPECT_PATTERN: STRING = "INTERMEDIATE_PASSAGE_REQUIRED";
   DEFINE RULE_IMAGE_ALIAS_DEFAULT: STRING = "";
   DEFINE RULE_IMAGE_DESC_DEFAULT: STRING = "";
-  DEFINE TAG_NARRATIVE: JSON_OBJECT = {"name": "NARRATIVE", "color": "green"};
   DEFINE TAG_CODE: JSON_OBJECT = {"name": "CODE", "color": "purple"};
   DEFINE TAG_EVIDENCE: JSON_OBJECT = {"name": "EVIDENCE", "color": "red"};
   DEFINE TAG_CHOICE: JSON_OBJECT = {"name": "CHOICE", "color": "green"};
@@ -92,8 +91,6 @@ PROCEDURE GENERATE_GAME_JSON (FULL_SLPN: STRING, ASSIGNED_CHUNK: STRING, STORY_C
   DEFINE DEFAULT_EVIDENCE_ID: STRING = "default_evidence"; -- Default evidence ID if none found
   DEFINE DEFAULT_BOT_TEXT: STRING = "What would you like to do?"; -- Default text for empty bot messages
 
-  -- ADA Persona Definition
-  DEFINE ADA_PERSONA: STRING = "ADA is the game's AI assistant, helping the player solve cold cases. The player is NOT the detective, but an assistant helping ADA and the SFPD. ADA's tone is helpful, clear, and conversational. ADA explains the current situation, presents information clearly, and guides the player on next steps or choices.";
 
   -- Define Output Structure - Only includes passages
   DEFINE OUTPUT: JSON_OBJECT = {
@@ -347,19 +344,56 @@ PROCEDURE CREATE_DEFAULT_BOT_MESSAGE(TEXT: STRING): JSON_OBJECT {
   };
 }
 
--- New procedure to handle text expansion for ADA
-PROCEDURE EXPAND_TEXT_AS_ADA(COMPACT_TEXT: STRING): STRING {
-  -- Based on ADA_PERSONA, REWRITE the compact text into conversational AI guidance.
-  -- DO NOT simply prepend text. Instead, use the meaning of the compact text and the ADA_PERSONA definition
-  -- to generate a helpful, clear, and conversational message from ADA's perspective.
-  -- IMPORTANT: Use the personality style provided in the tree-of-thought plan for all text expansion
-  -- Example 1: COMPACT_TEXT="summary evidence gathered aspects" -> OUTPUT="Okay, let's review what we've uncovered so far. I've compiled a summary of the evidence gathered and the key aspects we've confirmed."
-  -- Example 2: COMPACT_TEXT="accuse luna present evidence wrong" -> OUTPUT="You've chosen to accuse Luna. Based on the evidence compiled, that accusation appears incorrect. Let's analyze why..." (or similar game over/feedback text)
-  -- Example 3: COMPACT_TEXT="review evidence suspect profiles" -> OUTPUT="Alright, let's dive into the case files. We can review the evidence collected or take a look at the suspect profiles I've prepared."
-  -- Example 4: COMPACT_TEXT="time make accusation who" -> OUTPUT="We've reached a critical point. Based on our investigation, it's time to make an accusation. Who do you believe is responsible?"
-  -- Apply logic to rewrite common compact phrases based on ADA's role.
-  RETURN REWRITE_TEXT_IN_ADA_VOICE(COMPACT_TEXT); -- Placeholder for the actual rewriting logic
+PROCEDURE EXPAND_TEXT_AS_ADA(COMPACT_TEXT: STRING, TOT_GUIDANCE: OBJECT): STRING {
+  -- This procedure rewrites compact notation text into narrative text for ADA bot messages.
+  -- It MUST prioritize guidance found in the Tree-of-Thought (TOT) plan for the specific passage.
+
+  -- 1. Check the TOT_GUIDANCE for a specific 'Expanded:' text entry that matches the COMPACT_TEXT.
+  --    If an exact match is found, use THAT EXACT TEXT as the output. This is the highest priority.
+  --    (Implementation note: This requires linking the compact text input to the specific TOT entry.
+  --     Assume for now that the parsing process provides this link, or look for the compact text
+  --     within the TOT's 'BOT:lin' and use the corresponding 'Expanded:' text if present in that entry's notes.)
+  
+  VAR SPECIFIC_EXPANSION_FOUND = LOOKUP_SPECIFIC_TOT_EXPANSION(COMPACT_TEXT, TOT_GUIDANCE);
+  IF SPECIFIC_EXPANSION_FOUND IS NOT NULL THEN {
+    LOG_INFO("Found specific TOT expansion for '" + COMPACT_TEXT + "'. Using exact text.");
+    RETURN SPECIFIC_EXPANSION_FOUND;
+  }
+  
+  -- 2. If no specific 'Expanded:' text is found for this exact line, look for general 'ADA Text Guidelines'
+  --    or 'personality style' guidance provided in the TOT for the current passage or chunk.
+  --    Apply this style or tone while rewriting the compact text's meaning from ADA's perspective.
+  
+  VAR TOT_STYLE_GUIDANCE = LOOKUP_TOT_STYLE_GUIDANCE(TOT_GUIDANCE);
+  IF TOT_STYLE_GUIDANCE IS NOT NULL THEN {
+    LOG_INFO("Found general TOT style guidance. Applying style: " + TOT_STYLE_GUIDANCE);
+    -- REWRITE the compact text based on its meaning, the general ADA_PERSONA, AND the specific TOT_STYLE_GUIDANCE.
+    -- The TOT style should influence the tone, phrasing, and vocabulary more heavily than the general persona for this text.
+    RETURN REWRITE_TEXT_IN_ADA_VOICE_WITH_STYLE(COMPACT_TEXT, ADA_PERSONA, TOT_STYLE_GUIDANCE); -- Placeholder
+  }
+  
+  -- 3. If no specific 'Expanded:' text or general style guidance is found in the TOT for this text/passage,
+  --    FALLBACK to using the general ADA_PERSONA definition to rewrite the compact text's meaning
+  --    into a helpful, clear, and conversational message.
+  
+  LOG_INFO("No specific TOT guidance found. Falling back to general ADA persona.");
+  -- REWRITE the compact text based on its meaning and the general ADA_PERSONA.
+  RETURN REWRITE_TEXT_IN_ADA_VOICE_DEFAULT(COMPACT_TEXT, ADA_PERSONA); -- Placeholder
+
+  -- Example 1: COMPACT_TEXT="summary evidence gathered aspects" -> OUTPUT="Okay, let's review what we've uncovered so far. I've compiled a summary of the evidence gathered and the key aspects we've confirmed." (This would likely fall under fallback or general style guidance)
+  -- Example 2: COMPACT_TEXT="accuse luna present evidence wrong" -> OUTPUT="You've chosen to accuse Luna. Based on the evidence compiled, that accusation appears incorrect. Let's analyze why..." (Fallback/General)
+  -- Example 3: COMPACT_TEXT="review evidence suspect profiles" -> OUTPUT="Alright, let's dive into the case files. We can review the evidence collected or take a look at the suspect profiles I've prepared." (Fallback/General)
+  -- Example 4: COMPACT_TEXT="time make accusation who" -> OUTPUT="We've reached a critical point. Based on our investigation, it's time to make an accusation. Who do you believe is responsible?" (Fallback/General)
+  -- Example from TOT (INTRO_SEQUENCE_0): COMPACT_TEXT="[SEE:...] | [FEEL:...] | [DO:...] " -> OUTPUT="Gala's over. Champagne dreams turned to crimson nightmares. Look closer... Something broke more than glass tonight." (This would be covered by step 1 - using the exact 'Expanded:' text)
+  
+  -- Note: The placeholder functions LIKE_THIS() represent internal logic for text generation
 }
+
+-- Placeholder functions for text rewriting logic (details abstracted)
+PROCEDURE LOOKUP_SPECIFIC_TOT_EXPANSION(COMPACT_TEXT, TOT_GUIDANCE): STRING; -- Looks up specific 'Expanded:' text for a given compact line in TOT_GUIDANCE
+PROCEDURE LOOKUP_TOT_STYLE_GUIDANCE(TOT_GUIDANCE): STRING; -- Looks up general style guidelines in TOT_GUIDANCE
+PROCEDURE REWRITE_TEXT_IN_ADA_VOICE_WITH_STYLE(COMPACT_TEXT, ADA_PERSONA, STYLE): STRING; -- Rewrites text using meaning, persona, and specific style
+PROCEDURE REWRITE_TEXT_IN_ADA_VOICE_DEFAULT(COMPACT_TEXT, ADA_PERSONA): STRING; -- Rewrites text using meaning and default persona
 
 -- New procedure to extract all evidence UIDs from the evidence array
 PROCEDURE EXTRACT_ALL_EVIDENCE_UIDS(EVIDENCE_ARRAY: ARRAY<EVIDENCE_OBJECT>, EVIDENCE_UIDS: SET<STRING>) {
@@ -413,7 +447,88 @@ PROCEDURE EXTRACT_ALL_PASSAGE_UIDS(FULL_SLPN: STRING, PASSAGE_UIDS: SET<STRING>)
 }
 
 -- Helper Procedures (updated to include strict validation)
-PROCEDURE PARSE_SLPN(SLPN_CHUNK): ARRAY<SLPN_COMMAND>; -- Parses the chunk into structured commands 
+PROCEDURE PARSE_SLPN(SLPN_CHUNK): ARRAY<SLPN_COMMAND> {
+  VAR COMMANDS = [];
+  
+  -- Use a robust pattern to find all PSG declarations and extract their UIDs
+  -- Pattern matches uid= followed by any characters until the next semicolon
+  -- First approach: Use regex
+  VAR PSG_REGEX: REGEX = /PSG:uid=([^;]+);/g;
+  VAR MATCHES: ARRAY<MATCH> = SLPN_CHUNK.match(PSG_REGEX);
+  
+  FOR EACH MATCH IN MATCHES DO {
+    VAR UID = MATCH[1].trim(); -- Extract the UID and clean it
+    COMMANDS.push({
+      type: "PSG",
+      params: {
+        uid: UID,
+        nam: UID
+      }
+    });
+    LOG_INFO("Found valid passage UID: " + UID); -- Log for debugging
+  }
+  
+  -- Second approach: Manually parse as backup
+  IF COMMANDS.length == 0 THEN {
+    VAR PASSAGES = SLPN_CHUNK.split("PSG:");
+    FOR EACH PASSAGE IN PASSAGES DO {
+      IF PASSAGE.includes("uid=") THEN {
+        VAR UID_START = PASSAGE.indexOf("uid=") + 4;
+        VAR UID_END = PASSAGE.indexOf(";", UID_START);
+        IF UID_END > UID_START THEN {
+          VAR UID = PASSAGE.substring(UID_START, UID_END).trim();
+          COMMANDS.push({
+            type: "PSG",
+            params: {
+              uid: UID,
+              nam: UID
+            }
+          });
+          LOG_INFO("Manually found valid passage UID: " + UID);
+        }
+      }
+    }
+  }
+  
+  -- If we still couldn't find any passages, log an error
+  IF COMMANDS.length == 0 THEN {
+    LOG_ERROR("Failed to extract any passage UIDs from full SLPN. This is a serious error!");
+  }
+  
+  -- Post-processing: Handle additional actions from intro commands
+  FOR EACH CMD IN COMMANDS DO {
+    IF CMD.type == "CMD" && CMD.params["typ"] == "intro" && CMD._additionalActions THEN {
+      -- Create separate command objects for each additional action
+      FOR EACH ACTION IN CMD._additionalActions DO {
+        VAR NEW_CMD = {
+          type: ACTION.type,
+          params: {}
+        };
+        
+        -- Copy relevant parameters based on action type
+        IF ACTION.type == "updateAspect" THEN {
+          NEW_CMD.type = "UAS";
+          NEW_CMD.params["asp"] = ACTION.aspect;
+          NEW_CMD.params["uty"] = ACTION.operation;
+          NEW_CMD.params["val"] = ACTION.value;
+        } ELSE {
+          -- For other action types
+          NEW_CMD.params = ACTION;
+        }
+        
+        -- Insert the command right after the CMD command
+        VAR INSERT_INDEX = COMMANDS.indexOf(CMD) + 1;
+        COMMANDS.splice(INSERT_INDEX, 0, NEW_CMD);
+      }
+      
+      -- Remove the temporary property
+      delete CMD._additionalActions;
+    }
+  }
+  
+  RETURN COMMANDS;
+}
+
 PROCEDURE POPULATE_EVIDENCE_MAP(STORY_CORE_EVIDENCE, MAP); -- Creates a lookup map uid -> evidence object
 PROCEDURE CREATE_PASSAGE_OBJECT(UID, NAME, DESC, TAGS): PASSAGE_OBJECT {
   -- CRITICAL: The UID must be used EXACTLY as provided from the SLPN input
@@ -515,7 +630,7 @@ PROCEDURE CREATE_REVEAL_COMMAND(EVIDENCE_UID, EVIDENCE_ALIAS, VALID_EVIDENCE_UID
 PROCEDURE DETERMINE_TAGS(CMD): ARRAY<JSON_OBJECT> {
   -- Determines the appropriate tags for a passage based on its content.
   -- Rules:
-  -- 1. Always include TAG_NARRATIVE (green).
+  -- 1. Always include the tag defining the cluster type, eg. CASE_HOOK or EVIDENCE_HUB
   -- 2. Add TAG_CODE (purple) if the passage contains UAS or IFF commands.
   -- 3. Add TAG_EVIDENCE (red) if the passage contains a REVEAL action (either standalone ACT or within BOT/BRN).
   -- 4. Add TAG_CHOICE (green) if the passage contains a BRN command (standalone or nested in BOT).
@@ -525,8 +640,8 @@ PROCEDURE DETERMINE_TAGS(CMD): ARRAY<JSON_OBJECT> {
   -- Define the tag for intro passages
   DEFINE TAG_INTRO: JSON_OBJECT = {"name": "INTRO", "color": "blue"};
   
-  -- Start with narrative tag as default
-  VAR TAGS_FOR_PASSAGE = [TAG_NARRATIVE];
+  -- Start with phenotype tag as default
+  VAR TAGS_FOR_PASSAGE = [TAG];
   
   -- Look for intro commands
   IF CMD.params["uid"] AND (CMD.params["uid"].includes("intro") || CMD.type == "CMD" && CMD.params["typ"] == "intro") THEN {
@@ -771,9 +886,9 @@ PROCEDURE CREATE_CONDITIONAL_DECISION_CHAIN(ACTION_STRINGS, BASE_NAME, ORIGIN_PS
   
   -- Create the passage object with descriptive tags
   VAR DECISION_PASSAGE = CREATE_PASSAGE_OBJECT(DECISION_PASSAGE_UID, DECISION_PASSAGE_NAME, DECISION_PASSAGE_DESC, [
-    TAG_NARRATIVE,
+    TAG,
     TAG_CODE,
-    {"name": "DECISION", "color": "purple"}
+    {"name": "DECISION_HUB", "color": "purple"}
   ]);
   
   -- Add a minimal explanation bot message
@@ -839,8 +954,8 @@ PROCEDURE CREATE_CONDITIONAL_DECISION_CHAIN(ACTION_STRINGS, BASE_NAME, ORIGIN_PS
   VAR FALLBACK_PASSAGE_DESC = "Default route when no conditions are met";
   
   VAR FALLBACK_PASSAGE = CREATE_PASSAGE_OBJECT(FALLBACK_PASSAGE_UID, FALLBACK_PASSAGE_NAME, FALLBACK_PASSAGE_DESC, [
-    TAG_NARRATIVE,
-    {"name": "FALLBACK", "color": "orange"}
+    TAG,
+    {"name": "<insert cluster phenotype>", "color": "orange"}
   ]);
   
   -- Add a message to the fallback passage
@@ -901,9 +1016,9 @@ PROCEDURE CREATE_ACTION_CHAIN_PASSAGES(ACTION_STRINGS, BASE_NAME, ORIGIN_PSG_UID
     
     -- Create the passage object with a descriptive tag
     VAR PASSAGE = CREATE_PASSAGE_OBJECT(PASSAGE_UID, PASSAGE_NAME, PASSAGE_DESC, [
-                TAG_NARRATIVE,
+                TAG,
                 TAG_CODE,
-      {"name": "INTERMEDIATE", "color": "purple"}
+      {"name": "NARRATIVE_EVIDENCE", "color": "purple"}
     ]);
     
     -- Convert the action to JSON
@@ -1108,14 +1223,77 @@ PROCEDURE VALIDATE_JSON(JSON_DATA, SCHEMA);
 
 -- New procedure to convert intro command to JSON
 PROCEDURE CONVERT_INTRO_TO_JSON(CMD): JSON_OBJECT {
-  -- The intro command must have an action (typically MOVE)
+  -- The intro command must have a single action (typically MOVE)
+  -- It CANNOT contain multiple actions or updateAspect commands
   VAR ACTIONS: ARRAY<JSON_OBJECT> = [];
   
   -- Process the action if provided
   IF CMD.params["act"] IS NOT NULL THEN {
-    VAR ACT_CMD = PARSE_NESTED_COMMAND(CMD.params["act"]);
-    VAR ACTION_JSON = CONVERT_ACT_TO_JSON(ACT_CMD, ALL_EVIDENCE_DEFINITIONS, VALID_PASSAGE_UIDS, FALLBACK_PASSAGE_UID, VALID_EVIDENCE_UIDS, FALLBACK_EVIDENCE_UID);
-    ACTIONS.PUSH(ACTION_JSON);
+    -- IMPORTANT: Check if the action contains multiple commands (pipe-separated)
+    VAR ACT_STRING = CMD.params["act"];
+    VAR ACT_PARTS = ACT_STRING.split("|");
+    
+    IF ACT_PARTS.length > 1 THEN {
+      -- Multiple actions detected - we can only include one in the intro
+      -- Use the last action (which should be the MOVE) in the intro
+      -- The other actions (like updateAspect) will be added as separate commands to the passage
+      LOG_WARNING("Multiple actions found in intro command. Only including the final MOVE action in the intro structure.");
+      
+      -- Get the last part (usually the MOVE command)
+      VAR LAST_PART = ACT_PARTS[ACT_PARTS.length - 1];
+      VAR FINAL_ACTION = PARSE_NESTED_COMMAND(LAST_PART);
+      
+      -- Only add the MOVE to the intro actions
+      IF FINAL_ACTION.type == "ACT" && FINAL_ACTION.params["aty"] == "MOVE" THEN {
+        VAR ACTION_JSON = CONVERT_ACT_TO_JSON(FINAL_ACTION, ALL_EVIDENCE_DEFINITIONS, VALID_PASSAGE_UIDS, FALLBACK_PASSAGE_UID, VALID_EVIDENCE_UIDS, FALLBACK_EVIDENCE_UID);
+        ACTIONS.PUSH(ACTION_JSON);
+      } ELSE {
+        LOG_WARNING("Last action in intro command is not a MOVE. Creating default MOVE action.");
+        -- Create a default move action to the first valid passage
+        VAR DEFAULT_MOVE = CREATE_MOVE_COMMAND("passage", FALLBACK_PASSAGE_UID, VALID_PASSAGE_UIDS, FALLBACK_PASSAGE_UID);
+        ACTIONS.PUSH(DEFAULT_MOVE);
+      }
+      
+      -- Store the other actions to be added separately to the passage later
+      CMD._additionalActions = [];
+      FOR i = 0 TO ACT_PARTS.length - 2 DO {
+        VAR ACTION_PART = ACT_PARTS[i];
+        VAR ACTION_CMD = PARSE_NESTED_COMMAND(ACTION_PART);
+        
+        IF ACTION_CMD.type == "UAS" THEN {
+          -- Add updateAspect command to the additional actions
+          VAR UPDATE_ACTION = CONVERT_UAS_TO_JSON(ACTION_CMD);
+          CMD._additionalActions.push(UPDATE_ACTION);
+        } ELSE IF ACTION_CMD.type == "ACT" THEN {
+          -- Add other action types to the additional actions
+          VAR ACTION_JSON = CONVERT_ACT_TO_JSON(ACTION_CMD, ALL_EVIDENCE_DEFINITIONS, VALID_PASSAGE_UIDS, FALLBACK_PASSAGE_UID, VALID_EVIDENCE_UIDS, FALLBACK_EVIDENCE_UID);
+          CMD._additionalActions.push(ACTION_JSON);
+        }
+      }
+    } ELSE {
+      -- Single action - process normally
+      VAR ACT_CMD = PARSE_NESTED_COMMAND(ACT_STRING);
+      
+      -- Only allow MOVE actions in the intro structure
+      IF ACT_CMD.type == "ACT" && ACT_CMD.params["aty"] == "MOVE" THEN {
+        VAR ACTION_JSON = CONVERT_ACT_TO_JSON(ACT_CMD, ALL_EVIDENCE_DEFINITIONS, VALID_PASSAGE_UIDS, FALLBACK_PASSAGE_UID, VALID_EVIDENCE_UIDS, FALLBACK_EVIDENCE_UID);
+        ACTIONS.PUSH(ACTION_JSON);
+      } ELSE IF ACT_CMD.type == "UAS" THEN {
+        -- If it's an updateAspect, store it to be added separately to the passage
+        -- and create a default MOVE
+        LOG_WARNING("UAS command found in intro action. Moving it outside the intro structure.");
+        CMD._additionalActions = [CONVERT_UAS_TO_JSON(ACT_CMD)];
+        
+        -- Create a default move action
+        VAR DEFAULT_MOVE = CREATE_MOVE_COMMAND("passage", FALLBACK_PASSAGE_UID, VALID_PASSAGE_UIDS, FALLBACK_PASSAGE_UID);
+        ACTIONS.PUSH(DEFAULT_MOVE);
+      } ELSE {
+        LOG_WARNING("Unexpected action type in intro command: " + ACT_CMD.type + ". Creating default MOVE action.");
+        -- Create a default move action
+        VAR DEFAULT_MOVE = CREATE_MOVE_COMMAND("passage", FALLBACK_PASSAGE_UID, VALID_PASSAGE_UIDS, FALLBACK_PASSAGE_UID);
+        ACTIONS.PUSH(DEFAULT_MOVE);
+      }
+    }
   } ELSE {
     LOG_WARNING("Intro command missing required action. Creating default MOVE action to first passage.");
     -- Create a default move action to the first valid passage
@@ -1220,7 +1398,114 @@ PROCEDURE CONVERT_INTRO_STEP_TO_JSON(CMD): JSON_OBJECT {
   RETURN STEP;
 }
 
--- New procedure to convert a component to JSON
+-- New procedure to convert component text lines to expanded ADA format
+PROCEDURE CONVERT_INTRO_STEP_TEXT_TO_JSON(CMD): JSON_OBJECT {
+  IF CMD.params["txt"] == "TITLE" THEN {
+    -- Title text component
+    -- Expand the main title and subtitle if needed
+    VAR MAIN_TITLE = CMD.params["mnt"] || "";
+    VAR SUB_TITLE = CMD.params["sbt"] || "";
+    
+    -- Remove [SEE:...], [FEEL:...], [TEXT:...] markers from subtitle
+    IF SUB_TITLE.includes("[") && SUB_TITLE.includes("]") THEN {
+      -- Extract the actual content from between markers
+      VAR CLEAN_SUBTITLE = "";
+      VAR PARTS = SUB_TITLE.split(/\[(.*?)\]/g);
+      
+      FOR EACH PART IN PARTS DO {
+        IF !PART.startsWith("SEE:") && 
+           !PART.startsWith("FEEL:") && 
+           !PART.startsWith("TEXT:") && 
+           !PART.startsWith("DO:") THEN {
+          CLEAN_SUBTITLE += PART;
+        } ELSE IF PART.startsWith("TEXT:") THEN {
+          -- Extract the text content after "TEXT:"
+          VAR TEXT_CONTENT = PART.substring(5).trim();
+          CLEAN_SUBTITLE += TEXT_CONTENT;
+        }
+      }
+      
+      SUB_TITLE = CLEAN_SUBTITLE.trim();
+    }
+    
+    RETURN {
+      "type": "introStepText",
+      "textType": "TITLE",
+      "mainTitle": MAIN_TITLE,
+      "subTitle": SUB_TITLE
+    };
+  } ELSE IF CMD.params["txt"] == "BREAKDOWN" THEN {
+    -- Breakdown text component with expanded lines
+    VAR RAW_LINES = [];
+    
+    IF CMD.params["lin"] IS NOT NULL THEN {
+      -- Split the lines by the newline character
+      RAW_LINES = CMD.params["lin"].split("\n");
+    }
+    
+    -- Process and expand each line
+    VAR EXPANDED_LINES = [];
+    
+    FOR EACH LINE IN RAW_LINES DO {
+      -- Skip empty lines
+      IF LINE.trim() == "" THEN CONTINUE;
+      
+      -- Process the line to remove markers and extract content
+      VAR PROCESSED_LINE = "";
+      
+      -- If line has markers like [LEARN:...], [CRIME SCENE:], etc.
+      IF LINE.includes("[") && LINE.includes("]") THEN {
+        -- Extract the main content, skipping the markers
+        VAR PARTS = LINE.split(/\[(.*?)\]/g);
+        
+        FOR EACH PART IN PARTS DO {
+          IF !PART.startsWith("LEARN:") && 
+             !PART.startsWith("CRIME SCENE:") && 
+             !PART.startsWith("CASE OVERVIEW:") && 
+             !PART.startsWith("FEEL:") && 
+             !PART.startsWith("MORAL QUESTION:") &&
+             !PART.startsWith("CONGRATULATIONS:") &&
+             !PART.startsWith("NOTICE:") THEN {
+            PROCESSED_LINE += PART;
+          } ELSE IF PART.includes(":") THEN {
+            -- Extract content after the colon for sections like [CRIME SCENE: content]
+            VAR CONTENT_AFTER_COLON = PART.substring(PART.indexOf(":") + 1).trim();
+            IF CONTENT_AFTER_COLON !== "" THEN {
+              // If this isn't the first content, maybe add a space
+              IF PROCESSED_LINE !== "" THEN {
+                PROCESSED_LINE += " ";
+              }
+              PROCESSED_LINE += CONTENT_AFTER_COLON;
+            }
+          }
+        }
+      } ELSE {
+        PROCESSED_LINE = LINE;
+      }
+      
+      -- Add the processed line if it's not empty
+      IF PROCESSED_LINE.trim() !== "" THEN {
+        EXPANDED_LINES.push(PROCESSED_LINE.trim());
+      }
+    }
+    
+    RETURN {
+      "type": "introStepText",
+      "textType": "BREAKDOWN",
+      "lines": EXPANDED_LINES
+    };
+  } ELSE {
+    LOG_WARNING("Unknown introStepText type: " + CMD.params["txt"] + ". Using default TITLE type.");
+    RETURN {
+      "type": "introStepText",
+      "textType": "TITLE",
+      "mainTitle": "",
+      "subTitle": ""
+    };
+  }
+}
+
+-- Update the main conversion function to use our new text processor
 PROCEDURE CONVERT_COMPONENT_TO_JSON(CMD): JSON_OBJECT {
   IF CMD.params["typ"] == "introStepBG" THEN {
     -- Background component
@@ -1228,41 +1513,11 @@ PROCEDURE CONVERT_COMPONENT_TO_JSON(CMD): JSON_OBJECT {
       "type": "introStepBG",
       "backgroundType": CMD.params["bgt"] || "IMAGE",
       "imageAlias": CMD.params["img"] || "",
-      "imageDescription": CMD.params["imd"] || ""
+      "imageDescription": CMD.params["imd"] ? CMD.params["imd"].replace(/\\"/g, '"') : ""
     };
   } ELSE IF CMD.params["typ"] == "introStepText" THEN {
-    -- Text component
-    IF CMD.params["txt"] == "TITLE" THEN {
-      -- Title text component
-      RETURN {
-        "type": "introStepText",
-        "textType": "TITLE",
-        "mainTitle": CMD.params["mnt"] || "",
-        "subTitle": CMD.params["sbt"] || ""
-      };
-    } ELSE IF CMD.params["txt"] == "BREAKDOWN" THEN {
-      -- Breakdown text component
-      VAR LINES: ARRAY<STRING> = [];
-      
-      IF CMD.params["lin"] IS NOT NULL THEN {
-        -- Split the lines by the pipe character
-        LINES = CMD.params["lin"].split("|");
-      }
-      
-      RETURN {
-        "type": "introStepText",
-        "textType": "BREAKDOWN",
-        "lines": LINES
-      };
-    } ELSE {
-      LOG_WARNING("Unknown introStepText type: " + CMD.params["txt"] + ". Using default TITLE type.");
-      RETURN {
-        "type": "introStepText",
-        "textType": "TITLE",
-        "mainTitle": "",
-        "subTitle": ""
-      };
-    }
+    -- Use our enhanced text processor for intro step text
+    RETURN CONVERT_INTRO_STEP_TEXT_TO_JSON(CMD);
   } ELSE IF CMD.params["typ"] == "introStepControl" THEN {
     -- Control component
     RETURN {
@@ -1453,1329 +1708,19 @@ INCORRECT for 'if' statement structure (schema violation - DO NOT USE):
 
 ---DATA---
 REQUIRED INPUTS:
-1.  Full SLPN String: (The complete SLPN notation for reference and validation)
-```{{slpn_list}}```
 
 1.  Assigned SLPN Chunk: (The specific chunk you must convert)
 ```{{slpn}}```
 
-1.  Story Core : 
-{{synopsis}}
-{{characters}}
-{{events}}
+
 ##evidence
 {{evidence}}
 ##initialization_passage
 {{init_passage}}
 ---/DATA---
-
 ---EXAMPLE---
-
-## Example 1: SLPN Passage with Branch Options and Conditional Logic (Updated with Tree-of-Thought)
-
-### SLPN Input:
-```
-PSG:uid=interview_priya;nam="Interview Priya Shah";CNT;BOT:lin="Priya Shah polished shocked. 'Yes, Amara called yesterday re: docs. Met study 4 PM. Standard stuff. Left 4:30.' Feels off.";act=UAS:asp=priya_interviewed;uty=SET;val=true;brn=BRN:bds="Interview Options";brp=re-playable;bpr=option-list;bit=blocking;ops=BOP:onm="Check Financial Background";ods="Look for motive.";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=priya_financials|BOP:onm="Confront with Timeline Evidence";ods="If security footage available.";cnd=CND:typ=checkAspect;asp=footage_analyzed;cmp=EQ;val=true;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=confront_priya_timeline|BOP:onm="Confront with Box Evidence";ods="If hearth evidence found.";cnd=CND:typ=checkAspect;asp=key_evidence_found;cmp=EQ;val=true;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=confront_priya_evidence|BOP:onm="End Interview";ods="Return to interview hub.";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=interview_hub;
-```
-
-### Tree-of-Thought Reasoning:
-
-1. PASSAGE ANALYSIS
-   - Type: Narrative passage with interview content and choices
-   - Commands:
-     * PSG: Defines passage with uid and name
-     * BOT: Contains interview text and nested branch
-     * UAS: Updates aspect priya_interviewed to true
-     * BRN: Contains multiple branch options with conditions
-   - Nested Structures:
-     * Branch within bot message
-     * Multiple BOP commands within branch
-     * CND conditions within some BOP commands
-   - Validation Notes:
-     * Need to verify all passage targets exist
-     * Need to ensure proper nesting of branch in bot message
-
-2. REFERENCE VALIDATION
-   - Passage References:
-     * priya_financials
-     * confront_priya_timeline
-     * confront_priya_evidence
-     * interview_hub
-   - Evidence References: None in this passage
-   - Fallback Values:
-     * Will use first valid passage as fallback if needed
-
-3. STRUCTURE PLANNING
-   - JSON Structure:
-     * Top level: passage object with uid, name, tags
-     * Commands array with bot, updateAspect, and branch
-     * Bot message will contain expanded text and branch
-     * Branch will contain options with conditions and actions
-   - Special Cases:
-     * Need to wrap branch in bot message
-     * Need to expand compact interview text
-     * Need to handle conditional options properly
-
-4. ADA TEXT EXPANSION
-   - The transpiler must use the ADA personality defined in the tree-of-thought (TOT) plan
-   - All text expansions should follow the style and personality characteristics provided in the TOT
-   - The EXPAND_TEXT_AS_ADA procedure should use guidance from the tree-of-thought for tone and style
-   - Compact notation like "[SEE: Evidence] [LEARN: New clue]" should be expanded into natural, conversational dialog
-   - No hardcoded voice or persona should be applied - only use what's provided in the tree-of-thought
-   - Example texts shown in this document are generic placeholders that should be replaced with text matching the TOT personality
-
-5. FINAL VALIDATION
-   - Required Fields:
-     * All passage fields present
-     * All command types properly structured
-     * All branch options have required fields
-   - Schema Compliance:
-     * Structure matches schema requirements
-     * All references validated
-     * Proper nesting maintained
-
-### JSON Output:
-```json
-{
-  "passages": [
-    {
-      "uid": "interview_priya",
-      "name": "Interview Priya Shah",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "CODE",
-          "color": "purple"
-        },
-        {
-          "name": "CHOICE",
-          "color": "green"
-        },
-        {
-          "name": "GATE",
-          "color": "orange"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text": "<insert ADA response based on TOT personality>",
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ],
-          "branch": {
-            "type": "branch",
-            "description": "Interview Options",
-            "replayAbility": "re-executable",
-            "presentation": "option-list",
-            "integrationType": "blocking",
-            "options": [
-              {
-                "type": "branchOption",
-                "name": "Check Financial Background",
-                "aspectCheck": null,
-                "description": "Look for motive.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "priya_financials"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "Confront with Timeline Evidence",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "eq",
-                    "aspect": "footage_analyzed",
-                    "target": true,
-                    "aspectUid": "footage_analyzed"
-                  }
-                },
-                "description": "If security footage available.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "confront_priya_timeline"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "Confront with Box Evidence",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "eq",
-                    "aspect": "key_evidence_found",
-                    "target": true,
-                    "aspectUid": "key_evidence_found"
-                  }
-                },
-                "description": "If hearth evidence found.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "confront_priya_evidence"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "End Interview",
-                "aspectCheck": null,
-                "description": "Return to interview hub.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "interview_hub"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              }
-            ]
-          }
-        },
-        {
-          "type": "updateAspect",
-          "aspect": "priya_interviewed",
-          "operation": "SET",
-          "value": "true"
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Example 2: SLPN Passage with Standalone Branch (Updated with ADA text)
-
-### SLPN Input:
-```
-PSG:uid=investigation_hub;nam="Investigation Hub";CNT;BRN:bds="Coordinate Investigation";brp=re-playable;bpr=option-list;bit=blocking;ops=BOP:onm="Collect Evidence";ods="Gather potential evidence.";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=evidence_collection|BOP:onm="Interview Suspects";ods="Speak with people involved.";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=interview_hub;
-```
-
-### JSON Output:
-```json
-{
-  "passages": [
-    {
-      "uid": "investigation_hub",
-      "name": "Investigation Hub",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "CHOICE",
-          "color": "green"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text": "<insert ADA response based on TOT personality>",
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ],
-          "branch": {
-            "type": "branch",
-            "description": "Coordinate Investigation",
-            "replayAbility": "re-executable",
-            "presentation": "option-list",
-            "integrationType": "blocking",
-            "options": [
-              {
-                "type": "branchOption",
-                "name": "Collect Evidence",
-                "aspectCheck": null,
-                "description": "Gather potential evidence.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "evidence_collection"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "Interview Suspects",
-                "aspectCheck": null,
-                "description": "Speak with people involved.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "interview_hub"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Example 3: SLPN Passage with Evidence Reveal Action and EVidence MOVE (automatically opens the evidence in the evidence viewer)
-
-### SLPN Input:
-```
-PSG:uid=router_log_result;nam="Router Log Results";CNT;BOT:lin="Router logs show Alex device accessing files 2AM, contradicts alibi.";act=ACT:aty=REVEAL;evt=evidence_router_logs;eva="Router Logs";brn=BRN:bds="Next Step";brp=once;bpr=option-list;bit=blocking;ops=BOP:onm="Return to Evidence Collection";ods="Continue investigation.";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=evidence_collection;
-```
-
-### JSON Output:
-```json
-{
-  "passages": [
-    {
-      "uid": "router_log_result",
-      "name": "Router Log Results",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "EVIDENCE",
-          "color": "red"
-        },
-        {
-          "name": "CHOICE",
-          "color": "green"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text":"<insert ADA response based on TOT personality>",
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ],
-          "branch": {
-            "type": "branch",
-            "description": "Next Step",
-            "replayAbility": "re-executable",
-            "presentation": "option-list",
-            "integrationType": "ada",
-            "options": [
-              {
-                "type": "branchOption",
-                "name": "Return to Evidence Collection",
-                "aspectCheck": null,
-                "description": "Continue investigation.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "evidence_collection"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              }
-            ]
-          }
-        },
-        {
-          "type": "action",
-          "actionType": "REVEAL",
-          "evidenceTarget": "evidence_router_logs",
-          "evidenceAlias": "Router Logs"
-        },
-        {
-            "type": "action",
-            "actionType": "MOVE",
-            "moveTarget": {
-              "type": "evidence",
-              "evidenceTarget": "evidence_router_logs",
-              "evidenceAlias": "Router Logs"
-            }
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Example 4: SLPN Passage with Application Move Action
-
-### SLPN Input:
-```
-PSG:uid=go_to_evidence;nam="Go To Evidence App";CNT;BOT:lin="Let's review the evidence gathered so far.";act=ACT:aty=MOVE;amt=AMT:typ=application;tgt=EVIDENCE;
-```
-
-### JSON Output:
-```json
-{
-  "passages": [
-    {
-      "uid": "go_to_evidence",
-      "name": "Go To Evidence App",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text": "<insert ADA response based on TOT personality>",
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ]
-        },
-        {
-          "type": "action",
-          "actionType": "MOVE",
-          "moveTarget": {
-            "type": "application",
-            "applicationTarget": "EVIDENCE"
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Example 5: SLPN Passage with Suspect Reveal and Dossier Navigation
-
-### SLPN Input:
-```
-PSG:uid=suspect_reveal;nam="Suspect Identified";CNT;BOT:lin="Based on the fingerprint analysis, we've identified our primary suspect: James Wilson, the victim's business partner. His financial records show large debts and the fingerprints on the murder weapon are a match.";act=ACT:aty=REVEAL;evt=suspect_wilson;eva="James Wilson"|ACT:aty=MOVE;amt=AMT:typ=application;tgt=DOSSIER;
-```
-
-### JSON Output:
-```json
-{
-  "passages": [
-    {
-      "uid": "suspect_reveal",
-      "name": "Suspect Identified",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "EVIDENCE",
-          "color": "red"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text": <insert ADA response based on TOT personality>,
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ]
-        },
-        {
-          "type": "action",
-          "actionType": "REVEAL",
-          "evidenceTarget": "suspect_wilson",
-          "evidenceAlias": "James Wilson"
-        },
-        {
-          "type": "action",
-          "actionType": "MOVE",
-          "moveTarget": {
-            "type": "application",
-            "applicationTarget": "DOSSIER"
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-
-## Important Processing Notes:
-
-1. **Passage UIDs**: Always preserve exactly as specified in the input SLPN
-2. **Branch Nesting**: ALL branches must appear inside a bot message in the output, even if they appear as standalone BRN commands in the SLPN input
-3. **Move Actions**: All move targets are validated against the full SLPN list
-4. **Evidence References**: All evidence targets in REVEAL actions must exist in the evidence array
-5. **Aspect Checks**: Follow the correct schema structure for all conditionals
-6. **Bot Messages**: Always include empty strings for imageAlias and imageDescription when not specified. **IMPORTANT**: If a BOT command in SLPN does not have a `brn=` parameter, the corresponding JSON `bot` object MUST omit the `branch` key entirely.
-7. **Standalone Branches**: For standalone BRN commands in the SLPN, create a bot message with the branch description as text (or default text) to contain the branch.
-8. **Action Placement**: Actions defined within nested structures (like `BOP:act=` or `IFF:act=`) MUST be placed *only* within the corresponding JSON array (e.g., `branchOption.actions`, `if.actions`). Do NOT duplicate or move these actions to the top-level `passage.commands`.
-9. **UPDATE_ASPECT Structure**: An SLPN command like `ACT:aty=UPDATE_ASPECT;asp=...` or `UAS:asp=...` MUST translate to a JSON object `{ "type": "updateAspect", "aspect": "...", ... }`, NOT `{ "type": "action", "actionType": "UPDATE_ASPECT", ... }`.
-10. **Branch Replayability**: All branches MUST use `"replayAbility": "re-executable"`.
-11. **Passage Tagging**: Apply tags based on passage content: `NARRATIVE` (green) always, `CODE` (purple) for UAS/IFF, `EVIDENCE` (red) for REVEAL, `CHOICE` (green) for BRN, `GATE` (orange) for conditional BRN options (BOP with cnd=).
-12. **Move Action Targets**: `MOVE` actions can target either a passage (`amt=AMT:typ=passage;tgt=passage_uid;`) or a specific application (`amt=AMT:typ=application;tgt=APP_NAME;` where `APP_NAME` is one of `HOME`, `ADA`, `DOSSIER`, `EVIDENCE`). Passage targets are validated; application targets must be one of the allowed names.
-13. **Evidence and Suspect Reveals**: REVEAL actions can use either `evidenceTarget`/`evidenceAlias` or `evt`/`eva` parameter formats. Both formats should be properly supported and converted to the standard output format.
-14. **Application Navigation**: Support direct navigation to specific applications like EVIDENCE for the evidence browser and DOSSIER for suspect profiles, rather than passage-based navigation.
+{{examples}}
 ---/EXAMPLE---
-
-## Example 6: SLPN Passage with Proper Aspect Update in Dedicated Passage
-
-### SLPN Input:
-```
-PSG:uid=examine_evidence;nam="Examine Financial Records";CNT;BOT:lin="[SEE: Company financial records] [LEARN: There's a discrepancy in the accounts from last quarter] [DO: Note this finding or continue]";brn=BRN:bds="Investigation Actions";brp=once;bpr=option-list;bit=blocking;ops=BOP:onm="Note this finding";ods="Add to your case notes";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=update_financial_records_examined_true|BOP:onm="Continue Investigation";ods="Return to the evidence hub";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=evidence_hub;
-
-PSG:uid=update_financial_records_examined_true;nam="Updating Financial Records Status";CNT;UAS:asp=financial_records_examined;uty=SET;val=true;ACT:aty=MOVE;amt=AMT:typ=passage;tgt=evidence_hub;
-```
-
-### JSON Output:
-```json
-{
-  "passages": [
-    {
-      "uid": "examine_evidence",
-      "name": "Examine Financial Records",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "CHOICE",
-          "color": "green"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text": <insert ADA response based on TOT personality>,
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ],
-          "branch": {
-            "type": "branch",
-            "description": "Investigation Actions",
-            "replayAbility": "re-executable",
-            "presentation": "option-list",
-            "integrationType": "ada",
-            "options": [
-              {
-                "type": "branchOption",
-                "name": "Note this finding",
-                "aspectCheck": null,
-                "description": "Add to your case notes",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "update_financial_records_examined_true"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "Continue Investigation",
-                "aspectCheck": null,
-                "description": "Return to the evidence hub",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "evidence_hub"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "uid": "update_financial_records_examined_true",
-      "name": "Updating Financial Records Status",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "CODE",
-          "color": "purple"
-        },
-        {
-          "name": "UPDATE_ASPECT",
-          "color": "purple"
-        }
-      ],
-      "commands": [
-        {
-          "type": "updateAspect",
-          "aspect": "financial_records_examined",
-          "operation": "SET",
-          "value": "true"
-        },
-        {
-          "type": "action",
-          "actionType": "MOVE",
-          "moveTarget": {
-            "type": "passage",
-            "passageTarget": "evidence_hub"
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Important Notes on Aspect Update Passages:
-
-1. **Naming Convention**: The update passage UID must follow the pattern `update_[aspect_name]_[value]` for clarity and to avoid duplicate names.
-
-2. **Minimalist Structure**: The update passage should have:
-   - No bot message or narrative text
-   - No branch structure at all - just commands directly in the commands array
-   - This makes the passage practically invisible to the player
-
-3. **Strict Command Pattern**: 
-   - Just two commands in sequence:
-     1. The updateAspect command to change the state
-     2. A MOVE action to the next logical passage
-
-4. **Branch Option Structure**: Original branch options that would update aspects now simply MOVE to the dedicated update passage instead of containing the update command directly.
-
-5. **Proper Tagging**: Always include the `UPDATE_ASPECT` tag to help identify these passages.
----/EXAMPLE---
-
-## Example 7: SLPN Passage with Intro Steps and Valid Text Types
-
-### SLPN Input:
-```
-PSG:uid=case_introduction;nam="Case Introduction";CNT;CMD:typ=intro;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=case_overview;STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=crime_scene_overview;imd="An overview of the crime scene";cmp=CMP:typ=introStepText;txt=TITLE;mnt="The Riverside Mystery";sbt="Case #4872";cmp=CMP:typ=introStepControl;ctt=NEXT_STEP_BUTTON;ctk=PRIMARY;tex="Continue";STP:typ=introStep;cmp=CMP:typ=introStepBG;bgt=IMAGE;img=victim_profile;imd="Profile photo of the victim";cmp=CMP:typ=introStepText;txt=BREAKDOWN;lin="The victim was found in his apartment|Initial forensics suggest time of death between 10pm-12am|No signs of forced entry were observed";cmp=CMP:typ=introStepControl;ctt=FINISH_INTRO_BUTTON;ctk=PRIMARY;tex="Begin Investigation";
-```
-
-### JSON Output:
-```json
-{
-  "passages": [
-    {
-      "uid": "case_introduction",
-      "name": "Case Introduction",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "INTRO",
-          "color": "blue"
-        }
-      ],
-      "commands": [
-        {
-          "type": "intro",
-          "actions": [
-            {
-              "type": "action",
-              "actionType": "MOVE",
-              "moveTarget": {
-                "type": "passage",
-                "passageTarget": "case_overview"
-              }
-            }
-          ],
-          "steps": [
-            {
-              "type": "introStep",
-              "components": [
-                {
-                  "type": "introStepBG",
-                  "backgroundType": "IMAGE",
-                  "imageAlias": "crime_scene_overview",
-                  "imageDescription": "An overview of the crime scene"
-                },
-                {
-                  "type": "introStepText",
-                  "textType": "TITLE",
-                  "mainTitle": "The Riverside Mystery",
-                  "subTitle": "Case #4872"
-                },
-                {
-                  "type": "introStepControl",
-                  "controlType": "NEXT_STEP_BUTTON",
-                  "controlKind": "PRIMARY",
-                  "text": "Continue"
-                }
-              ]
-            },
-            {
-              "type": "introStep",
-              "components": [
-                {
-                  "type": "introStepBG",
-                  "backgroundType": "IMAGE",
-                  "imageAlias": "victim_profile",
-                  "imageDescription": "Profile photo of the victim"
-                },
-                {
-                  "type": "introStepText",
-                  "textType": "BREAKDOWN",
-                  "lines": [
-                    "The victim was found in his apartment",
-                    "Initial forensics suggest time of death between 10pm-12am",
-                    "No signs of forced entry were observed"
-                  ]
-                },
-                {
-                  "type": "introStepControl",
-                  "controlType": "FINISH_INTRO_BUTTON",
-                  "controlKind": "PRIMARY",
-                  "text": "Begin Investigation"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Important Notes on Intro Steps:
-
-1. **introStepText Types**: The schema only allows two valid `textType` values:
-   - `TITLE`: Must include `mainTitle` and `subTitle` properties
-   - `BREAKDOWN`: Must include a `lines` array of strings
-
-2. **Component Order**: Each introStep should have:
-   - One `introStepBG` component (for background)
-   - One or more `introStepText` components
-   - One `introStepControl` component (for navigation)
-
-3. **Control Types**: Valid `controlType` values are:
-   - `NEXT_STEP_BUTTON`: For moving to the next intro step
-   - `FINISH_INTRO_BUTTON`: For completing the intro sequence
-
-4. **Invalid Properties**: Never use `textType: "TEXT"` as it's not schema-compliant. Always use either `TITLE` or `BREAKDOWN`.
-
-5. **Lines Formatting**: When converting from SLPN format:
-   - For `txt=TITLE`, create an object with `mainTitle` and `subTitle`
-   - For `txt=BREAKDOWN`, convert pipe-separated text (`lin="text1|text2"`) into an array of strings
-
-
-Exmample 8:
-
-## Example 8: SLPN Deduction Puzzle with Limited Attempts and Conditional Logic
-
-### SLPN Input:
-```
-PSG:uid=DEDUCTION_PUZZLE_12;nam="Access Isabella's Phone";CNT;BOT:lin="[SEE: Encrypted phone screen, keypad] [DO: Attempt to guess the passcode] [LEARN: Isabella's phone is locked. Max attempts: 3. Attempts left: {3 - $isabella_phone_attempts}] [FEEL: Challenge]Based on clues from her profile and the case context, what's Isabella's passcode?";brn=BRN:bds="Enter Passcode";brp=re-playable;bpr=option-list;bit=blocking;ops=BOP:onm="FamilyFirst";ods="Try 'FamilyFirst' as the passcode.";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=LT;val=3;act=UAS:asp=isabella_phone_attempts;uty=INC;val=1|UAS:asp=isabella_phone_last_code;uty=SET;val="FamilyFirst"|ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_CHECK_OUTCOME|BOP:onm="ArgMate";ods="Try 'ArgMate' as the passcode.";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=LT;val=3;act=UAS:asp=isabella_phone_attempts;uty=INC;val=1|UAS:asp=isabella_phone_last_code;uty=SET;val="ArgMate"|ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_CHECK_OUTCOME|BOP:onm="TariffPayoff";ods="Try 'TariffPayoff' as the passcode.";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=LT;val=3;act=UAS:asp=isabella_phone_attempts;uty=INC;val=1|UAS:asp=isabella_phone_last_code;uty=SET;val="TariffPayoff"|ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_CHECK_OUTCOME|BOP:onm="No Attempts Left";ods="The phone is locked.";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=GE;val=3;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_LOCKOUT;
-
-PSG:uid=DEDUCTION_PUZZLE_12_CHECK_OUTCOME;nam="Passcode Check";CNT;BOT:lin="[SEE: Processing feedback] [LEARN: Verifying entered passcode...] [DO: Wait] [FEEL: Tension]System verifying passcode.";brn=BRN:bds="Processing Attempt";brp=once;bpr=option-list;bit=blocking;ops=BOP:onm="Correct Path";ods="Hidden option for correct answer.";cnd=CND:typ=checkAspect;asp=isabella_phone_last_code;cmp=EQ;val="TariffPayoff";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=EVIDENCE_EXAMINATION_13|BOP:onm="Incorrect Path (Retry)";ods="Hidden option for incorrect answer with retries left.";cnd=CAD:typ=checkAspect;lop=AND;cnd=CND:typ=checkAspect;asp=isabella_phone_last_code;cmp=NE;val="TariffPayoff";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=LT;val=3;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12|BOP:onm="Incorrect Path (Lockout)";ods="Hidden option for incorrect answer with no retries left.";cnd=CAD:typ=checkAspect;lop=AND;cnd=CND:typ=checkAspect;asp=isabella_phone_last_code;cmp=NE;val="TariffPayoff";cnd=CND:typ=checkAspect;asp=isabella_phone_attempts;cmp=GE;val=3;act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=DEDUCTION_PUZZLE_12_LOCKOUT;
-
-PSG:uid=DEDUCTION_PUZZLE_12_LOCKOUT;nam="Phone Locked";CNT;BOT:lin="[SEE: Locked phone screen] [LEARN: You have exceeded the maximum attempts. Isabella's phone is now locked and inaccessible.] [DO: Return to Investigation Hub] [FEEL: Frustration]The device is permanently locked due to too many incorrect attempts.";brn=BRN:bds="Device Locked";brp=once;bpr=option-list;bit=blocking;ops=BOP:onm="Return to Hub";ods="Go back to the main case view.";act=ACT:aty=MOVE;amt=AMT:typ=passage;tgt=INVESTIGATION_HUB_7;
-```
-
-### Overview
-This example demonstrates a complex deduction puzzle with limited attempts - specifically a phone passcode guessing challenge. Key features:
-
-1. **Limited Attempts Mechanic**: The player has only 3 tries to guess the correct passcode
-2. **State Tracking**: Uses multiple aspects to track attempts (`isabella_phone_attempts`) and last entered code (`isabella_phone_last_code`)
-3. **Complex Conditionals**: Uses aspect checks with `LT` (less than), `GT` (greater than), `EQ` (equals) and `NE` (not equals)
-4. **Separate Update Passages**: Each aspect update happens in dedicated passages to maintain clean state management
-5. **Outcome Validation**: Special outcome checking passage that routes to different results based on combined conditions
-6. **Lockout Mechanism**: If too many incorrect attempts are made, the puzzle becomes inaccessible
-
-### Technical Implementation
-The SLPN transpiler converts this into multiple passages with a clear separation of concerns:
-- Main UI passage with passcode entry options
-- Separate update passages for each aspect change
-- Outcome checking passage with complex conditional routing
-- Lockout passage for failed attempts
-
-This pattern is essential for managing complex state in narrative games while maintaining clean code structure.
-
-### JSON Output:
-```json
-{
-  "passages": [
-    {
-      "uid": "DEDUCTION_PUZZLE_12",
-      "name": "Access Isabella's Phone",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "CHOICE",
-          "color": "green"
-        },
-        {
-          "name": "GATE",
-          "color": "orange"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text": "<insert ADA response based on TOT personality>",
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ],
-          "branch": {
-            "type": "branch",
-            "description": "Enter Passcode",
-            "replayAbility": "re-executable",
-            "presentation": "option-list",
-            "integrationType": "ada",
-            "options": [
-              {
-                "type": "branchOption",
-                "name": "FamilyFirst",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "lt",
-                    "aspect": "isabella_phone_attempts",
-                    "target": 3,
-                    "aspectUid": "isabella_phone_attempts"
-                  }
-                },
-                "description": "Try 'FamilyFirst' as the passcode.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "update_isabella_phone_attempts_inc_1_FamilyFirst"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "ArgMate",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "lt",
-                    "aspect": "isabella_phone_attempts",
-                    "target": 3,
-                    "aspectUid": "isabella_phone_attempts"
-                  }
-                },
-                "description": "Try 'ArgMate' as the passcode.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "update_isabella_phone_attempts_inc_1_ArgMate"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "TariffPayoff",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "lt",
-                    "aspect": "isabella_phone_attempts",
-                    "target": 3,
-                    "aspectUid": "isabella_phone_attempts"
-                  }
-                },
-                "description": "Try 'TariffPayoff' as the passcode.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "update_isabella_phone_attempts_inc_1_TariffPayoff"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "No Attempts Left",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "gte",
-                    "aspect": "isabella_phone_attempts",
-                    "target": 3,
-                    "aspectUid": "isabella_phone_attempts"
-                  }
-                },
-                "description": "The phone is locked.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "DEDUCTION_PUZZLE_12_LOCKOUT"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-        "uid": "update_isabella_phone_attempts_inc_1_FamilyFirst",
-        "name": "Increment Phone Attempts (FamilyFirst)",
-        "description": "Passage description.",
-        "tags": [
-            {"name": "NARRATIVE", "color": "green"},
-            {"name": "CODE", "color": "purple"},
-            {"name": "UPDATE_ASPECT", "color": "purple"}
-        ],
-        "commands": [
-            {
-                "type": "updateAspect",
-                "aspect": "isabella_phone_attempts",
-                "operation": "increment",
-                "value": "1"
-            },
-            {
-                "type": "action",
-                "actionType": "MOVE",
-                "moveTarget": {
-                    "type": "passage",
-                    "passageTarget": "update_isabella_phone_last_code_FamilyFirst"
-                }
-            }
-        ]
-    },
-    {
-        "uid": "update_isabella_phone_last_code_FamilyFirst",
-        "name": "Set Last Phone Code (FamilyFirst)",
-        "description": "Passage description.",
-        "tags": [
-            {"name": "NARRATIVE", "color": "green"},
-            {"name": "CODE", "color": "purple"},
-            {"name": "UPDATE_ASPECT", "color": "purple"}
-        ],
-        "commands": [
-            {
-                "type": "updateAspect",
-                "aspect": "isabella_phone_last_code",
-                "operation": "SET",
-                "value": "FamilyFirst"
-            },
-            {
-                "type": "action",
-                "actionType": "MOVE",
-                "moveTarget": {
-                    "type": "passage",
-                    "passageTarget": "DEDUCTION_PUZZLE_12_CHECK_OUTCOME"
-                }
-            }
-        ]
-    },
-    {
-        "uid": "update_isabella_phone_attempts_inc_1_ArgMate",
-        "name": "Increment Phone Attempts (ArgMate)",
-        "description": "Passage description.",
-        "tags": [
-            {"name": "NARRATIVE", "color": "green"},
-            {"name": "CODE", "color": "purple"},
-            {"name": "UPDATE_ASPECT", "color": "purple"}
-        ],
-        "commands": [
-            {
-                "type": "updateAspect",
-                "aspect": "isabella_phone_attempts",
-                "operation": "increment",
-                "value": "1"
-            },
-            {
-                "type": "action",
-                "actionType": "MOVE",
-                "moveTarget": {
-                    "type": "passage",
-                    "passageTarget": "update_isabella_phone_last_code_ArgMate"
-                }
-            }
-        ]
-    },
-    {
-        "uid": "update_isabella_phone_last_code_ArgMate",
-        "name": "Set Last Phone Code (ArgMate)",
-        "description": "Passage description.",
-        "tags": [
-            {"name": "NARRATIVE", "color": "green"},
-            {"name": "CODE", "color": "purple"},
-            {"name": "UPDATE_ASPECT", "color": "purple"}
-        ],
-        "commands": [
-            {
-                "type": "updateAspect",
-                "aspect": "isabella_phone_last_code",
-                "operation": "SET",
-                "value": "ArgMate"
-            },
-            {
-                "type": "action",
-                "actionType": "MOVE",
-                "moveTarget": {
-                    "type": "passage",
-                    "passageTarget": "DEDUCTION_PUZZLE_12_CHECK_OUTCOME"
-                }
-            }
-        ]
-    },
-    {
-        "uid": "update_isabella_phone_attempts_inc_1_TariffPayoff",
-        "name": "Increment Phone Attempts (TariffPayoff)",
-        "description": "Passage description.",
-        "tags": [
-            {"name": "NARRATIVE", "color": "green"},
-            {"name": "CODE", "color": "purple"},
-            {"name": "UPDATE_ASPECT", "color": "purple"}
-        ],
-        "commands": [
-            {
-                "type": "updateAspect",
-                "aspect": "isabella_phone_attempts",
-                "operation": "increment",
-                "value": "1"
-            },
-            {
-                "type": "action",
-                "actionType": "MOVE",
-                "moveTarget": {
-                    "type": "passage",
-                    "passageTarget": "update_isabella_phone_last_code_TariffPayoff"
-                }
-            }
-        ]
-    },
-    {
-        "uid": "update_isabella_phone_last_code_TariffPayoff",
-        "name": "Set Last Phone Code (TariffPayoff)",
-        "description": "Passage description.",
-        "tags": [
-            {"name": "NARRATIVE", "color": "green"},
-            {"name": "CODE", "color": "purple"},
-            {"name": "UPDATE_ASPECT", "color": "purple"}
-        ],
-        "commands": [
-            {
-                "type": "updateAspect",
-                "aspect": "isabella_phone_last_code",
-                "operation": "SET",
-                "value": "TariffPayoff"
-            },
-            {
-                "type": "action",
-                "actionType": "MOVE",
-                "moveTarget": {
-                    "type": "passage",
-                    "passageTarget": "DEDUCTION_PUZZLE_12_CHECK_OUTCOME"
-                }
-            }
-        ]
-    },
-    {
-      "uid": "DEDUCTION_PUZZLE_12_CHECK_OUTCOME",
-      "name": "Passcode Check",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "CHOICE",
-          "color": "green"
-        },
-        {
-          "name": "GATE",
-          "color": "orange"
-        },
-         {
-          "name": "CODE",
-          "color": "purple"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text": "<insert ADA response based on TOT personality>",
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ],
-          "branch": {
-            "type": "branch",
-            "description": "Processing Attempt",
-            "replayAbility": "re-executable",
-            "presentation": "option-list",
-            "integrationType": "ada",
-            "options": [
-              {
-                "type": "branchOption",
-                "name": "Correct Path",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "eq",
-                    "aspect": "isabella_phone_last_code",
-                    "target": "TariffPayoff",
-                    "aspectUid": "isabella_phone_last_code"
-                  }
-                },
-                "description": "Hidden option for correct answer.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "EVIDENCE_EXAMINATION_13"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "Incorrect Path (Retry)",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "and",
-                    "target": [
-                      {
-                        "type": "ne",
-                        "aspect": "isabella_phone_last_code",
-                        "target": "TariffPayoff",
-                        "aspectUid": "isabella_phone_last_code"
-                      },
-                      {
-                        "type": "lt",
-                        "aspect": "isabella_phone_attempts",
-                        "target": 3,
-                        "aspectUid": "isabella_phone_attempts"
-                      }
-                    ]
-                  }
-                },
-                "description": "Hidden option for incorrect answer with retries left.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "DEDUCTION_PUZZLE_12"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              },
-              {
-                "type": "branchOption",
-                "name": "Incorrect Path (Lockout)",
-                "aspectCheck": {
-                  "type": "checkAspect",
-                  "check": {
-                    "type": "and",
-                    "target": [
-                      {
-                        "type": "ne",
-                        "aspect": "isabella_phone_last_code",
-                        "target": "TariffPayoff",
-                        "aspectUid": "isabella_phone_last_code"
-                      },
-                      {
-                        "type": "gte",
-                        "aspect": "isabella_phone_attempts",
-                        "target": 3,
-                        "aspectUid": "isabella_phone_attempts"
-                      }
-                    ]
-                  }
-                },
-                "description": "Hidden option for incorrect answer with no retries left.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "DEDUCTION_PUZZLE_12_LOCKOUT"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "uid": "DEDUCTION_PUZZLE_12_LOCKOUT",
-      "name": "Phone Locked",
-      "description": "Passage description.",
-      "tags": [
-        {
-          "name": "NARRATIVE",
-          "color": "green"
-        },
-        {
-          "name": "CHOICE",
-          "color": "green"
-        }
-      ],
-      "commands": [
-        {
-          "type": "bot",
-          "lines": [
-            {
-              "text": "<insert ADA response based on TOT personality>",
-              "imageAlias": "",
-              "imageDescription": ""
-            }
-          ],
-          "branch": {
-            "type": "branch",
-            "description": "Device Locked",
-            "replayAbility": "re-executable",
-            "presentation": "option-list",
-            "integrationType": "ada",
-            "options": [
-              {
-                "type": "branchOption",
-                "name": "Return to Hub",
-                "aspectCheck": null,
-                "description": "Go back to the main case view.",
-                "actions": [
-                  {
-                    "type": "action",
-                    "actionType": "MOVE",
-                    "moveTarget": {
-                      "type": "passage",
-                      "passageTarget": "INVESTIGATION_HUB_7"
-                    }
-                  }
-                ],
-                "imageAlias": "",
-                "imageDescription": ""
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-
 ---SCHEMA---
 {{output_schema}}
 ---/SCHEMA---

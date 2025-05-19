@@ -54,22 +54,39 @@ When presented with a game design document potentially outlining one path throug
 // prioritizing the narrative purpose and structural role over surface-level descriptions.
 
 // Define constants for the phenotype types
-DEFINE PhenotypeTypes = [
-    "CASE_HOOK", "INTRO_SEQUENCE", "INVESTIGATION_HUB", "EVIDENCE_COLLECTION", 
-    "EVIDENCE_EXAMINATION", "SUSPECT_LIST", "SUSPECT_PROFILE", "DEDUCTION_PUZZLE", 
-    "DEDUCTION_SUCCESS", "DEDUCTION_FAILURE", "EVIDENCE_VERIFICATION", 
-    "BREAKTHROUGH_MOMENT", "SUSPECT_CONFRONTATION", "ACCUSATION", "CASE_RESOLUTION",
-    "DIAGNOSTIC_ENTRY_POINT", "DIAGNOSTIC_LINEAR_TEST", "DIAGNOSTIC_BRANCH_TEST_BINARY",
-    "DIAGNOSTIC_BRANCH_TEST_MULTI", "DIAGNOSTIC_EVIDENCE_REVEAL", "DIAGNOSTIC_EVIDENCE_EXAMINATION",
-    "DIAGNOSTIC_MERGE_POINT", "DIAGNOSTIC_LOOP_TEST", "DIAGNOSTIC_APP_NAVIGATION",
-    "DIAGNOSTIC_EXIT_POINT", "DIAGNOSTIC_SLPN_CONVERSION_TEST", "DIAGNOSTIC_JSON_GENERATION_TEST",
-    "DIAGNOSTIC_TEST_SEQUENCE", "DIAGNOSTIC_COMPLEX_CONDITION",
-    "NARRATIVE_EVIDENCE_SNIPPET",
-    "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
-    "NARRATIVE_EVIDENCE_FOR_MOTIVE",
-    "NARRATIVE_EVIDENCE_FOR_FLASHBACK",
-    "NARRATIVE_EVIDENCE_FOR_REFLECTION"
-];
+/ --- Available Gameplay Phenotype Summaries ---
+// Use these phenotypes as building blocks for the gameplay outline:
+
+// - CASE_HOOK: Creates ~5 passage compelling hook sequence (hook, context, immersive introduction) using intro cmds. **May trigger initial World/Case Axioms.**
+// - INTRO_SEQUENCE: Presents 3 theories (TruePositive, FalsePositive, FalseNegative) with evidence via intro steps, ending in a branch choice. **May trigger initial Relationship/Character reveals.**
+
+// - INVESTIGATION_HUB: Central navigation point for all activities.
+
+// - EVIDENCE_COLLECTION: Creates interactive locations to find evidence.
+// - EVIDENCE_EXAMINATION: Provides detailed analysis of individual evidence items.
+
+// - SUSPECT_LIST: Displays known suspects for comparison and selection.
+// - SUSPECT_PROFILE: Shows detailed suspect info, including statements.
+
+// - DEDUCTION_PUZZLE: Challenges player to identify lies or solve puzzles (e.g., passcode). **Success often triggers `Revelation_Proposition`s.**
+// - DEDUCTION_SUCCESS: Rewards correct deductions/puzzle solutions with progress/evidence.
+// - DEDUCTION_FAILURE: Provides feedback and retry/consequence for incorrect deductions/puzzle solutions.
+
+// - EVIDENCE_VERIFICATION: Presents scientific/expert analysis results. **May trigger technical `Revelation_Proposition`s.**
+
+// - BREAKTHROUGH_MOMENT: Creates dramatic revelation connecting evidence. **This IS a major `Revelation_Proposition`.**
+
+// - SUSPECT_CONFRONTATION: Creates tense scenes when presenting evidence to suspects. **Can trigger `Character_Axiom` or `Interaction_Proposition` reveals.**
+// - ACCUSATION: Final mechanism for player to select the culprit.
+// - CASE_RESOLUTION: Delivers the satisfying conclusion and explanation, **integrating narrative threads.**
+
+// - NARRATIVE_EVIDENCE_SNIPPET: Delivers a specific piece of evidence containing a narrative detail, guiding the player towards examination.
+// - NARRATIVE_EVIDENCE_FOR_RELATIONSHIP: Delivers evidence revealing information about a character relationship, guiding towards interpretation.
+// - NARRATIVE_EVIDENCE_FOR_MOTIVE: Delivers evidence suggesting or confirming a character's motive, guiding towards interpretation.
+// - NARRATIVE_EVIDENCE_FOR_FLASHBACK: Delivers evidence representing a past event (e.g., diary entry, log), guiding towards examination.
+// - NARRATIVE_EVIDENCE_FOR_REFLECTION: Delivers 'observation' evidence describing a character's likely internal state, guiding towards interpretation/deduction.
+// - NARRATIVE_DIALOGUE_SEQUENCE: Creates immersive dialogue or monologue scenes using intro sequence functionality.
+// - NARRATIVE_CUTSCENE_SEQUENCE: Creates cinematic, omniscient narrative cutscenes showing story context, montages, or emotional moments.
 
 // Define maximum step count constraint
 DEFINE MAX_OUTPUT_STEPS = 16;
@@ -856,7 +873,9 @@ PROCEDURE FindNextEntryPointID(current_index, detailed_journey, id_to_index_map,
             "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
             "NARRATIVE_EVIDENCE_FOR_MOTIVE",
             "NARRATIVE_EVIDENCE_FOR_FLASHBACK",
-            "NARRATIVE_EVIDENCE_FOR_REFLECTION"
+            "NARRATIVE_EVIDENCE_FOR_REFLECTION",
+            "NARRATIVE_DIALOGUE_SEQUENCE"
+            "NARRATIVE_CUTSCENE_SEQUENCE"
           ]
         },
         "description": "Array of phenotype types for this step"

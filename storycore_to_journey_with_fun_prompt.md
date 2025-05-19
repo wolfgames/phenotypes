@@ -514,6 +514,19 @@ DEFINE MAX_INITIAL_SUSPECTS = 3;
 DEFINE LOCKED_EVIDENCE_COUNT = 2; // Target number of initially locked key evidence pieces
 DEFINE DEDUCTION_MECHANIC = "Two Truths and a Lie"; // Define the core puzzle type
 
+// --- NEW VISUALIZATION REQUIREMENT ---
+// After listing all numbered gameplay steps, **append** a Mermaid flowchart that visualizes the navigation between steps.
+// Guidelines for the graph:
+// 1. Use Mermaid graph TD syntax.
+// 2. Represent each step as `S[stepNumber\nScreenName]` (e.g., S1["1. CASE_HOOK"]) to keep nodes compact.
+// 3. Draw directed edges that reflect the primary `NAVIGATE` actions between steps (e.g., hub to branch and branch back to hub).
+// 4. Include at least the core hub connections and any explicit branching paths shown in OPTIONS.
+// 5. Place this graph **after** the final CASE_RESOLUTION step, separated by an empty line.
+// 6. Do **not** wrap the Mermaid code block in additional Markdown headings; just start with ```mermaid.
+// 7. Keep the graph readable – if more than 15 nodes, consider clustering branches (e.g., subgraph Phase 2).
+// This visualization helps designers quickly verify flow coherence.
+// --- END VISUALIZATION REQUIREMENT ---
+
 // --- Phenotype Mapping ---
 // --- Character-Driven Phenotype Sequence ---
 DEFINE PHENOTYPE_SEQUENCE = [
@@ -542,21 +555,30 @@ DEFINE PHENOTYPE_SEQUENCE = [
 
 // --- Available Gameplay Phenotype Summaries ---
 // Use these phenotypes as building blocks for the gameplay outline:
+
 // - CASE_HOOK: Creates ~5 passage compelling hook sequence (hook, context, immersive introduction) using intro cmds. **May trigger initial World/Case Axioms.**
 // - INTRO_SEQUENCE: Presents 3 theories (TruePositive, FalsePositive, FalseNegative) with evidence via intro steps, ending in a branch choice. **May trigger initial Relationship/Character reveals.**
+
 // - INVESTIGATION_HUB: Central navigation point for all activities.
+
 // - EVIDENCE_COLLECTION: Creates interactive locations to find evidence.
 // - EVIDENCE_EXAMINATION: Provides detailed analysis of individual evidence items.
+
 // - SUSPECT_LIST: Displays known suspects for comparison and selection.
 // - SUSPECT_PROFILE: Shows detailed suspect info, including statements.
+
 // - DEDUCTION_PUZZLE: Challenges player to identify lies or solve puzzles (e.g., passcode). **Success often triggers `Revelation_Proposition`s.**
 // - DEDUCTION_SUCCESS: Rewards correct deductions/puzzle solutions with progress/evidence.
 // - DEDUCTION_FAILURE: Provides feedback and retry/consequence for incorrect deductions/puzzle solutions.
+
 // - EVIDENCE_VERIFICATION: Presents scientific/expert analysis results. **May trigger technical `Revelation_Proposition`s.**
+
 // - BREAKTHROUGH_MOMENT: Creates dramatic revelation connecting evidence. **This IS a major `Revelation_Proposition`.**
+
 // - SUSPECT_CONFRONTATION: Creates tense scenes when presenting evidence to suspects. **Can trigger `Character_Axiom` or `Interaction_Proposition` reveals.**
 // - ACCUSATION: Final mechanism for player to select the culprit.
 // - CASE_RESOLUTION: Delivers the satisfying conclusion and explanation, **integrating narrative threads.**
+
 // - NARRATIVE_EVIDENCE_SNIPPET: Delivers a specific piece of evidence containing a narrative detail, guiding the player towards examination.
 // - NARRATIVE_EVIDENCE_FOR_RELATIONSHIP: Delivers evidence revealing information about a character relationship, guiding towards interpretation.
 // - NARRATIVE_EVIDENCE_FOR_MOTIVE: Delivers evidence suggesting or confirming a character's motive, guiding towards interpretation.
@@ -739,20 +761,44 @@ PROCEDURE GenerateGameplayOutline(Synopsis, Characters, Events) RETURNS ARRAY<Ga
             EvidenceForEach: [ Theories[0].evidence.details, Theories[1].evidence.details, Theories[2].evidence.details ]
         },
         OPTIONS: TheoryChoiceStepData.OPTIONS,
-        ACTION: "LOCK Phase 2; SET ChosenTheory=<choice>; SET CharacterFocus=TheoryChoiceStepData.GetCharacterFocus(choice); NAVIGATE Phase2_Start"
+        ACTION: "LOCK Phase 2; SET ChosenTheory=<choice>; SET CharacterFocus=TheoryChoiceStepData.GetCharacterFocus(choice); NAVIGATE TO InvestigationHubScreen"
     ));
     DEFINE ChosenTheory = EXTRACT_THEORY_FROM_CHOICE(TheoryChoiceStepData);
     DEFINE CharacterFocus = TheoryChoiceStepData.GetCharacterFocus(ChosenTheory);
 
     // --- Phase 2: Character Context & Initial Investigation ---
     
-    // Step 5: Early NARRATIVE_EVIDENCE_FOR_REFLECTION about victim
+    // Step 5: INVESTIGATION_HUB
+    // Conceptual helpers: GENERATE_HUB_SUMMARY(ChosenTheory, KnownEvidence), GET_CURRENT_OBJECTIVES(ChosenTheory)
+    // Conceptual helper: GENERATE_OPTIONS_FROM_ACTIVITIES(ActivitiesList) -> returns array of {ChoiceLabel, Risk, Reward, TargetScreen}
+    HubActivities = [
+        { Name: "Ponder Victim's State of Mind", ScreenTarget: "VictimReflectionScreen", Description: "Gain insights into the victim's psychology.", Risk: "May focus too much on speculation", Reward: "Deeper understanding of victim's context" },
+        { Name: "Search the Crime Scene", ScreenTarget: "CrimeSceneExplorationScreen", Description: "Collect physical evidence from the key location.", Risk: "Might miss subtle clues if rushed", Reward: "Potential discovery of crucial physical evidence" },
+        { Name: "Review Persons of Interest", ScreenTarget: "SuspectOverviewScreen", Description: "Examine individuals connected to the case.", Risk: "Preconceptions could bias view", Reward: "Identify potential suspects and motives" },
+        { Name: "Hear Witness Testimony", ScreenTarget: "WitnessInterviewScreen", Description: "Listen to what key witnesses observed.", Risk: "Witnesses may be unreliable or biased", Reward: "Gather first-hand accounts and new leads" }
+    ];
+    GameplaySteps.Add(ADD_STEP(
+        Phase: 2,
+        StepNumber: ++CurrentStepNumber,
+        PhenotypeTag: "INVESTIGATION_HUB",
+        Screen: "InvestigationHubScreen",
+        DECISION: "Review case progress and available leads. What's your next move?",
+        DATA: {
+            CaseSummary: "Current Theory: " + ChosenTheory.name + ". Focus: " + CharacterFocus + ".", // Simplified
+            Objectives: ["Gather initial evidence", "Identify key individuals"], // Simplified
+            Activities: HubActivities
+        },
+        OPTIONS: HubActivities.map(activity => ({ ChoiceLabel: activity.Name, Risk: activity.Risk, Reward: activity.Reward, TargetScreen: activity.ScreenTarget })),
+        ACTION: "NAVIGATE TO <choice.TargetScreen>" // Assumes 'choice' object contains the selected option with its TargetScreen
+    ));
+    
+    // Step 6 (was 5): Early NARRATIVE_EVIDENCE_FOR_REFLECTION about victim
     VictimInsightData = GENERATE_VICTIM_PSYCHOLOGICAL_INSIGHT(VictimData);
     GameplaySteps.Add(ADD_STEP(
         Phase: 2, 
         StepNumber: ++CurrentStepNumber, 
         PhenotypeTag: "NARRATIVE_EVIDENCE_FOR_REFLECTION",
-        Screen: "Victim's Psychology",
+        Screen: "VictimReflectionScreen",
         DECISION: "Consider the victim's state of mind. What drove their final actions?",
         DATA: { 
             NarrativeContext: VictimInsightData.Context, 
@@ -764,51 +810,51 @@ PROCEDURE GenerateGameplayOutline(Synopsis, Characters, Events) RETURNS ARRAY<Ga
             { ChoiceLabel: VictimInsightData.Option1.Label, Risk: VictimInsightData.Option1.Risk, Reward: VictimInsightData.Option1.Reward }, 
             { ChoiceLabel: VictimInsightData.Option2.Label, Risk: VictimInsightData.Option2.Risk, Reward: VictimInsightData.Option2.Reward } 
         ],
-        ACTION: "ACT:aty=REVEAL;aet=" + VictimInsightData.EvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; ADD PlayerNote('" + VictimInsightData.NoteText + "')"
+        ACTION: "ACT:aty=REVEAL;aet=" + VictimInsightData.EvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; ADD PlayerNote('" + VictimInsightData.NoteText + "'); NAVIGATE TO InvestigationHubScreen"
     ));
     
-    // Step 6: Character-infused EVIDENCE_COLLECTION
+    // Step 7 (was 6): Character-infused EVIDENCE_COLLECTION
     LocationData = GENERATE_CHARACTER_INFUSED_LOCATION(ChosenTheory, VictimData);
     GameplaySteps.Add(ADD_STEP(
         Phase: 2,
         StepNumber: ++CurrentStepNumber,
         PhenotypeTag: "EVIDENCE_COLLECTION",
-        Screen: LocationData.Name,
+        Screen: "CrimeSceneExplorationScreen", // Was LocationData.Name
         DECISION: "This space reflects " + VictimData.Name + "'s life. Where does their story speak loudest?",
         DATA: { 
             SceneDesc: LocationData.Description + " " + LocationData.EmotionalAtmosphere, 
             CharacterTraces: LocationData.PersonalityTraces,
-            Hotspots: LocationData.Hotspots
+            Hotspots: LocationData.Hotspots // Assumes hotspots are choices or lead to choices
         },
-        OPTIONS: LocationData.Options,
-        ACTION: "IF choice=PersonalSpace: TRIGGER EmotionalConnection(VictimInsight); NAVIGATE EvidenceExamination(<choice>)"
+        OPTIONS: LocationData.Options, // Assumes LocationData.Options are structured with ChoiceLabel, Risk, Reward
+        ACTION: "PROCESS_EVIDENCE_CHOICE(<choice>, LocationData.Hotspots); ADD_EVIDENCE_IF_FOUND(<choice>); NAVIGATE TO InvestigationHubScreen" // Simplified action
     ));
     
-    // Step 7: Character-focused SUSPECT_LIST
+    // Step 8 (was 7): Character-focused SUSPECT_LIST
     SuspectOrderData = DETERMINE_SUSPECT_ORDER_BY_RELATIONSHIP(ChosenTheory, AllSuspects, CharacterRelationships);
     GameplaySteps.Add(ADD_STEP(
         Phase: 2,
         StepNumber: ++CurrentStepNumber,
         PhenotypeTag: "SUSPECT_LIST",
-        Screen: "People in the Victim's Life",
+        Screen: "SuspectOverviewScreen", // Was "People in the Victim's Life"
         DECISION: "These individuals shaped " + VictimData.Name + "'s final days. Whose perspective do you want to understand first?",
         DATA: {
             SuspectProfiles: SuspectOrderData.Profiles,
             RelationshipContext: SuspectOrderData.RelationshipMap,
             EmotionalDynamics: SuspectOrderData.EmotionalDynamics
         },
-        OPTIONS: SuspectOrderData.Options,
-        ACTION: "SET CurrentSuspectFocus=<choice>; NAVIGATE SuspectProfile(<choice>)"
+        OPTIONS: SuspectOrderData.Options, // Assumes SuspectOrderData.Options structured with ChoiceLabel, Risk, Reward and implies chosen suspect ID
+        ACTION: "SET CurrentSuspectFocus=<GET_SUSPECT_ID_FROM_CHOICE(choice, SuspectOrderData.Options)>; ADD_PLAYER_NOTE('Now focusing on ' + CurrentSuspectFocus); NAVIGATE TO InvestigationHubScreen"
     ));
     
-    // Step 8: Witness perspective NARRATIVE_DIALOGUE_SEQUENCE
+    // Step 9 (was 8): Witness perspective NARRATIVE_DIALOGUE_SEQUENCE
     WitnessData = IDENTIFY_KEY_WITNESS(Characters, ChosenTheory);
-    DialogueData = GENERATE_WITNESS_DIALOGUE(WitnessData, LocationData);
+    DialogueData = GENERATE_WITNESS_DIALOGUE(WitnessData, LocationData); // LocationData might be stale if not re-fetched or passed around
     GameplaySteps.Add(ADD_STEP(
         Phase: 2,
         StepNumber: ++CurrentStepNumber,
         PhenotypeTag: "NARRATIVE_DIALOGUE_SEQUENCE",
-        Screen: "Conversation with " + WitnessData.Name,
+        Screen: "WitnessInterviewScreen", // Was "Conversation with " + WitnessData.Name
         DECISION: "How do you interpret " + WitnessData.Name + "'s emotional state as they recount what they saw?",
         DATA: {
             CharacterDescription: WitnessData.Description,
@@ -820,18 +866,18 @@ PROCEDURE GenerateGameplayOutline(Synopsis, Characters, Events) RETURNS ARRAY<Ga
             { ChoiceLabel: "Focus on their nervousness", Risk: "May overinterpret anxiety as deception", Reward: "Might uncover hidden fears" },
             { ChoiceLabel: "Focus on factual consistency", Risk: "May miss emotional undercurrents", Reward: "Establish reliable timeline" }
         ],
-        ACTION: "ACT:aty=REVEAL;aet=" + DialogueData.RevealedEvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; SET WitnessInsightGained=true"
+        ACTION: "ACT:aty=REVEAL;aet=" + DialogueData.RevealedEvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; SET WitnessInsightGained=true; NAVIGATE TO InvestigationHubScreen"
     ));
     
     // --- Phase 3: Relationship Exploration & Character Depth ---
     
-    // Step a: NARRATIVE_EVIDENCE_FOR_RELATIONSHIP
+    // Step 10 (was a): NARRATIVE_EVIDENCE_FOR_RELATIONSHIP
     KeyRelationshipData = IDENTIFY_KEY_RELATIONSHIP(CharacterRelationships, ChosenTheory);
     GameplaySteps.Add(ADD_STEP(
         Phase: 3,
         StepNumber: ++CurrentStepNumber,
         PhenotypeTag: "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
-        Screen: "Complex Connection",
+        Screen: "RelationshipAnalysisScreen", // New screen name
         DECISION: "How would you characterize the relationship between " + KeyRelationshipData.Character1 + " and " + KeyRelationshipData.Character2 + "?",
         DATA: {
             RelationshipHistory: KeyRelationshipData.History,
@@ -843,7 +889,7 @@ PROCEDURE GenerateGameplayOutline(Synopsis, Characters, Events) RETURNS ARRAY<Ga
             { ChoiceLabel: KeyRelationshipData.Option1.Label, Risk: KeyRelationshipData.Option1.Risk, Reward: KeyRelationshipData.Option1.Reward },
             { ChoiceLabel: KeyRelationshipData.Option2.Label, Risk: KeyRelationshipData.Option2.Risk, Reward: KeyRelationshipData.Option2.Reward }
         ],
-        ACTION: "ACT:aty=REVEAL;aet=" + KeyRelationshipData.EvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; SET RelationshipInsightGained=true"
+        ACTION: "ACT:aty=REVEAL;aet=" + KeyRelationshipData.EvidenceID + "; ACT:aty=MOVE;amt=AMT:typ=EVIDENCE;tgt=evidence_app; SET RelationshipInsightGained=true; NAVIGATE TO InvestigationHubScreen"
     ));
     
     // More Phase 3-5 steps would continue with similar character-focused approach...
@@ -960,7 +1006,7 @@ Events: {{events}} (Array of event objects, potentially linked to characters or 
         - MoralQuestion: Can truth prevail when both victim and suspects traded in deception?
     *   **OPTIONS:**
         - Continue Investigation (Risk: null; Reward: null)
-    *   **ACTION:** `NAVIGATE TO NARRATIVE_DIALOGUE_SEQUENCE; SET CaseIntroduced=true`
+    *   **ACTION:** `NAVIGATE TO INTRO_SEQUENCE`
 
 2.  **INTRO_SEQUENCE: Initial Theory Choice**
     *   **DECISION:** The initial reports point in several directions. Which lead feels strongest right now?
@@ -972,65 +1018,110 @@ Events: {{events}} (Array of event objects, potentially linked to characters or 
         - Pursue: Corporate Enemy (Risk: Might be a professional dispute, not murder; Reward: Focus on direct competitors like Julian Griffin)
         - Pursue: Political Backlash (Risk: Powerful people often have alibis; Reward: Investigate Aria Shah-Powell's potential influence)
         - Pursue: Personal Vendetta (Risk: Revenge seekers can be obvious red herrings; Reward: Explore Jack Sullivan's history and movements)
-    *   **ACTION:** `LOCK Phase 2; SET ChosenTheory=<choice>; NAVIGATE Phase2_Start`
+    *   **ACTION:** `LOCK Phase 2; SET ChosenTheory=<choice>; NAVIGATE TO InvestigationHubScreen`
 
-**(Phase 2: Evidence Gathering & Character Moments)**
+**(Phase 2: Investigation Hub & Branching Activities)**
 
-3.  **EVIDENCE_COLLECTION: Search Raj's Suite**
+3.  **INVESTIGATION_HUB: Main Board**
+    *   **DECISION:** Review case progress and available leads. What's your next move?
+    *   **CLUES/DATA:**
+        - CaseSummary: Current Theory, key evidence collected, main objectives.
+        - Activities:
+            1. Ponder Victim's State of Mind (`VictimReflectionScreen`)
+            2. Search the Crime Scene (`CrimeSceneExplorationScreen`)
+            3. Review Persons of Interest (`SuspectOverviewScreen`)
+            4. Hear Witness Testimony (`WitnessInterviewScreen`)
+    *   **OPTIONS:**
+        - Ponder Victim's State of Mind (Risk: May focus too much on speculation; Reward: Deeper understanding of victim context)
+        - Search the Crime Scene (Risk: Might miss subtle clues if rushed; Reward: Discover crucial physical evidence)
+        - Review Persons of Interest (Risk: Pre-conceptions could bias view; Reward: Identify motives/suspects)
+        - Hear Witness Testimony (Risk: Witness may be unreliable; Reward: Gain new leads)
+    *   **ACTION:** `NAVIGATE TO <choice.TargetScreen>`
+
+4.  **NARRATIVE_EVIDENCE_FOR_REFLECTION: VictimReflectionScreen**
+    *   **DECISION:** Consider the victim's state of mind. What drove their final actions?
+    *   **CLUES/DATA:** PsychologicalProfile, EmotionalState, SupportingEvidenceID (`diary_fragment_aet`).
+    *   **OPTIONS:**
+        - Interpret as Paranoia (Risk: Overemphasise fear; Reward: Hypothesis on hidden threat)
+        - Interpret as Marketing Stunt (Risk: Dismiss genuine fear; Reward: Focus on corporate rivalry)
+    *   **ACTION:** `ADD_EVIDENCE('diary_fragment_aet'); ADD_PLAYER_NOTE('Victim may have staged viral post'); NAVIGATE TO InvestigationHubScreen`
+
+5.  **EVIDENCE_COLLECTION: CrimeSceneExplorationScreen**
     *   **DECISION:** Where to focus the search in Raj Singh's suite?
     *   **CLUES/DATA:**
         - SceneDesc: Opulent suite, tech gear everywhere. A faint metallic scent near the desk?
-        - Hotspots: Desk Area (laptop, unusual tablet stand), Bedside Table (personal effects), Window Area (view of the Wharf, any disturbances?).
+        - Hotspots: Desk Area, Bedside Table, Window Area.
     *   **OPTIONS:**
-        - Examine Desk Area (Risk: Could be standard tech clutter; Reward: Access business tools, potentially find hidden devices)
-        - Check Bedside Table (Risk: Likely personal, could be irrelevant; Reward: Insight into Raj's private life/habits)
-        - Investigate Window Area (Risk: Unlikely murder location; Reward: Check for external signs, forced entry evidence)
-    *   **ACTION:** `NAVIGATE EvidenceExamination(<choice>)`
+        - Examine Desk Area (Risk: Could be standard tech clutter; Reward: Access hidden devices)
+        - Check Bedside Table (Risk: Likely personal, could be irrelevant; Reward: Insight into private life)
+        - Investigate Window Area (Risk: Unlikely murder location; Reward: Check for external signs of forced entry)
+    *   **ACTION:** `PROCESS_EVIDENCE_CHOICE(<choice>); NAVIGATE TO InvestigationHubScreen`
 
-**(Phase 3: Uncovering Motives & Relationships)**
-
-4.  **EVIDENCE_EXAMINATION: Custom Tablet Charging Stand**
-    *   **DECISION:** Analyze the unusual charging stand. What secrets does it hold?
-    *   **CLUES/DATA:** Heavy, custom, GenMat logo. Potential hidden tech.
-    *   **OPTIONS:** Physical Inspection, Research Online, Test Voice Commands.
-    *   **ACTION:** `IF TestVoiceCommands: NAVIGATE DeductionPuzzle(VoiceCommandTrial) ELSE: MARK StandLogged; NAVIGATE InvestigationHub`
-
-**(Phase 4: Cracks in the Facade & Deduction)**
-
-5.  **DEDUCTION_PUZZLE: Voice Command Trial (Tablet Stand)**
-    *   **DECISION:** Attempt to unlock the charging stand's hidden function.
-    *   **CLUES/DATA:** GenMat AI link, debug phrases hint.
-    *   **OPTIONS:** "GenMat Activate", "GenMat Secure Mode", "GenMat Archive Override Seven".
-    *   **ACTION:** `VALIDATE command; IF Correct: UNLOCK HiddenAudioFile; NAVIGATE BreakthroughMoment ELSE: TRIGGER DeductionFailure(VoiceCommandFail)`
-
-**(Phase 5: The Breakthrough & Climax)**
-
-6.  **BREAKTHROUGH_MOMENT: The Fatal Argument** (Triggered by unlocking audio)
-    *   **DECISION:** The hidden recording changes everything. How to proceed with this definitive proof?
-    *   **CLUES/DATA:**
-        - Narrative Context: The chilling audio plays - Julian's smooth voice turning sharp, Raj's defiant threats about exposure, the sickening *thump* of suppressed shots, Julian's ragged breathing. The corporate rivalry wasn't just business; it was motive for murder.
-        - Revealed Evidence: `evidence_hidden_audio_recording` (aet).
+6.  **SUSPECT_LIST: SuspectOverviewScreen**
+    *   **DECISION:** These individuals shaped Raj's final days. Whose perspective do you want to understand first?
+    *   **CLUES/DATA:** Profiles of Julian Griffin, Aria Shah-Powell, Jack Sullivan.
     *   **OPTIONS:**
-        - Confront Julian Now (Risk: He might react violently/destructively; Reward: Immediate challenge with irrefutable proof)
-        - Secure Warrant & Arrest Team (Risk: Gives him slight window to act; Reward: Safer, standard procedure)
-    *   **ACTION:** `MARK BreakthroughAchieved; SET PrimeSuspect=JulianGriffin; NAVIGATE based on choice (e.g., SuspectConfrontation(Julian), SecureWarrantSequence)`
+        - Focus on Julian Griffin (Risk: Early tunnel vision; Reward: Investigate key rival)
+        - Focus on Aria Shah-Powell (Risk: Political pressure; Reward: Discover potential cover-ups)
+        - Focus on Jack Sullivan (Risk: Obvious red herring; Reward: Expose revenge motive)
+    *   **ACTION:** `SET CurrentSuspectFocus=<choice>; NAVIGATE TO InvestigationHubScreen`
 
-7.  **ACCUSATION: Final Decision**
+7.  **NARRATIVE_DIALOGUE_SEQUENCE: WitnessInterviewScreen**
+    *   **DECISION:** Gauge witness reliability as they recount events.
+    *   **CLUES/DATA:** Witness statements, micro-expressions, body-language cues.
+    *   **OPTIONS:**
+        - Probe inconsistencies (Risk: Alienate witness; Reward: Reveal hidden detail)
+        - Empathise to build trust (Risk: May be manipulated; Reward: Gain additional context)
+    *   **ACTION:** `ADD_EVIDENCE('witness_voice_memo'); NAVIGATE TO InvestigationHubScreen`
+
+**(Phase 3: Breakthrough & Confrontation)**
+
+8.  **BREAKTHROUGH_MOMENT: Hidden Audio Unlocked**
+    *   **DECISION:** The concealed recording changes everything. How do you proceed?
+    *   **CLUES/DATA:** Julian's voice threatening Raj, suppressed gunshots (`hidden_audio_aet`).
+    *   **OPTIONS:**
+        - Confront Julian Now (Risk: He may react violently; Reward: Immediate confession opportunity)
+        - Secure Warrant First (Risk: Delay; Reward: Safer arrest)
+    *   **ACTION:** `SET PrimeSuspect=JulianGriffin; NAVIGATE TO InvestigationHubScreen`
+
+**(Phase 4: Culmination & Choice)**
+
+9.  **ACCUSATION: Final Decision**
     *   **DECISION:** Formally accuse the killer of Raj Singh.
-    *   **CLUES/DATA:** Evidence Summary overwhelmingly points to Julian.
-    *   **OPTIONS:** Accuse Julian Griffin, Accuse Aria Shah-Powell, Accuse Jack Sullivan.
+    *   **CLUES/DATA:** Evidence Summary (including `hidden_audio_aet`).
+    *   **OPTIONS:**
+        - Accuse Julian Griffin (Risk: Career repercussions if wrong; Reward: Justice served)
+        - Accuse Aria Shah-Powell (Risk: Powerful political backlash; Reward: Expose political corruption)
+        - Accuse Jack Sullivan (Risk: Punish an innocent; Reward: Simple vendetta narrative)
     *   **ACTION:** `LOCK Investigation; TRIGGER CaseResolution(<choice>)`
 
-8.  **CASE_RESOLUTION: Echoes Silenced**
+10. **CASE_RESOLUTION: Echoes Silenced**
     *   **DECISION:** Review the case conclusion.
     *   **CLUES/DATA:**
-        - Verdict: Julian Griffin guilty.
-        - Narrative Explanation: The resolution emphasizes how Julian's desperation over corporate espionage, hidden behind a calm facade, led to murder. It revisits the other suspects, explaining why their apparent motives (political fallout, revenge) were ultimately red herrings despite seeming compelling. The viral "shooting" incident is confirmed as unrelated noise that Julian exploited.
-        - Emotional Beat: Perhaps a final reflection from Detective Saito on the tragic intersection of ambition, deceit, and violence in the tech world.
-    *   **OPTIONS:** Proceed to Next Case/Menu
+        - Verdict & legal consequences.
+        - Emotional closure for key characters.
+        - Detective reflection on ambition, deceit, and violence.
+    *   **OPTIONS:**
+        - Proceed to Next Case/Menu (Risk: None; Reward: Continue playing)
     *   **ACTION:** `SHOW CaseOutcome(ViralEchoes_Success); NAVIGATE HOME`
 ```
-
+```mermaid
+graph TD
+    S1["1. CASE_HOOK"] --> S2["2. INTRO_SEQUENCE"]
+    S2 --> S3["3. INVESTIGATION_HUB"]
+    S3 --> S4["4. VictimReflection"]
+    S4 --> S3
+    S3 --> S5["5. CrimeSceneExploration"]
+    S5 --> S3
+    S3 --> S6["6. SuspectOverview"]
+    S6 --> S3
+    S3 --> S7["7. WitnessInterview"]
+    S7 --> S3
+    S3 --> S8["8. BREAKTHROUGH"]
+    S8 --> S3
+    S3 --> S9["9. ACCUSATION"]
+    S9 --> S10["10. CASE_RESOLUTION"]
+```
 ---/EXAMPLE---
 
 ---SCHEMA---
@@ -1039,27 +1130,27 @@ Events: {{events}} (Array of event objects, potentially linked to characters or 
 **Goal:** Guide the player through a structured risk/reward investigation, making key decisions to identify the culprit within a ~10-minute experience, **while strategically revealing narrative elements to enhance engagement and emotional investment.**
 
 **Output Structure:**
-The gameplay outline is a sequence of numbered steps, grouped by phase. Each step represents a specific player interaction or decision point and MUST be tagged with a **Gameplay** `PhenotypeTag` indicating the type of gameplay pattern being used. The sequence of these phenotype-tagged steps forms the complete player journey. **Narrative reveals are triggered via the `ACTION` field within these gameplay steps.**
+The gameplay outline is a sequence of numbered steps, grouped by phase. Each step represents a specific player interaction or decision point and MUST be tagged with a **Gameplay** `PhenotypeTag` indicating the type of gameplay pattern being used. The sequence of these phenotype-tagged steps forms the complete player journey. **Narrative reveals are triggered via the `ACTION` field within these gameplay steps.** The `INVESTIGATION_HUB` serves as a central point for navigation from Phase 2 onwards, with other investigative steps branching off and returning to it.
 
 **PhenotypeTag (Enum):**
 The `PhenotypeTag` for each step MUST be one of the following values:
 **Gameplay Phenotypes:**
 - `CASE_HOOK`: Creates ~5 passage compelling hook sequence (hook, context, immersive introduction) using intro cmds. **May trigger initial World/Case Axioms.**
-- `INTRO_SEQUENCE`: Presents 3 theories (TruePositive, FalsePositive, FalseNegative) with evidence via intro steps, ending in a branch choice. **May trigger initial Relationship/Character reveals.**
-- `INVESTIGATION_HUB`: Central navigation point for all activities.
-- `EVIDENCE_COLLECTION`: Creates interactive locations to find evidence.
-- `EVIDENCE_EXAMINATION`: Provides detailed analysis of individual evidence items.
-- `SUSPECT_LIST`: Displays known suspects for comparison and selection.
-- `SUSPECT_PROFILE`: Shows detailed suspect info, including statements.
-- `DEDUCTION_PUZZLE`: Challenges player to identify lies or solve puzzles (e.g., passcode). **Success often triggers `Revelation_Proposition`s.**
+- `INTRO_SEQUENCE`: Presents 3 theories (TruePositive, FalsePositive, FalseNegative) with evidence via intro steps, ending in a branch choice. **May trigger initial Relationship/Character reveals and leads to the INVESTIGATION_HUB.**
+- `INVESTIGATION_HUB`: Central navigation point for all activities, typically introduced at the start of Phase 2. Player returns here after completing investigative branches.
+- `EVIDENCE_COLLECTION`: Creates interactive locations to find evidence. Player typically returns to `INVESTIGATION_HUB` after.
+- `EVIDENCE_EXAMINATION`: Provides detailed analysis of individual evidence items. Player typically returns to `INVESTIGATION_HUB` after.
+- `SUSPECT_LIST`: Displays known suspects for comparison and selection. Player typically returns to `INVESTIGATION_HUB` after.
+- `SUSPECT_PROFILE`: Shows detailed suspect info, including statements. Player typically returns to `INVESTIGATION_HUB` after.
+- `DEDUCTION_PUZZLE`: Challenges player to identify lies or solve puzzles (e.g., passcode). **Success often triggers `Revelation_Proposition`s.** Player typically returns to `INVESTIGATION_HUB` after solving or failing.
 - `DEDUCTION_SUCCESS`: Rewards correct deductions/puzzle solutions with progress/evidence.
 - `DEDUCTION_FAILURE`: Provides feedback and retry/consequence for incorrect deductions/puzzle solutions.
-- `EVIDENCE_VERIFICATION`: Presents scientific/expert analysis results. **May trigger technical `Revelation_Proposition`s.**
+- `EVIDENCE_VERIFICATION`: Presents scientific/expert analysis results. **May trigger technical `Revelation_Proposition`s.** Player typically returns to `INVESTIGATION_HUB` after.
 - `BREAKTHROUGH_MOMENT`: Creates dramatic revelation connecting evidence. **This IS a major `Revelation_Proposition`.**
 - `SUSPECT_CONFRONTATION`: Creates tense scenes when presenting evidence to suspects. **Can trigger `Character_Axiom` or `Interaction_Proposition` reveals.**
 - `ACCUSATION`: Final mechanism for player to select the culprit.
 - `CASE_RESOLUTION`: Delivers the satisfying conclusion and explanation, **integrating narrative threads.**
-**Narrative Delivery Phenotypes:**
+**Narrative Delivery Phenotypes:** (These often act as destinations from the HUB or follow other gameplay steps before returning to the HUB)
 - `NARRATIVE_EVIDENCE_SNIPPET`: Reveals evidence containing a narrative detail.
 - `NARRATIVE_EVIDENCE_FOR_RELATIONSHIP`: Reveals evidence about character relationships.
 - `NARRATIVE_EVIDENCE_FOR_MOTIVE`: Reveals evidence suggesting/confirming motive.
@@ -1072,12 +1163,12 @@ The `PhenotypeTag` for each step MUST be one of the following values:
 
 [Step Number]. **[PhenotypeTag]: [Step Title - Descriptive of the interaction]**
     *   **DECISION:** [The core question or choice being presented to the player]
-    *   **CLUES/DATA:** [List of contextual clues, data, or puzzle elements relevant to the decision]
+    *   **CLUES/DATA:** [List of contextual clues, data, or puzzle elements relevant to the decision. For an INVESTIGATION_HUB, this would be a summary of leads/available actions.]
     *   **OPTIONS:** (Each option details the potential outcome)
         - [OptionLabel 1] (Risk: [Describe potential negative outcome/cost]; Reward: [Describe potential positive outcome/benefit])
         - [OptionLabel 2] (Risk: [...]; Reward: [...])
         - ... (etc.)
-    *   **ACTION:** `[Compact pseudocode directive for game logic (e.g., SET flags, NAVIGATE to next step/app, UNLOCK items, UPDATE state)]`
+    *   **ACTION:** `[Compact pseudocode directive for game logic (e.g., SET flags, NAVIGATE to next step/app/hub, UNLOCK items, UPDATE state)]`
 
 **(Phase [Phase Number]: [Phase Name])**
 
@@ -1090,6 +1181,10 @@ The `PhenotypeTag` for each step MUST be one of the following values:
     *   **ACTION:** `[...]`
 
 *... Repeat for all steps across all phases, ensuring each step uses an appropriate `PhenotypeTag` from the allowed list ...*
+    *   **ACTION:** `[Compact pseudocode directive for game logic (e.g., SET flags, NAVIGATE to next step/app/hub, UNLOCK items, UPDATE state)]`
+
+**Mermaid Visualization Requirement:** After the final numbered `CASE_RESOLUTION` step, append a Mermaid `graph TD` flow-chart that maps the primary `NAVIGATE` paths between steps. Use compact node labels like `S1["1. CASE_HOOK"]` and include at minimum the hub-to-branch and branch-back connections.
+
 
 ---/SCHEMA---
 

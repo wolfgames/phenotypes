@@ -1,0 +1,4296 @@
+{
+    "evidence": [
+        {
+            "uid": "victim_james_carter_1",
+            "name": "James Carter (Victim Profile)",
+            "description": "Profile information for James Carter, a 35-year-old cab driver found deceased. Known to have gambling problems and significant financial debt.",
+            "relatedEvents": [],
+            "tier": "tier_3"
+        },
+        {
+            "uid": "crime_scene_alley_2",
+            "name": "Queens Alley Crime Scene",
+            "description": "Initial scene description from the alley in Long Island City where James Carter's body was discovered beside his cab. Notes the rain-slicked ground and minimal lighting.",
+            "relatedEvents": [],
+            "tier": "tier_3"
+        },
+        {
+            "uid": "metallic_object_scene_3",
+            "name": "Metallic Object Near Body",
+            "description": "An initial observation from the crime scene noted a metallic object located near James Carter's head, suggesting a potential murder weapon.",
+            "relatedEvents": [],
+            "tier": "tier_3"
+        },
+        {
+            "uid": "luca_dogwalker_profile_4",
+            "name": "Luca Dogwalker (Witness Profile)",
+            "description": "Profile and statement from Luca Dogwalker, the witness who discovered James Carter's body while walking his dog and called 911. He reported seeing a blur in the dark.",
+            "relatedEvents": [],
+            "tier": "tier_3"
+        },
+        {
+            "uid": "ryan_cole_profile_5",
+            "name": "Ryan Cole (Suspect Profile)",
+            "description": "Background information on Ryan Cole, the gruff owner of Kings Cab Garage. Known to have had a financial dispute with James Carter over unpaid fees.",
+            "relatedEvents": [],
+            "tier": "tier_2"
+        },
+        {
+            "uid": "lucas_reed_profile_6",
+            "name": "Lucas Reed (Suspect Profile)",
+            "description": "Background information on Lucas Reed, a loan shark known to operate in Queens. James Carter owed him a substantial amount of money.",
+            "relatedEvents": [],
+            "tier": "tier_2"
+        },
+        {
+            "uid": "natalie_parker_profile_7",
+            "name": "Natalie Parker (Suspect Profile)",
+            "description": "Background information on Natalie Parker, James Carter's ex-girlfriend. She is a single mother with a daughter who has significant medical issues.",
+            "relatedEvents": [],
+            "tier": "tier_2"
+        },
+        {
+            "uid": "james_financial_troubles_8",
+            "name": "James Carter's Financial Troubles",
+            "description": "Investigation into James Carter's finances revealed significant debt and a history of gambling, creating potential motives for multiple parties.",
+            "relatedEvents": [],
+            "tier": "tier_2"
+        },
+        {
+            "uid": "strained_relation_natalie_9",
+            "name": "Strained Relationship with Natalie Parker",
+            "description": "Information indicates James Carter's relationship with his ex-girlfriend, Natalie Parker, ended badly and involved financial conflict.",
+            "relatedEvents": [],
+            "tier": "tier_2"
+        },
+        {
+            "uid": "lack_forced_entry_10",
+            "name": "Lack of Forced Entry (Apt/Cab)",
+            "description": "There were no signs of forced entry at James Carter's apartment or his cab, suggesting the killer may have been known to him or had access.",
+            "relatedEvents": [],
+            "tier": "tier_2"
+        },
+        {
+            "uid": "ryan_cole_ledger_11",
+            "name": "Ryan Cole's Ledger",
+            "description": "A ledger from Kings Cab Garage documenting James Carter's outstanding debt for storage fees, confirming Ryan Cole's stated motive.",
+            "relatedEvents": [],
+            "tier": "tier_2"
+        },
+        {
+            "uid": "iou_lucas_reed_12",
+            "name": "IOU from James Carter to Lucas Reed",
+            "description": "A document detailing the substantial sum of money James Carter owed to loan shark Lucas Reed, establishing a strong financial motive for Reed.",
+            "relatedEvents": [],
+            "tier": "tier_1"
+        },
+        {
+            "uid": "head_wound_details_13",
+            "name": "Head Trauma Details",
+            "description": "Forensic examination and autopsy revealed blunt force trauma to the back of James Carter's head as the cause of death.",
+            "relatedEvents": [],
+            "tier": "tier_1"
+        },
+        {
+            "uid": "metal_fragments_wound_14",
+            "name": "Metal Fragments in Wound",
+            "description": "Metal fragments were found embedded in the head wound, providing a crucial clue about the material composition of the murder weapon.",
+            "relatedEvents": [],
+            "tier": "tier_1"
+        },
+        {
+            "uid": "missing_wrench_outline_15",
+            "name": "Missing Wrench Outline (Cab Toolbox)",
+            "description": "Examination of James Carter's cab toolbox revealed an empty slot with a dust outline, indicating a wrench was recently removed and is missing.",
+            "relatedEvents": [],
+            "tier": "tier_1"
+        },
+        {
+            "uid": "natalie_medical_bills_16",
+            "name": "Natalie Parker's Medical Bills",
+            "description": "Unpaid medical bills for Natalie Parker's daughter, visually demonstrating her financial strain and the urgency of her need for money.",
+            "relatedEvents": [],
+            "tier": "tier_1"
+        },
+        {
+            "uid": "wrench_stolen_cab_17",
+            "name": "Wrench Stolen from Cab",
+            "description": "Natalie Parker admitted to taking a wrench from James Carter's cab during a fare earlier on the day of the murder, providing the means.",
+            "relatedEvents": [],
+            "tier": "tier_1"
+        },
+        {
+            "uid": "cctv_figure_match_parker_18",
+            "name": "CCTV Figure Matches Natalie Parker",
+            "description": "Analysis of security camera footage from near the crime scene shows a figure matching Natalie Parker's build and gait around the time of the murder.",
+            "relatedEvents": [],
+            "tier": "tier_1"
+        },
+        {
+            "uid": "cctv_figure_dropping_19",
+            "name": "CCTV Capture: Figure Dropping Object",
+            "description": "Grainy security footage shows the figure matching Natalie Parker discarding a heavy object into a sewer grate near the crime scene shortly after the murder.",
+            "relatedEvents": [],
+            "tier": "tier_0"
+        },
+        {
+            "uid": "bloody_wrench_sewer_20",
+            "name": "Bloody Wrench (Sewer Grate)",
+            "description": "A wrench was recovered from the sewer grate identified in the CCTV footage. It is stained dark, consistent with blood, and matches the description of the missing tool from James Carter's cab.",
+            "relatedEvents": [],
+            "tier": "tier_0"
+        },
+        {
+            "uid": "forensic_metal_analysis_21",
+            "name": "Forensic Analysis: Metal Fragments",
+            "description": "Laboratory report confirming that the metal fragments found in James Carter's wound match the composition of the wrench recovered from the sewer.",
+            "relatedEvents": [],
+            "tier": "tier_0"
+        },
+        {
+            "uid": "natalie_daughter_motive_22",
+            "name": "Motive: Money for Daughter's Treatment",
+            "description": "Investigation revealed James Carter stole money from Natalie Parker that she desperately needed for her diabetic daughter's medical treatments, establishing her powerful motive for revenge.",
+            "relatedEvents": [],
+            "tier": "tier_0"
+        },
+        {
+            "uid": "lucas_reed_alibi_cleared_23",
+            "name": "Lucas Reed's Confirmed Alibi",
+            "description": "Evidence, including cell tower data and witness confirmation, placed Lucas Reed in Brooklyn at the time of the murder, clearing him of opportunity.",
+            "relatedEvents": [],
+            "tier": "tier_3"
+        },
+        {
+            "uid": "ryan_cole_alibi_checked_24",
+            "name": "Ryan Cole's Statement and Alibi Check",
+            "description": "Ryan Cole's statement confirms his argument and pursuit of James Carter but places him back inside the garage at the time of the murder. Investigation found no evidence contradicting this or linking him directly to the means.",
+            "relatedEvents": [],
+            "tier": "tier_3"
+        },
+        {
+            "uid": "natalie_parker_confession_25",
+            "name": "Natalie Parker's Confession",
+            "description": "Natalie Parker confessed to killing James Carter, detailing her motive (revenge for stealing her daughter's medical funds) and method (using the wrench taken from his cab).",
+            "relatedEvents": [],
+            "tier": "Solution"
+        }
+    ],
+    "passages": [
+        {
+            "uid": "p-init",
+            "name": "Initialization",
+            "description": "Passage to initialize all game aspects.",
+            "tags": [
+                {
+                    "name": "CODE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "action",
+                    "actionType": "HIDE_ALL_EVIDENCE"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "application",
+                        "applicationTarget": "ADA"
+                    }
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "study_examined",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "tracy_interviewed",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "me_consulted",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "evidence_gathered",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "letter_found",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "teacup_analyzed",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "computer_analyzed",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "box_found",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "key_evidence_found",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "priya_interviewed",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "footage_analyzed",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "financials_checked",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "brandon_cleared",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "miguel_cleared",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "timeline_confronted",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "priya_confessed",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "can_accuse",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "createAspect",
+                    "aspect": "case_solved",
+                    "aspectType": "boolean",
+                    "nullable": false,
+                    "value": "false"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "NARRATIVE_CUTSCENE_SEQUENCE_0"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_CUTSCENE_SEQUENCE_0",
+            "name": "Cab Fare to Hell Intro",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_CUTSCENE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "INTRO",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "intro",
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "NARRATIVE_DIALOGUE_SEQUENCE_1"
+                            }
+                        }
+                    ],
+                    "steps": [
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "Queens_Street_at_Night",
+                                    "imageDescription": "Rain-slicked Queens street at night"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "TITLE",
+                                    "mainTitle": "Cab Fare to Hell",
+                                    "subTitle": "A cab driver found dead in a Queens alley. The city waits."
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Enter the Scene..."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "Crime_Scene_Panorama_Carters_Cab",
+                                    "imageDescription": "Crime scene with yellow cab and body beside it"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "A rain-slicked alley, a yellow cab glowing sickly under a lone lamp.",
+                                        "James Carter, a cab driver, is a crumpled shape beside his vehicle.",
+                                        "Dread, solitude"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_DIALOGUE_SEQUENCE_1",
+            "name": "Initial Narration",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_DIALOGUE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "INTRO",
+                    "color": "blue"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "intro",
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "NARRATIVE_DIALOGUE_SEQUENCE_1_branch"
+                            }
+                        }
+                    ],
+                    "steps": [
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "ADA_Song_Text_Messages",
+                                    "imageDescription": "ADA Song's text message bubble"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Just got the ping. Carter, huh?",
+                                        "Any initial read?",
+                                        "What's the scene telling you?"
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Continue..."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "Crime_Scene_Panorama_Carters_Cab",
+                                    "imageDescription": "Flashback to the alley scene"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "This wasn't a stray bullet or a random mugging.",
+                                        "Feels deliberate. Like someone waited."
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Continue..."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "Luca_Dogwalker_Witness_Profile",
+                                    "imageDescription": "Flashback to talking to the witness"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Saw the dogwalker. Shaken.",
+                                        "Said he saw something, but it was dark.",
+                                        "Couldn't be sure."
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Continue..."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "Medical_Bills_Natalies_Apartment",
+                                    "imageDescription": "Flashback to a stack of bills"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Carter owed money.",
+                                        "To a shark, maybe? Cabbies always do.",
+                                        "Or was it closer than that?"
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Continue..."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_DIALOGUE_SEQUENCE_1_branch",
+            "name": "Text ADA Song 1",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_DIALOGUE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "BRANCH",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Choose how to phrase your update.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "How do you sum up the scene and initial thoughts for ADA Song?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: 'Feels cold, Song. Like someone had a score to settle...'",
+                                "aspectCheck": null,
+                                "description": "Share your gut feeling",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: 'Witness saw a blur, dark. Didn't get much...'",
+                                "aspectCheck": null,
+                                "description": "Report on the witness encounter",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: 'Could be debt. ...Reed's name came up...'",
+                                "aspectCheck": null,
+                                "description": "Suggest financial motive lead",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "INVESTIGATION_HUB_2",
+            "name": "Investigation Hub 2",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "INVESTIGATION_HUB",
+                    "color": "blue"
+                },
+                {
+                    "name": "HUB",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                },
+                {
+                    "name": "GATE",
+                    "color": "orange"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Just got the ping. Carter, huh? Any initial read? What's the scene telling you?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Where to next, detective?",
+                        "replayAbility": "re-executable",
+                        "presentation": "block-panel",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Visit Kings Cab Garage",
+                                "aspectCheck": null,
+                                "description": "Interview Ryan Cole",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "SUSPECT_PROFILE_3"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Visit Lucas Reed's 'Office'",
+                                "aspectCheck": null,
+                                "description": "Interview the loan shark",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "SUSPECT_PROFILE_4"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Search Victim's Apartment",
+                                "aspectCheck": null,
+                                "description": "Look for clues in Carter's home",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "EVIDENCE_COLLECTION_5"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Visit Natalie Parker (Ex-GF)",
+                                "aspectCheck": null,
+                                "description": "Talk to the ex-girlfriend",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP_7"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Examine Cab Toolbox",
+                                "aspectCheck": null,
+                                "description": "Check the victim's cab for tools",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "EVIDENCE_EXAMINATION_6"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Analyze CCTV Footage",
+                                "aspectCheck": {
+                                    "type": "checkAspect",
+                                    "check": {
+                                        "type": "and",
+                                        "target": [
+                                            {
+                                                "type": "eq",
+                                                "aspect": "visited_garage",
+                                                "target": true,
+                                                "aspectUid": "visited_garage"
+                                            },
+                                            {
+                                                "type": "eq",
+                                                "aspect": "visited_ex_girlfriend",
+                                                "target": true,
+                                                "aspectUid": "visited_ex_girlfriend"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "description": "Look for suspects on security cameras",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "BREAKTHROUGH_MOMENT_9"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Review Evidence",
+                                "aspectCheck": null,
+                                "description": "Examine collected evidence",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "application",
+                                            "applicationTarget": "EVIDENCE"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Review Suspect Dossiers",
+                                "aspectCheck": null,
+                                "description": "Read suspect background info",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "application",
+                                            "applicationTarget": "DOSSIER"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "View Case Briefing",
+                                "aspectCheck": null,
+                                "description": "Review the full case summary",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2_briefing"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Check Objectives",
+                                "aspectCheck": null,
+                                "description": "See current investigation goals",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2_objectives"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "INVESTIGATION_HUB_2_briefing",
+            "name": "Case Briefing 2",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "INVESTIGATION_HUB",
+                    "color": "blue"
+                },
+                {
+                    "name": "BRIEFING",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, detective, I've compiled the case details. Here's a summary: James Carter, 35, cab driver, found dead outside his cab in Queens. Blunt force trauma to the head. Metallic fragments found in wound. Suspects include the garage owner (financial dispute), a loan shark (large debt), and the ex-girlfriend (strained relations, possible financial issue).",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Anything specific from the briefing, detective, or back to the hub?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Return to Hub",
+                                "aspectCheck": null,
+                                "description": "Go back to main investigation view",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "INVESTIGATION_HUB_2_objectives",
+            "name": "Current Objectives 2",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "INVESTIGATION_HUB",
+                    "color": "blue"
+                },
+                {
+                    "name": "OBJECTIVES",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Alright, let's clarify our current objectives: Identify the murder weapon, Determine the killer's motive, Eliminate suspects without opportunity/means, and Accuse the culprit.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Objectives clear? What's next?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Return to Hub",
+                                "aspectCheck": null,
+                                "description": "Go back to main investigation view",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "SUSPECT_PROFILE_3",
+            "name": "Ryan Cole - Profile",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "SUSPECT_PROFILE",
+                    "color": "blue"
+                },
+                {
+                    "name": "PROFILE",
+                    "color": "blue"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, let's review Ryan Cole's profile. He owns Kings Cab Garage. We know he had a heated argument with Carter just before the murder over unpaid fees. He was even seen holding a baseball bat, but he claims Carter just drove off. Let's consider what this tells us and decide your next step.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Focus your thoughts on Ryan Cole",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Cole's vibe & debt focus",
+                                "aspectCheck": null,
+                                "description": "Share your read on his demeanor and financial motive angle.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Observation on the bat",
+                                "aspectCheck": null,
+                                "description": "Mention the baseball bat seen and his claim.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Evaluate his alibi",
+                                "aspectCheck": null,
+                                "description": "Consider if his story about Carter leaving holds up.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Return to Investigation Hub",
+                                "aspectCheck": null,
+                                "description": "Go back and explore other leads.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "SUSPECT_PROFILE_3_return_to_investigation_hub_intermediate_1"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "SUSPECT_PROFILE_3_return_to_investigation_hub_intermediate_1",
+            "name": "Action Chain Step 1",
+            "description": "Automatically generated intermediate passage for action chain.",
+            "tags": [
+                {
+                    "name": "ACTION_CHAIN",
+                    "color": "purple"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Processing action 1 of 3...",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "ryan_cole_profile_5",
+                    "evidenceAlias": "Ryan Cole Profile"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "application",
+                        "applicationTarget": "EVIDENCE"
+                    }
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "SUSPECT_PROFILE_3_return_to_investigation_hub_intermediate_2"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "SUSPECT_PROFILE_3_return_to_investigation_hub_intermediate_2",
+            "name": "Action Chain Step 2",
+            "description": "Automatically generated intermediate passage for action chain.",
+            "tags": [
+                {
+                    "name": "ACTION_CHAIN",
+                    "color": "purple"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Processing action 2 of 3...",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "ryan_cole_ledger_11",
+                    "evidenceAlias": "Ryan Cole Ledger"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "application",
+                        "applicationTarget": "EVIDENCE"
+                    }
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "SUSPECT_PROFILE_3_return_to_investigation_hub_intermediate_3"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "SUSPECT_PROFILE_3_return_to_investigation_hub_intermediate_3",
+            "name": "Action Chain Step 3",
+            "description": "Automatically generated intermediate passage for action chain.",
+            "tags": [
+                {
+                    "name": "ACTION_CHAIN",
+                    "color": "purple"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Processing action 3 of 3...",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "INVESTIGATION_HUB_2"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "SUSPECT_PROFILE_4",
+            "name": "Lucas Reed Profile",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "SUSPECT_PROFILE",
+                    "color": "blue"
+                },
+                {
+                    "name": "PROFILE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Reed. Ugly business... What's the feel there?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "How do you text ADA Song about Reed?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text: 'Reed's smooth, ADA... Brooklyn alibi. Place is sterile. Money and fear live there.'",
+                                "aspectCheck": null,
+                                "description": "Give ADA a character read.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text: 'Shark watched his watch the whole time... Didn't sweat Carter's death much.'",
+                                "aspectCheck": null,
+                                "description": "Highlight suspicious demeanor.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text: 'Reed confirms Carter owed him... losing a cash cow.'",
+                                "aspectCheck": null,
+                                "description": "Focus on the financial angle and cynicism.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Return to Investigation Hub",
+                                "aspectCheck": null,
+                                "description": "Go back to the main investigation view.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "lucas_reed_profile_6",
+                    "evidenceAlias": "Lucas Reed (Suspect Profile)"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "evidence",
+                        "evidenceTarget": "lucas_reed_profile_6",
+                        "evidenceAlias": "Lucas Reed (Suspect Profile)"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "EVIDENCE_COLLECTION_5",
+            "name": "Carter's Apartment 5",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_COLLECTION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SCENE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, Detective. Let's take a look around Carter's place. It's pretty worn - looks like stacks of bills, cluttered surfaces everywhere. There's a small toolbox near the door that seems a bit out of place. What do you want to examine?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Search the apartment.",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Examine Bills on Table",
+                                "aspectCheck": null,
+                                "description": "Look at the stack of papers.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "evidence_collection_5_examine_bills"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Examine Toolbox near Door",
+                                "aspectCheck": null,
+                                "description": "Check the condition of the toolbox.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "evidence_collection_5_examine_toolbox"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Check Entry Method",
+                                "aspectCheck": null,
+                                "description": "Look for signs of forced entry.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "evidence_collection_5_examine_entry"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Return to Investigation Hub",
+                                "aspectCheck": null,
+                                "description": "Go back to the main investigation screen.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "evidence_collection_5_examine_bills",
+            "name": "Examine Bills 5",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_COLLECTION",
+                    "color": "blue"
+                },
+                {
+                    "name": "EXAMINE",
+                    "color": "blue"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, Detective. Looking closer at these bills... they're all overdue notices, final demands. Seems James was definitely in deep financial trouble, just like Reed mentioned.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Report findings.",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: Bills everywhere. Carter was drowning in debt. Confirms Reed's story on that end.",
+                                "aspectCheck": null,
+                                "description": "Text ADA Song about the bills.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "iou_lucas_reed_12",
+                    "evidenceAlias": "IOU from James Carter to Lucas Reed"
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "ryan_cole_ledger_11",
+                    "evidenceAlias": "Ryan Cole's Ledger"
+                }
+            ]
+        },
+        {
+            "uid": "evidence_collection_5_examine_toolbox",
+            "name": "Examine Toolbox 5",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_COLLECTION",
+                    "color": "blue"
+                },
+                {
+                    "name": "EXAMINE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Here's a basic toolbox by the door. Huh. It's surprisingly clean and organized, considering the rest of the apartment is a mess. That's odd. Something to report back to ADA about?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Report findings.",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: Odd. Toolbox by his door is clean, organized. Rest of the place is a dump. Why keep the tools so tidy?",
+                                "aspectCheck": null,
+                                "description": "Text ADA Song about the toolbox.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "evidence_collection_5_examine_entry",
+            "name": "Check Entry Method 5",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_COLLECTION",
+                    "color": "blue"
+                },
+                {
+                    "name": "EXAMINE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Let's check the entry point. The apartment door and frame... no pry marks, no forced damage. It looks like the killer had a key, or Carter let them in. Just like the cab scene. Suggests someone he knew, maybe?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Report findings.",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: Nothing missing I can see. No forced entry. Like the alley. Someone he knew? Or they had a key.",
+                                "aspectCheck": null,
+                                "description": "Text ADA Song about the lack of forced entry.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "EVIDENCE_EXAMINATION_6",
+            "name": "Examine Cab Toolbox",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_EXAMINATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "INITIAL_NARRATIVE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Got the prelim from Forensics. Metal fragments in the wound point to blunt force. Cabbies usually carry a toolkit. Check Carter's? See what it tells you.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Investigate Toolbox",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Examine the cab toolbox",
+                                "aspectCheck": null,
+                                "description": "Look inside for clues.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "EVIDENCE_EXAMINATION_6_actionReveal_missing_wrench_outline"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "EVIDENCE_EXAMINATION_6_actionReveal_missing_wrench_outline",
+            "name": "Revealing: Missing Wrench",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_EXAMINATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "ACTION_REVEAL",
+                    "color": "blue"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "missing_wrench_outline_15",
+                    "evidenceAlias": "Missing Wrench Outline (Cab Toolbox)"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "evidence",
+                        "evidenceTarget": "missing_wrench_outline_15",
+                        "evidenceAlias": "Missing Wrench Outline (Cab Toolbox)"
+                    }
+                },
+                {
+                    "type": "trigger",
+                    "targets": [
+                        {
+                            "triggerType": "FIRST-VIEW",
+                            "evidenceTarget": "missing_wrench_outline_15",
+                            "evidenceAlias": "Missing Wrench Outline (Cab Toolbox)"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "EVIDENCE_EXAMINATION_6_followUp_missing_wrench"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "EVIDENCE_EXAMINATION_6_followUp_missing_wrench",
+            "name": "Thoughts on: Missing Wrench",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_EXAMINATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "FOLLOWUP_COMMENTARY",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Missing wrench, dust outline... fits the fragments. Good eye, detective. Looks like you found the weapon. Get back here when you can, let's tie this up.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Report Finding",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA Song",
+                                "aspectCheck": null,
+                                "description": "Inform ADA about the missing wrench.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "update_missing_wrench_examined_true"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "update_missing_wrench_examined_true",
+            "name": "Update Missing Wrench Examined",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "ASPECT_UPDATE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "UPDATE_ASPECT",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "updateAspect",
+                    "aspect": "missing_wrench_examined",
+                    "operation": "SET",
+                    "value": "true"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "INVESTIGATION_HUB_2"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP_7",
+            "name": "Review Natalie Parker Profile",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
+                    "color": "blue"
+                },
+                {
+                    "name": "PROFILE_HINT",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, let's look into Natalie Parker. She's the ex-girlfriend, right? Single mother, I remember. Something about her daughter's medical issues came up, and Carter apparently screwed her over on some money. Seems like a strong angle to explore.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Focus on Natalie Parker?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Access Natalie's Profile",
+                                "aspectCheck": null,
+                                "description": "View her background and potential motive.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP_7_action_reveal"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP_7_action_reveal",
+            "name": "Revealing Natalie Profile 7",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
+                    "color": "blue"
+                },
+                {
+                    "name": "ACTION_REVEAL",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "natalie_parker_confession_25",
+                    "evidenceAlias": "Natalie Parker (Suspect Profile)"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "application",
+                        "applicationTarget": "DOSSIER"
+                    }
+                },
+                {
+                    "type": "trigger",
+                    "targets": [
+                        {
+                            "triggerType": "FIRST-VIEW",
+                            "evidenceTarget": "natalie_parker_confession_25",
+                            "evidenceAlias": "Natalie Parker (Suspect Profile)"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP_7_followup"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP_7_followup",
+            "name": "Natalie Parker Profile Reviewed 7",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
+                    "color": "blue"
+                },
+                {
+                    "name": "FOLLOWUP",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Alright. Looking at Natalie's profile... The details about her daughter's health crisis and the money James stole are definitely significant. This seems like more than just a breakup. What's your gut feeling on her potential motive, before we meet her?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Text ADA Song...",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: 'Desperation motive'",
+                                "aspectCheck": null,
+                                "description": "Text: 'Single mom, sick kid. Carter screwing her over for $$ needed for meds? Desperation is a hell of a motive.'",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "update_hunch_natalie_motive_desperation"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: 'Bad blood/Money issue'",
+                                "aspectCheck": null,
+                                "description": "Text: 'Ex-girlfriend angle always messy. Could be breakup revenge, or maybe concrete like that money dispute.'",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "update_hunch_natalie_motive_bad_blood_money"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: 'Capability/Kid leverage'",
+                                "aspectCheck": null,
+                                "description": "Text: 'Nurse's aide knows anatomy? Quiet type can be dangerous. But the kid's health... is that the leverage? Or motive?'",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "update_hunch_natalie_motive_capability_leverage"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "update_hunch_natalie_motive_desperation",
+            "name": "Update: Hunch Desperation",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
+                    "color": "blue"
+                },
+                {
+                    "name": "UPDATE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "UPDATE_ASPECT",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "updateAspect",
+                    "aspect": "hunch_natalie_motive",
+                    "operation": "SET",
+                    "value": "desperation"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "NARRATIVE_DIALOGUE_SEQUENCE_8"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "update_hunch_natalie_motive_bad_blood_money",
+            "name": "Update: Hunch Bad Blood",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
+                    "color": "blue"
+                },
+                {
+                    "name": "UPDATE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "UPDATE_ASPECT",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "updateAspect",
+                    "aspect": "hunch_natalie_motive",
+                    "operation": "SET",
+                    "value": "bad_blood_money"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "NARRATIVE_DIALOGUE_SEQUENCE_8"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "update_hunch_natalie_motive_capability_leverage",
+            "name": "Update: Hunch Capability",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_EVIDENCE_FOR_RELATIONSHIP",
+                    "color": "blue"
+                },
+                {
+                    "name": "UPDATE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "UPDATE_ASPECT",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "updateAspect",
+                    "aspect": "hunch_natalie_motive",
+                    "operation": "SET",
+                    "value": "capability_leverage"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "NARRATIVE_DIALOGUE_SEQUENCE_8"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_DIALOGUE_SEQUENCE_8",
+            "name": "Natalie Parker Encounter - Intro",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_DIALOGUE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "INTRO",
+                    "color": "blue"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "intro",
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "natalie_encounter_part_1"
+                            }
+                        }
+                    ],
+                    "steps": [
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "natalie_apartment_clean",
+                                    "imageDescription": "Small, clean apartment. Pictures of a young girl."
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Natalie Parker",
+                                        "Tired, but sharp. Quiet fury.",
+                                        "Encountering James Carter's ex-girlfriend."
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Enter"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "natalie_encounter_part_1",
+            "name": "Natalie Parker Encounter - Part 1",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_DIALOGUE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "INTRO",
+                    "color": "blue"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "intro",
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "natalie_encounter_part_2"
+                            }
+                        }
+                    ],
+                    "steps": [
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "natalie_tired_eyes",
+                                    "imageDescription": "Close-up on Natalie's tired eyes."
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Natalie: \"James? He was a mistake. A bad gamble.\"",
+                                        "Tired eyes, guarded expression.",
+                                        "Resignation."
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Continue"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "natalie_encounter_part_2",
+            "name": "Natalie Parker Encounter - Part 2",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_DIALOGUE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "INTRO",
+                    "color": "blue"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "intro",
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "natalie_encounter_part_3"
+                            }
+                        }
+                    ],
+                    "steps": [
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "natalie_tight_voice",
+                                    "imageDescription": "Image hinting at tension."
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Natalie: \"Money? He took what he needed. Didn't care who it hurt.\"",
+                                        "Her voice tightens.",
+                                        "Bitterness."
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Continue"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "natalie_encounter_part_3",
+            "name": "Natalie Parker Encounter - Part 3",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_DIALOGUE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "INTRO",
+                    "color": "blue"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "intro",
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "natalie_encounter_part_4"
+                            }
+                        }
+                    ],
+                    "steps": [
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "natalie_daughter_photo",
+                                    "imageDescription": "Hand rests near a photo of her daughter."
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Natalie: \"My daughter's everything. Everything I do is for her.\"",
+                                        "Hand near photo.",
+                                        "Fierce protectiveness."
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Continue"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "natalie_encounter_part_4",
+            "name": "Natalie Parker Encounter - Observations",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_DIALOGUE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "INTRO",
+                    "color": "blue"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "intro",
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "natalie_parker_encounter_text_ada"
+                            }
+                        }
+                    ],
+                    "steps": [
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "natalie_scar_hand",
+                                    "imageDescription": "Close-up on Natalie's steady hands."
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Small scar on her hand. Hands are steady.",
+                                        "She didn't ask how James died.",
+                                        "Something is held back."
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Text ADA Song"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "natalie_parker_encounter_text_ada",
+            "name": "Text ADA Song - Natalie",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_DIALOGUE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "TEXT_ADA",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, you met Parker. What's your read? Give me the rundown.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Text ADA Song",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text: Money/Kid motive",
+                                "aspectCheck": null,
+                                "description": "Share impression about financial motive tied to her daughter.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text: Composure/Scar",
+                                "aspectCheck": null,
+                                "description": "Comment on her steady hands, possible scar, lack of surprise.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text: Desperation Angle",
+                                "aspectCheck": null,
+                                "description": "Frame her statements as desperation due to Carter's actions.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "BREAKTHROUGH_MOMENT_9",
+            "name": "CCTV Analysis 9",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "BREAKTHROUGH_MOMENT",
+                    "color": "blue"
+                },
+                {
+                    "name": "HINT",
+                    "color": "orange"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, let's re-evaluate the CCTV footage near the garage. Is there anything we might have missed?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Re-examine Surveillance",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Analyze Footage Closely",
+                                "aspectCheck": null,
+                                "description": "Review the video from near Kings Cab Garage",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "BREAKTHROUGH_MOMENT_9_cctv_focus"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "BREAKTHROUGH_MOMENT_9_cctv_focus",
+            "name": "Focus on CCTV 9",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "BREAKTHROUGH_MOMENT",
+                    "color": "blue"
+                },
+                {
+                    "name": "EVIDENCE_A",
+                    "color": "red"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Reviewing the footage frame-by-frame... found a figure. Small build, moving fast. Not Cole, not Reed.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Following the Figure",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Follow Figure's Path",
+                                "aspectCheck": null,
+                                "description": "See where the figure goes on the recording",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "BREAKTHROUGH_MOMENT_9_discard_focus"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "BREAKTHROUGH_MOMENT_9_discard_focus",
+            "name": "Figure's Action 9",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "BREAKTHROUGH_MOMENT",
+                    "color": "blue"
+                },
+                {
+                    "name": "EVIDENCE_B",
+                    "color": "red"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "The figure pauses near a sewer grate... then discards something heavy.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "What was Discarded?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Connect the Pieces",
+                                "aspectCheck": null,
+                                "description": "Think about the discarded object and other evidence",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "BREAKTHROUGH_MOMENT_9_reveal"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "BREAKTHROUGH_MOMENT_9_reveal",
+            "name": "The Revelation 9",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "BREAKTHROUGH_MOMENT",
+                    "color": "blue"
+                },
+                {
+                    "name": "REVELATION",
+                    "color": "red"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "That figure... matches Natalie Parker's build. Discarding something heavy into the sewer grate... like the missing wrench from Carter's cab.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Case Breakthrough!",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: It was Parker.",
+                                "aspectCheck": null,
+                                "description": "Send the critical breakthrough observation to ADA Song",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "BREAKTHROUGH_MOMENT_9_new_path"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "BREAKTHROUGH_MOMENT_9_new_path",
+            "name": "New Lead: Sewer Grate 9",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "BREAKTHROUGH_MOMENT",
+                    "color": "blue"
+                },
+                {
+                    "name": "NEW_PATH",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Got it. CCTV footage reveals a figure matching Natalie Parker discarding a heavy object into a sewer grate near the scene.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Pursue the Lead",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Investigate the Sewer Grate",
+                                "aspectCheck": null,
+                                "description": "Direct uniforms to search the specified sewer grate",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "update_breakthrough_cctv_parker_true"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "cctv_figure_dropping_19",
+                    "evidenceAlias": "CCTV Capture: Figure Dropping Object"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "evidence",
+                        "evidenceTarget": "cctv_figure_dropping_19",
+                        "evidenceAlias": "CCTV Capture: Figure Dropping Object"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "update_breakthrough_cctv_parker_true",
+            "name": "Update Breakthrough Cctv Parker True",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "BREAKTHROUGH_MOMENT",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "UPDATE_ASPECT",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "updateAspect",
+                    "aspect": "breakthrough_cctv_parker",
+                    "operation": "SET",
+                    "value": "true"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "intermediate_BREAKTHROUGH_MOMENT_9_new_path_investigate_action_2"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "intermediate_BREAKTHROUGH_MOMENT_9_new_path_investigate_action_2",
+            "name": "Intermediate Breakthrough Moment 9 New Path Investigate Action 2",
+            "description": "Automatically generated intermediate passage for action chain",
+            "tags": [
+                {
+                    "name": "BREAKTHROUGH_MOMENT",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Processing action 2 of 3",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "cctv_figure_dropping_19",
+                    "evidenceAlias": "CCTV Capture: Figure Dropping Object"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "intermediate_BREAKTHROUGH_MOMENT_9_new_path_investigate_action_3"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "intermediate_BREAKTHROUGH_MOMENT_9_new_path_investigate_action_3",
+            "name": "Intermediate Breakthrough Moment 9 New Path Investigate Action 3",
+            "description": "Automatically generated intermediate passage for action chain",
+            "tags": [
+                {
+                    "name": "BREAKTHROUGH_MOMENT",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Processing action 3 of 3",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "EVIDENCE_COLLECTION_10"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "EVIDENCE_COLLECTION_10",
+            "name": "Sewer Grate Search",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_COLLECTION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SCENE",
+                    "color": "blue"
+                },
+                {
+                    "name": "ACTION",
+                    "color": "orange"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, let's focus on the sewer grate at the location from the CCTV. It could hold a clue.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Investigate the sewer grate.",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Examine Grate",
+                                "aspectCheck": null,
+                                "description": "Look closer at the sewer grate.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "EVIDENCE_COLLECTION_10_pry_open"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Return to Investigation Hub",
+                                "aspectCheck": null,
+                                "description": "Go back to the main investigation view.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "EVIDENCE_COLLECTION_10_pry_open",
+            "name": "Prying Open Grate",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_COLLECTION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SCENE",
+                    "color": "blue"
+                },
+                {
+                    "name": "ACTION",
+                    "color": "orange"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "The grate looks heavy, probably rusted tight. Be careful prying it open.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "The grate is open. Search inside?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Search Inside",
+                                "aspectCheck": null,
+                                "description": "Look down into the darkness.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "EVIDENCE_COLLECTION_10_find_wrench"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "EVIDENCE_COLLECTION_10_find_wrench",
+            "name": "Finding the Wrench",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_COLLECTION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SCENE",
+                    "color": "blue"
+                },
+                {
+                    "name": "ACTION",
+                    "color": "orange"
+                },
+                {
+                    "name": "DISCOVERY",
+                    "color": "blue"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Something glinting in the muck? Get it out of there. Could be important.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "You found the weapon. Examine it?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Examine Wrench",
+                                "aspectCheck": null,
+                                "description": "Take a closer look at the stained wrench.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "EVIDENCE_COLLECTION_10_examine_wrench"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "bloody_wrench_sewer_20",
+                    "evidenceAlias": "bloody_wrench_sewer_grate"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "evidence",
+                        "evidenceTarget": "bloody_wrench_sewer_20",
+                        "evidenceAlias": "bloody_wrench_sewer_grate"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "EVIDENCE_COLLECTION_10_examine_wrench",
+            "name": "Examine Wrench",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "EVIDENCE_COLLECTION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SCENE",
+                    "color": "blue"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Let's look at that wrench closely. Any details match what we know about the crime scene or the victim's cab?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "The weapon is found and identified. What's next?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: The Wrench!",
+                                "aspectCheck": null,
+                                "description": "Report the confirmed murder weapon to ADA Song.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "NARRATIVE_CUTSCENE_SEQUENCE_11"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Return to Hub",
+                                "aspectCheck": null,
+                                "description": "Go back to the main investigation view.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "INVESTIGATION_HUB_2"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "updateAspect",
+                    "aspect": "wrench_examined",
+                    "operation": "SET",
+                    "value": "true"
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_CUTSCENE_SEQUENCE_11",
+            "name": "Precinct Pressure",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_CUTSCENE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "INTRO",
+                    "color": "blue"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "intro",
+                    "actions": [
+                        {
+                            "type": "action",
+                            "actionType": "MOVE",
+                            "moveTarget": {
+                                "type": "passage",
+                                "passageTarget": "NARRATIVE_CUTSCENE_SEQUENCE_11_text_ada"
+                            }
+                        }
+                    ],
+                    "steps": [
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "interrogation_room_parker",
+                                    "imageDescription": "Natalie Parker behind glass in Interrogation Room 1, looking small"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Parker behind glass",
+                                        "Interrogation setup",
+                                        "Tension"
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Continue..."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "witness_room_reed",
+                                    "imageDescription": "Lucas Reed leaning back in a witness room, smirking"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Reed waiting",
+                                        "Suspects standing by",
+                                        "Unease"
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "And then..."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "witness_room_cole",
+                                    "imageDescription": "Ryan Cole pacing in a witness room, muttering"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "Cole pacing",
+                                        "Suspects waiting",
+                                        "Anxiety"
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Meanwhile..."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "introStep",
+                            "components": [
+                                {
+                                    "type": "introStepBG",
+                                    "backgroundType": "IMAGE",
+                                    "imageAlias": "bloody_wrench_tagged",
+                                    "imageDescription": "The tagged wrench sitting on an interrogation room table"
+                                },
+                                {
+                                    "type": "introStepText",
+                                    "textType": "BREAKDOWN",
+                                    "lines": [
+                                        "The wrench tagged",
+                                        "Evidence is ready",
+                                        "Gravity"
+                                    ]
+                                },
+                                {
+                                    "type": "introStepControl",
+                                    "controlType": "FINISH_INTRO_BUTTON",
+                                    "controlKind": "PRIMARY",
+                                    "text": "Ready?"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "uid": "NARRATIVE_CUTSCENE_SEQUENCE_11_text_ada",
+            "name": "Prep with ADA 11",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE_CUTSCENE_SEQUENCE",
+                    "color": "blue"
+                },
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "DIALOGUE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Got everyone in place, Detective. Parker's ready. Reed and Cole are prepped. Your call on the approach. How do you want to play this?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "What's the setup, Detective?",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: Set up Wrench & CCTV",
+                                "aspectCheck": null,
+                                "description": "Tell ADA your plan to use the wrench and footage first.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "ACCUSATION_12"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: Lay out the case",
+                                "aspectCheck": null,
+                                "description": "Tell ADA you'll present money, wrench, CCTV.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "ACCUSATION_12"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "ACCUSATION_12",
+            "name": "Precinct Interrogation Prep",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "ACCUSATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SUSPECT_CONFRONTATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "We're set up in the hallway, just outside the interrogation room. Parker's inside. Cole and Reed are standing by. Feeling the tension... What should I text ADA Song about the setup?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Prepare for Confrontation",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: Setup",
+                                "aspectCheck": null,
+                                "description": "Describe the scene: Parker, Reed, Cole standby, wrench ready.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "ACCUSATION_12_setup_text"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "ACCUSATION_12_setup_text",
+            "name": "Texting ADA: Setup",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "ACCUSATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SUSPECT_CONFRONTATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "DIALOGUE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Parker's here. Reed and Cole standing by? Good. Your call when to bring her in and what to hit her with.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Describe the Plan",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Hit her with CCTV & Wrench",
+                                "aspectCheck": null,
+                                "description": "Start with the concrete evidence.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "ACCUSATION_12_start_confront"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Lay out all known evidence",
+                                "aspectCheck": null,
+                                "description": "Build the complete picture first.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "ACCUSATION_12_start_confront"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "ACCUSATION_12_start_confront",
+            "name": "Confronting Natalie Parker",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "ACCUSATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SUSPECT_CONFRONTATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Natalie Parker is in the interrogation room. You lay out the evidence: the money Carter stole, her daughter's illness, the missing wrench from his cab, the CCTV footage showing her near his car and dumping something in the sewer. The pressure is building. Now, observe her reaction.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Presenting the Case",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Observe Her Reaction",
+                                "aspectCheck": null,
+                                "description": "Watch how she responds to the evidence.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "ACCUSATION_12_crumble"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "ACCUSATION_12_crumble",
+            "name": "Parker's Facade Cracks",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "ACCUSATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SUSPECT_CONFRONTATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Natalie is turning pale, eyes fixed on her daughter's photo in her wallet. Her composure is gone, replaced by raw fear and desperation. Her eyes keep returning to the photo. The true motive is coming into focus. Now, text ADA Song about this breakthrough.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "The Breaking Point",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: Focus on the Kid",
+                                "aspectCheck": null,
+                                "description": "Tell ADA the daughter's medical bills were the real reason.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "ACCUSATION_12_text_ada_motive"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            },
+                            {
+                                "type": "branchOption",
+                                "name": "Text ADA: Focus on Desperation",
+                                "aspectCheck": null,
+                                "description": "Tell ADA it was about being trapped, no other way.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "ACCUSATION_12_text_ada_motive"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "ACCUSATION_12_text_ada_motive",
+            "name": "Texting ADA: The Motive",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "ACCUSATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SUSPECT_CONFRONTATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "DIALOGUE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "That's it then. Parker. The wrench, the money for the kid. Damn. Rough business. Get some sleep, detective.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Motive Confirmed",
+                        "replayAbility": "re-executable",
+                        "presentation": "option-list",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Await Confession",
+                                "aspectCheck": null,
+                                "description": "Wait for her to break.",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "update_parker_confronted_true"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "update_parker_confronted_true",
+            "name": "Update: Parker Confronted",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "ACCUSATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "SUSPECT_CONFRONTATION",
+                    "color": "blue"
+                },
+                {
+                    "name": "UPDATE",
+                    "color": "blue"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "UPDATE_ASPECT",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "updateAspect",
+                    "aspect": "parker_confronted",
+                    "operation": "SET",
+                    "value": "true"
+                },
+                {
+                    "type": "action",
+                    "actionType": "MOVE",
+                    "moveTarget": {
+                        "type": "passage",
+                        "passageTarget": "CASE_RESOLUTION_13"
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "CASE_RESOLUTION_13",
+            "name": "Case Resolution - Verdict 13",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Okay, Detective. Verdict's in: Natalie Parker. Ready for the full story?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Verdict Delivered",
+                        "replayAbility": "re-executable",
+                        "presentation": "block-panel",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Hear Full Story",
+                                "aspectCheck": null,
+                                "description": "",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "case_resolution_13_explain"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "verdict_natalie_parker",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "case_resolution_13_explain",
+            "name": "Case Resolution - Explanation 13",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "The full story: Natalie Parker killed James Carter using a wrench stolen from his cab earlier that day. Her motive was revenge for Carter stealing money she desperately needed for her diabetic daughter's medical treatment. She waited for him...",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        },
+                        {
+                            "text": "Ready to review the evidence that sealed the case?",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        },
+                        {
+                            "text": "Check out the timeline of the crime.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Full Explanation",
+                        "replayAbility": "re-executable",
+                        "presentation": "block-panel",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Review Key Evidence",
+                                "aspectCheck": null,
+                                "description": "",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "case_resolution_13_recap"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "explanation_natalie_parker",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "uid": "case_resolution_13_recap",
+            "name": "Case Resolution - Evidence Recap 13",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                },
+                {
+                    "name": "EVIDENCE",
+                    "color": "red"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Here's a visualization of the connected evidence.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        },
+                        {
+                            "text": "Key evidence: Missing Wrench Outline (Cab Toolbox), Bloody Wrench (Sewer Grate), CCTV Capture: Figure Dropping Object, Medical Bills (Natalie's Apartment), and Natalie's Confession.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        },
+                        {
+                            "text": "We can now conclude the investigation.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Evidence Recap",
+                        "replayAbility": "re-executable",
+                        "presentation": "block-panel",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Case Closed",
+                                "aspectCheck": null,
+                                "description": "",
+                                "actions": [
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "passage",
+                                            "passageTarget": "case_resolution_13_end"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "evidence_recap_natalie_parker",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "missing_wrench_outline_15",
+                    "evidenceAlias": "Missing Wrench Outline (Cab Toolbox)"
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "bloody_wrench_sewer_20",
+                    "evidenceAlias": "Bloody Wrench (Sewer Grate)"
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "cctv_figure_dropping_19",
+                    "evidenceAlias": "CCTV Capture: Figure Dropping Object"
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "natalie_medical_bills_16",
+                    "evidenceAlias": "Medical Bills (Natalie's Apartment)"
+                },
+                {
+                    "type": "action",
+                    "actionType": "REVEAL",
+                    "evidenceTarget": "natalie_parker_confession_25",
+                    "evidenceAlias": "Natalie Parker's Confession"
+                }
+            ]
+        },
+        {
+            "uid": "case_resolution_13_end",
+            "name": "Case Closed 13",
+            "description": "Passage description.",
+            "tags": [
+                {
+                    "name": "NARRATIVE",
+                    "color": "green"
+                },
+                {
+                    "name": "CHOICE",
+                    "color": "green"
+                },
+                {
+                    "name": "CODE",
+                    "color": "purple"
+                },
+                {
+                    "name": "UPDATE_ASPECT",
+                    "color": "purple"
+                }
+            ],
+            "commands": [
+                {
+                    "type": "bot",
+                    "lines": [
+                        {
+                            "text": "Epilogue: With Natalie Parker's confession and the evidence chain complete, the case is closed. The city's underbelly remains, but for tonight, justice found a corner in Queens. Parker faces charges, leaving her daughter's future uncertain. Another sad story written...",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        },
+                        {
+                            "text": "Credits and acknowledgments are available.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        },
+                        {
+                            "text": "Case is complete.",
+                            "imageAlias": "",
+                            "imageDescription": ""
+                        }
+                    ],
+                    "branch": {
+                        "type": "branch",
+                        "description": "Case Closed",
+                        "replayAbility": "re-executable",
+                        "presentation": "block-panel",
+                        "integrationType": "ada",
+                        "options": [
+                            {
+                                "type": "branchOption",
+                                "name": "Finish",
+                                "aspectCheck": null,
+                                "description": "",
+                                "actions": [
+                                    {
+                                        "type": "updateAspect",
+                                        "aspect": "case_complete",
+                                        "operation": "SET",
+                                        "value": "true"
+                                    },
+                                    {
+                                        "type": "action",
+                                        "actionType": "MOVE",
+                                        "moveTarget": {
+                                            "type": "application",
+                                            "applicationTarget": "HOME"
+                                        }
+                                    }
+                                ],
+                                "imageAlias": "epilogue_complete",
+                                "imageDescription": ""
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

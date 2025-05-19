@@ -1,0 +1,780 @@
+
+:: StoryTitle
+0.26338435037843455
+
+
+:: StoryData
+{
+  "ifid": "A49F632E-77AD-42DC-BDE2-18501DFF5192",
+  "format": "Harlowe",
+  "format-version": "3.3.9",
+  "start": "Intro",
+  "tag-colors": {
+    "CODE": "purple",
+    "NARRATIVE": "green",
+    "LOCATION": "orange",
+    "EVIDENCE": "red",
+    "OPTIONS": "blue",
+    "OPTION": "orange",
+    "INTRO-OUTRO": "yellow"
+  },
+  "zoom": 1
+}
+
+
+:: ADA All Evidence Revealed [NARRATIVE] {"position":"1300,875","size":"200,200"}
+($bot: "We’ve collected all available evidence, Investigator. Carefully review your findings before making your accusation", 
+	($branch:
+   "","ada",
+   "passable",
+   "once",
+  ($branchOption: "",
+    "",
+    "next",
+    "",
+    ($action: "MOVE", ($passage: "[[Accusation Choice]]"))
+  )
+)
+)
+
+
+:: ADA Crime Scene [NARRATIVE] {"position":"475,250","size":"200,200"}
+<!--start in ADA app-->
+($action: "MOVE", ($app: "ADA"))
+
+($setLocation:
+  "Cabby Crime Scene",
+  "cabbyCrimeScene"
+)
+
+<!--($audio: "mainAudioLow")-->
+
+
+
+($bot: "Welcome, Investigator.",
+	($branch:
+    "","ada",
+	"passable", 
+    "once",
+		($branchOption: "",
+			"",
+			"next",
+			"",
+			($action: "MOVE", ($passage: "[[ADA Victim Intro]]"))
+    	)
+  	)
+)
+
+
+:: ADA Interviews [NARRATIVE] {"position":"1000,250","size":"200,200"}
+($bot: "We have interviews with three possible suspects. Who would you like to view first?",
+	($branch:
+    "","ada",
+	"passable", 
+    "once",
+		($branchOption: "",
+			"",
+			"next",
+			"",
+			($action: "MOVE", ($passage: "[[Interview Selection (ADA)]]"))
+    	)
+  	)
+)
+
+
+:: ADA Lucas Interview Response [NARRATIVE] {"position":"1725,75","size":"200,200"}
+<!--Mimicking Callouts to new Evidence appear after listening to interview-->
+<!--($bot: "(Lucas Reed added to Dossier)")
+($bot: "(New Evidence added to Evidence List)")-->
+
+($bot: "Lucas may be a bit slimy but is he really a murderer?")
+($action: "MOVE", ($passage: "[[Interview Selection (ADA)]]"))
+
+<!--($bot: "Lucas may be a bit slimy but is he really a murderer?",
+	($branch:
+    "","ada",
+	"passable", 
+    "once",
+		($branchOption: "",
+			"",
+			"Back to interviews",
+			"",
+			($action: "MOVE", ($passage: "[[Interview Selection (ADA)]]"))
+    	)
+  	)
+)-->
+
+<!--Revealing new evidence-->
+($action: "MOVE", ($passage: "[[Motive Lucas Debt]]"))
+($action: "MOVE", ($passage: "[[Profiling Victim Debt]]"))
+($action: "MOVE", ($passage: "[[DOSSIER Lucas Reed]]"))
+
+
+:: ADA Natalie Interview Response [NARRATIVE] {"position":"1725,300","size":"200,200"}
+<!--Mimicking Callouts to new Evidence appear after listening to interview-->
+<!--($bot: "(Natalie Parker added to Dossier)")
+($bot: "(New Evidence added to Evidence List)")-->
+
+($bot: "Natalie seems sweet, but aren’t you curious how her daughter factors into this?")
+($action: "MOVE", ($passage: "[[Interview Selection (ADA)]]"))
+
+
+<!--($bot: "Natalie seems sweet, but aren’t you curious how her daughter factors into this?",
+	($branch:
+    "","ada",
+	"passable", 
+    "once",
+		($branchOption: "",
+			"",
+			"Back to interviews",
+			"",
+			($action: "MOVE", ($passage: "[[Interview Selection (ADA)]]"))
+    	)
+  	)
+)-->
+
+<!--Revealing new evidence-->
+($action: "MOVE", ($passage: "[[Opportunity Natalie CCTV]]"))
+($action: "MOVE", ($passage: "[[Motive Natalie SMS]]"))
+($action: "MOVE", ($passage: "[[DOSSIER Natalie Parker]]"))
+
+
+:: ADA Ryan interview dialog [NARRATIVE] {"position":"1725,525","size":"200,200"}
+<!--Mimicking Callouts to new Evidence appear after listening to interview-->
+<!--($bot: "(Ryan Cole added to Dossier)")-->
+
+($bot: "Ryan and James seem to have butted heads a few times.")
+($action: "MOVE", ($passage: "[[Interview Selection (ADA)]]"))
+
+<!--($bot: "Ryan and James seem to have butted heads a few times.",
+	($branch:
+    "","ada",
+	"passable", 
+    "once",
+		($branchOption: "",
+			"",
+			"Back to interviews",
+			"",
+			($action: "MOVE", ($passage: "[[Interview Selection (ADA)]]"))
+    	)
+  	)
+)-->
+
+<!--Revealing new evidence-->
+($action: "MOVE", ($passage: "[[DOSSIER Ryan Cole]]"))
+
+
+:: ADA Victim Intro [NARRATIVE] {"position":"750,250","size":"200,200"}
+<!--Activate / Reveal James Carter Dossier-->
+($action: "MOVE", ($passage: "[[DOSSIER James Carter]]"))
+
+<!--($bot: "(James Carter added to Dossier)")
+-->
+
+($bot: "You can learn more about the vicim by viewing their profile in your Dossier.",
+	($branch:
+    "","ada",
+	"passable", 
+    "once",
+		($branchOption: "",
+			"",
+			"next",
+			"",
+			($action: "MOVE", ($passage: "[[ADA Interviews]]"))
+    	)
+  	)
+)
+
+
+:: Accusation [OPTION] {"position":"1725,1175","size":"200,200"}
+($setLocation:
+  "",
+  ""
+)
+($action: "MOVE", ($app: "HOME"))
+
+($branch:
+   "Who killed James Carter?","standalone",
+   "option-list",
+   "re-playable",
+  ($branchOption: "",
+    "",
+    "Lucas Reed",
+    "lucas",
+    ($action: "MOVE", ($passage: "[[NOT GUILTY Lucas]]"))
+  ),
+  ($branchOption: "",
+    "",
+    "Natalie Parker",
+    "natalie",
+    ($action: "MOVE", ($passage: "[[GUILTY]]"))
+  ), 
+    ($branchOption: "",
+    "",
+    "Ryan Cole",
+    "ryan",
+    ($action: "MOVE", ($passage: "[[NOT GUILTY Ryan]]"))
+  )
+)
+
+
+:: Accusation Choice [NARRATIVE] {"position":"1300,1100","size":"200,200"}
+<!--start in ADA app-->
+($action: "MOVE", ($app: "ADA"))
+
+($setLocation:
+  "Cabby Crime Scene",
+  "cabbyCrimeScene"
+)
+
+($bot: " ", 
+	($branch:
+   "What do you want to do next?","ada",
+   "option-list",
+   "re-playable",
+    ($branchOption: "",
+    "",
+    "Review Evidence List",
+    "evidenceIcon",
+    ($action: "MOVE", ($app: "EVIDENCE"))
+  ),
+  ($branchOption: "",
+    "",
+    "Make Accusation",
+    "accusationIcon",
+    ($action: "MOVE", ($passage: "[[Accusation]]"))
+  )
+  )
+)
+
+
+:: Audios [startup] {"position":"0,400","size":"100,100"}
+(set: $audios to (dm:
+))
+
+
+:: CHECKS Seen all Interviews [CODE] {"position":"1250,575","size":"100,100"}
+($trigger:
+  (a:
+    ($triggerTarget: "FIRST-VIEW", ($evidence: "[MOTIVE suspect Lucas]")),
+    ($triggerTarget: "FIRST-VIEW", ($evidence: "[MOTIVE Culprit Natalie]")),
+    ($triggerTarget: "FIRST-VIEW", ($evidence: "[PROFILING victim]")),
+    ($triggerTarget: "AFTER-VIEW", ($evidence: "Interview with Ryan Cole (Photo)")),
+    ($triggerTarget: "FIRST-VIEW", ($evidence: "CCTV of Natalie"))
+  ),
+  ($action: "MOVE", ($passage: "[[ADA All Evidence Revealed]]"))
+)
+
+
+:: DOSSIER James Carter [EVIDENCE] {"position":"850,575","size":"100,100"}
+($action: "REVEAL", ($evidence: "[VICTIM] James Carter"))
+
+($trigger:
+  ($triggerTarget: "AFTER-FIRST-VIEW", ($evidence: "[VICTIM] James Carter")),
+  ($action: "MOVE", ($passage: "[[ADA Interviews]]"))
+)
+
+
+:: DOSSIER Lucas Reed [EVIDENCE] {"position":"2250,50","size":"100,100"}
+($action: "REVEAL", ($evidence: "[Suspect] Lucas Reed"))
+
+
+:: DOSSIER Natalie Parker [EVIDENCE] {"position":"2225,400","size":"100,100"}
+($action: "REVEAL", ($evidence: "[Suspect] Natalie Parker"))
+
+
+:: DOSSIER Ryan Cole [EVIDENCE] {"position":"2075,600","size":"100,100"}
+($action: "REVEAL", ($evidence: "[Suspect] Ryan Cole"))
+
+
+:: End Test {"position":"2250,1350","size":"200,200"}
+($action: "MOVE", ($app: "ADA"))
+
+($bot: "Close this window (Click the x in the upper right corner) to begin the survey")
+
+
+:: Footer [footer] {"position":"0,100","size":"100,100"}
+(set: _index to 16)
+(for: each _item, ...(dm-values: $chats))[
+  (css: "display:none;")[
+  (set: _index to _index - 1)
+  (set: $val to "")
+  (for: each _i, ...(range: 1, 16))[
+    (if: _index is _i)[
+      (set: $val to (joined: "", $val, "Y"))
+    ](else:)[
+      (set: $val to (joined: "", $val, "="))
+    ]
+  ]
+  ]
+  (float-box: "=XXX=",$val)[_item]
+]
+
+
+:: GUILTY [INTRO-OUTRO] {"position":"2050,1400","size":"100,100"}
+($intro:
+  ($action: "MOVE", ($passage: "[[End Test]]")),
+  ($introStep:
+    ($introStepBG:
+      "VIDEO",
+      "SOUND_ON",
+      "c4a8b7dc-dbbb-450c-99a7-4108af58a17d"
+    ),
+    ($introStepControl:
+      "NEXT_STEP_BUTTON",
+      "SECONDARY",
+      "Continue"
+    )
+  ),
+  ($introStep:
+    ($introStepBG:
+      "IMAGE",
+      "natalie"
+    ),
+    ($introStepText:
+      "BREAKDOWN",
+      "NATALIE PARKER",
+        "IS",
+		"GUILTY"
+    ),
+    ($introStepControl:
+      "FINISH_INTRO_BUTTON",
+      "SECONDARY",
+      "End Case"
+    )
+  )
+)
+
+
+:: INIT [CODE] {"position":"350,500","size":"100,100"}
+($action: "HIDE_ALL_EVIDENCE")
+($action: "MOVE", ($passage: "[[ADA Crime Scene]]"))
+
+
+:: Images [startup] {"position":"0,200","size":"100,100"}
+(set: $images to (dm:
+  "40c26245-cca0-43d7-a0a1-f3e3b5e9847c", "https://static-qa.casescope.com/uploads/44de5bf5-10d9-4ab7-8f52-ace5325909d0.png",
+  "864eeba1-b202-403a-9ff3-99499401b6f9", "https://static-qa.casescope.com/uploads/155be1f2-7390-4fb7-ab6c-91f9938858f0.png",
+  "dca874a5-6a9f-4ada-bf60-1313485a3260", "https://static-qa.casescope.com/uploads/a31e7ade-0757-4702-8b38-b8d1b9dd2068.jpg",
+  "4144a8ce-ee35-4407-ba72-11c0395462d6", "https://static-qa.casescope.com/uploads/b123862b-e519-4d07-8d96-392f3248b0d1.png",
+  "c61b5229-34aa-4e82-8db9-a1ae0083ff55", "https://static-qa.casescope.com/uploads/59b09392-8804-411d-986d-2db636737496.png",
+  "c94986b3-39c5-4af8-8e1d-2d2a7282348e", "https://static-qa.casescope.com/uploads/137c5768-cddd-4d5b-9021-d5dd60619d02.png",
+  "1d8c1946-f7f6-4315-aa72-4e4db8d4e362", "https://static-qa.casescope.com/uploads/b6fa8665-ecb6-409b-880e-2444f953da07.png",
+  "dd2f4769-876d-47ae-8321-445b4b619e60", "https://static-qa.casescope.com/uploads/90ee4b50-ae43-4a71-9e1e-f342dab32863.png",
+  "47ec9ec4-fb09-4930-b17b-d2d819176dc1", "https://static-qa.casescope.com/uploads/2cf23c14-7183-4076-909e-afab0ec3ca87.png"
+))
+
+
+:: Interview Selection (ADA) [NARRATIVE] {"position":"1250,250","size":"200,200"}
+($bot: " ",
+($branch:
+   "Click to view Interview","ada",
+   "option-list",
+   "re-playable",
+  ($branchOption: "",
+    "",
+    "Lucas Reed interview",
+    "lucas",
+    ($action: "MOVE", ($passage: "[[Lucas Interview (Photo)]]"))
+  ),
+  ($branchOption: "",
+    "",
+    "Natalie Parker interview",
+    "natalie",
+    ($action: "MOVE", ($passage: "[[Natalie Interview (Photo)]]"))
+  ), 
+    ($branchOption: "",
+    "",
+    "Ryan Cole interview",
+    "ryan",
+    ($action: "MOVE", ($passage: "[[Ryan Interview (Photo)]]"))
+  )
+)
+)
+<!--Checks if it meets all conditions to open up ACCUSATION-->
+($action: "MOVE", ($passage: "[[CHECKS Seen all Interviews]]"))
+
+
+:: Intro [INTRO-OUTRO] {"position":"200,250","size":"200,200"}
+($intro:
+  ($action: "MOVE", ($passage: "[[INIT]]")),
+  ($introStep:
+    ($introStepBG:
+      "IMAGE",
+      "cabbyCrimeScene"
+    ),
+    ($introStepText:
+      "TITLE",
+      "CABBY'S LAST RIDE",
+      "The James Carter Case"
+    ),
+    ($introStepControl:
+      "NEXT_STEP_BUTTON",
+      "SECONDARY",
+      "Open Case"
+    )
+  ),
+  ($introStep:
+    ($introStepBG:
+      "VIDEO",
+      "SOUND_ON",
+      "358ed00a-13cb-4287-a522-c38bdf1805d8"
+    ),
+    ($introStepControl:
+      "NEXT_STEP_BUTTON",
+      "SECONDARY",
+      "Continue"
+    )
+  ),
+  ($introStep:
+    ($introStepBG:
+      "IMAGE",
+      "james"
+    ),
+    ($introStepText:
+      "BREAKDOWN",
+      "DATE:\nSEPTEMBER 4TH, 2024",
+      "VICTIM:\nJAMES CARTER",
+      "TIME OF DEATH:\n23:15",
+      "CAUSE OF DEATH:\nBLUNT FORCE TRAUMA TO THE HEAD"
+    ),
+    ($introStepControl:
+      "FINISH_INTRO_BUTTON",
+      "PRIMARY",
+      "Let's Begin"
+    )
+  )
+)
+
+
+:: Lucas Interview (Photo) [EVIDENCE] {"position":"1525,225","size":"100,100"}
+($action: "REVEAL", ($evidence: "Interview with Lucas Reed (Photo)"))
+($action: "MOVE", ($evidence: "Interview with Lucas Reed (Photo)"))
+
+<!--Player needs to fully play thru INTERACTION_END to move on-->
+($trigger:
+  ($triggerTarget: "FIRST-VIEW", ($evidence: "Interview with Lucas Reed (Photo)")),
+  ($action: "MOVE", ($passage: "[[ADA Lucas Interview Response]]"))
+)
+
+
+:: Mappers [startup] {"position":"0,300","size":"100,100"}
+(set: $uidAliasMap to (dm:
+  "cabbyCrimeScene", "40c26245-cca0-43d7-a0a1-f3e3b5e9847c",
+  "[VICTIM] James Carter", "32555f6e-e33b-4315-adcb-8af24495db32",
+  "Final Intro", "00d89dda-a9e0-4a7d-a663-7d3ad6bbc8f4",
+  "crimeScene", "864eeba1-b202-403a-9ff3-99499401b6f9",
+  "office", "dca874a5-6a9f-4ada-bf60-1313485a3260",
+  "[Location]  Crime Scene", "87e0fc6c-fe9e-4f58-b404-600d9bc6bbc5",
+  "natalie", "4144a8ce-ee35-4407-ba72-11c0395462d6",
+  "lucas", "c61b5229-34aa-4e82-8db9-a1ae0083ff55",
+  "james", "c94986b3-39c5-4af8-8e1d-2d2a7282348e",
+  "ryan", "1d8c1946-f7f6-4315-aa72-4e4db8d4e362",
+  "Interview with Lucas Reed (Photo)", "a8daf3d6-8ff6-4f4b-8ffe-5bfc0cebb166",
+  "Interview with Natalie Parker (Photo)", "61db517a-9b42-4ce6-b993-c6ff4a03c1f0",
+  "Interview with Ryan Cole (Photo)", "73208e1f-8ea3-4af4-bd34-65b857364930",
+  "[PROFILING victim]", "293c7440-e8f5-40e8-80b3-2565b84c6809",
+  "[Suspect] Lucas Reed", "74e2a941-b3e5-4269-a8eb-92da53ba4d7f",
+  "[MOTIVE suspect Lucas]", "65c75aa6-3766-4411-ac7e-2690cd70b0e1",
+  "CCTV of Natalie", "92aa3a2f-f418-4fda-8868-954caee142be",
+  "[Suspect] Natalie Parker", "f20f957a-a80b-4730-bcae-86109b1dff35",
+  "[MOTIVE Culprit Natalie]", "e587f49a-ea3a-4871-96f0-f1a069f7a3ad",
+  "[Suspect] Ryan Cole", "c1f7fe60-eb74-4d69-91c8-b35389b93dfe",
+  "accusationIcon", "dd2f4769-876d-47ae-8321-445b4b619e60",
+  "evidenceIcon", "47ec9ec4-fb09-4930-b17b-d2d819176dc1"
+))
+
+
+:: Motive Lucas Debt [EVIDENCE] {"position":"2250,175","size":"100,100"}
+($action: "REVEAL", ($evidence: "[MOTIVE suspect Lucas]"))
+
+
+:: Motive Natalie SMS [EVIDENCE] {"position":"2100,425","size":"100,100"}
+($action: "REVEAL", ($evidence: "[MOTIVE Culprit Natalie]"))
+
+
+:: NOT GUILTY Lucas [INTRO-OUTRO] {"position":"2050,1100","size":"100,100"}
+($intro:
+  ($action: "MOVE", ($passage: "[[Accusation Choice]]")),
+  ($introStep:
+    ($introStepBG:
+      "VIDEO",
+      "SOUND_ON",
+      "ce8aac00-c0f2-4a71-93a5-0ed11af87216"
+    ),
+    ($introStepControl:
+      "NEXT_STEP_BUTTON",
+      "SECONDARY",
+      "Continue"
+    )
+  ),
+  ($introStep:
+    ($introStepBG:
+      "IMAGE",
+      "lucas"
+    ),
+    ($introStepText:
+      "BREAKDOWN",
+      "LUCAS REED",
+      "NOT GUILTY"
+    ),
+    ($introStepControl:
+      "FINISH_INTRO_BUTTON",
+      "PRIMARY",
+      "RETRY ACCUSATION"
+    )
+  )
+  )
+
+
+:: NOT GUILTY Ryan [INTRO-OUTRO] {"position":"2050,1250","size":"100,100"}
+($intro:
+  ($action: "MOVE", ($passage: "[[Accusation Choice]]")),
+  ($introStep:
+    ($introStepBG:
+      "VIDEO",
+      "SOUND_ON",
+      "59120a71-4ca4-4bd4-a946-a3b5b0c68ca2"
+    ),
+    ($introStepControl:
+      "NEXT_STEP_BUTTON",
+      "SECONDARY",
+      "Continue"
+    )
+  ),
+  ($introStep:
+    ($introStepBG:
+      "IMAGE",
+      "ryan"
+    ),
+    ($introStepText:
+      "BREAKDOWN",
+      "RYAN COLE",
+     "NOT GUILTY"
+    ),
+    ($introStepControl:
+      "FINISH_INTRO_BUTTON",
+      "PRIMARY",
+      "RETRY ACCUSATION"
+    )
+  )
+)
+
+
+:: Natalie Interview (Photo) [EVIDENCE] {"position":"1525,350","size":"100,100"}
+($action: "REVEAL", ($evidence: "Interview with Natalie Parker (Photo)"))
+($action: "MOVE", ($evidence: "Interview with Natalie Parker (Photo)"))
+
+
+<!--Player needs to fully play thru INTERACTION_END to move on-->
+($trigger:
+  ($triggerTarget: "FIRST-VIEW", ($evidence: "Interview with Natalie Parker (Photo)")),
+  ($action: "MOVE", ($passage: "[[ADA Natalie Interview Response]]"))
+)
+
+
+:: Opportunity Natalie CCTV [EVIDENCE] {"position":"2100,300","size":"100,100"}
+($action: "REVEAL", ($evidence: "CCTV of Natalie"))
+
+
+:: Profiling Victim Debt [EVIDENCE] {"position":"2000,25","size":"100,100"}
+($action: "REVEAL", ($evidence: "[PROFILING victim]"))
+
+
+:: Ryan Interview (Photo) [EVIDENCE] {"position":"1525,475","size":"100,100"}
+($action: "REVEAL", ($evidence: "Interview with Ryan Cole (Photo)"))
+($action: "MOVE", ($evidence: "Interview with Ryan Cole (Photo)"))
+
+
+<!--Player needs to fully play thru INTERACTION_END to move on-->
+($trigger:
+  ($triggerTarget: "FIRST-VIEW", ($evidence: "Interview with Ryan Cole (Photo)")),
+  ($action: "MOVE", ($passage: "[[ADA Ryan interview dialog]]"))
+)
+
+
+:: Startup [startup] {"position":"0,0","size":"100,100"}
+(css: "display:none;")[
+(set: $chats to (dm:))
+
+(set: $bot to (macro: ...str-type _messages, [
+  (set: _res to "ADA: >>> ")
+  (for: each _message, ..._messages)[
+    (set: _res to _res + "\n* " + _message)
+  ]
+  (output-data: _res)
+]))
+
+(set: $botMessage to (macro: str-type _text, str-type _identifier, [
+  (set: _imageUid to "")
+  (if: $uidAliasMap contains _identifier)[
+    (set: _imageUid to $uidAliasMap's _identifier)
+  ](else:)[
+    (set: _imageUid to _identifier)
+  ]
+  (set: _res to "")
+  (if: _text is not "")[
+     (set: _res to _res + _text)
+  ]
+  (if: _imageUid is not "")[
+     (set: _nextLine to "")
+     (if: _text is not "")[
+       (set: _nextLine to "<br />")
+     ]
+     (set: _res to _res + _nextLine + (text: "<" + "img src='" + $images's _imageUid + "'>"))
+  ]
+  (output-data: _res)
+]))
+
+(set: $evidence to (macro: str-type _identifier, [
+  (set: _uid to "")
+  (if: $uidAliasMap contains _identifier)[
+    (set: _uid to $uidAliasMap's _identifier)
+  ](else:)[
+    (set: _uid to _identifier)
+  ]
+  (set: $ev to (find: _e where _e's uid is _uid, ...$evidence_list)'s 1st)
+  (output-data: "(Evidence) " + $ev's name)
+]))
+
+(set: $action to (macro: str-type _type, str-type _target, [
+  (output-data: _type + ": " + _target)
+]))
+
+(set: $passage to (macro: str-type _passage, [
+  (output-data: "[" + "[" + _passage + "]" + "]")
+]))
+
+(set: $triggerTarget to (macro: str-type _type, str-type _target, [
+  (output-data: (dm:
+    "type", _type,
+    "target", _target
+  ))
+]))
+
+(set: $trigger to (macro: any-type _targets, ...str-type _actions, [
+  (set: _res to "")
+  (if: _targets matches (a:
+    ...(datatype:(dm:
+      "type", str,
+      "target", str
+    ))
+  ))[
+    (for: each _target, ..._targets)[
+      (set: _res to _res + "\n* " + _target's "type" + ": " + _target's "target")
+    ]
+    (set: _res to _res + " >>> ")
+    (for: each _action, ..._actions)[
+      (set: _res to _res + "\n** " + _action)
+    ]
+  ](elseif: _targets matches (dm:
+    "type", str,
+    "target", str
+  ))[
+    (set: _res to _targets's "type" + ": " + _targets's "target" + " >>> ")
+    (for: each _action, ..._actions)[
+      (set: _res to _res + "\n* " + _action)
+    ]
+  ](else:)[
+    (error: "Invalid input for trigger target param")
+  ]
+  (output-data: _res)
+]))
+
+(set: $chatTrigger to (macro: str-type _uid, str-type _type, str-type _text, ...str-type _actions, [
+  (if: _type is 'EXACT')[(set: $chats's _uid to _text)]
+  (if: _type is 'EXACT')[(set: $prefix to "BUTTON")]
+  (else-if: _type is 'AI-PROMPT')[(set: $prefix to "PROMPT")]
+  (else: )[(error: "Unknown chat trigger type. Available types: [EXACT, AI-PROMPT]")]
+  (set: _res to $prefix + ": " + _text + " >>> ")
+  (for: each _action, ..._actions)[
+    (set: _res to _res + "\n* " + _action)
+  ]
+  (output-data: _res)
+]))
+
+(set: $chatTriggerOff to (macro: str-type _uid, [
+  (if: $chats contains _uid)[
+    (set: _button to $chats's _uid)
+    (move: $chats's _uid into _var)
+    (output-data: "BUTTON DISABLED: " + _button)
+  ](else:)[
+    (output-data: "BUTTON DISABLED: " + "(colour: red)[Unregistered button]")
+  ]
+]))
+
+(set: $messages_evidence to (a:))
+
+(set: $photos_evidence to (a:(dm:"uid","87e0fc6c-fe9e-4f58-b404-600d9bc6bbc5","name","[Location]  Crime Scene","description","Crime Scene BKG"),(dm:"uid","e587f49a-ea3a-4871-96f0-f1a069f7a3ad","name","[MOTIVE Culprit Natalie]","description","Sms"),(dm:"uid","293c7440-e8f5-40e8-80b3-2565b84c6809","name","[PROFILING victim]","description","More debts"),(dm:"uid","b81a9409-97bb-4960-9b88-3669f9fb3feb","name","a picture of the murder weapon","description","the murder weapon as seen in the evidence room"),(dm:"uid","92aa3a2f-f418-4fda-8868-954caee142be","name","CCTV of Natalie","description","CCTV of Natalie"),(dm:"uid","a8daf3d6-8ff6-4f4b-8ffe-5bfc0cebb166","name","Interview with Lucas Reed (Photo)","description","Interview with Lucas Reed (Video)"),(dm:"uid","61db517a-9b42-4ce6-b993-c6ff4a03c1f0","name","Interview with Natalie Parker (Photo)","description","nat parker interview"),(dm:"uid","73208e1f-8ea3-4af4-bd34-65b857364930","name","Interview with Ryan Cole (Photo)","description","Interview with Ryan Cole (Photo)"),(dm:"uid","e04dd231-f4e2-4628-b6d2-081513c5455a","name","Lucas Not Guilty Outcome","description","Lucas Not Guilty Movie"),(dm:"uid","ec978e8a-e7c6-4b02-bc73-30b8436435b6","name","Natalie Guilty Outcome","description","Natalie Guilty Movie"),(dm:"uid","2cb38f8c-29e8-4b3d-9332-8cb21934561d","name","Ryan Not Guilty Outcome","description","Ryan Not Guilty Movie")))
+
+(set: $reports_evidence to (a:(dm:"uid","65c75aa6-3766-4411-ac7e-2690cd70b0e1","name","[MOTIVE suspect Lucas]","description","Debt to Lucas")))
+
+(set: $character_evidence to (a:(dm:"uid","74e2a941-b3e5-4269-a8eb-92da53ba4d7f","name","[Suspect] Lucas Reed","description","Lucas Dossier"),(dm:"uid","f20f957a-a80b-4730-bcae-86109b1dff35","name","[Suspect] Natalie Parker","description","Natalie Dossier"),(dm:"uid","c1f7fe60-eb74-4d69-91c8-b35389b93dfe","name","[Suspect] Ryan Cole","description","Ryan Dossier"),(dm:"uid","32555f6e-e33b-4315-adcb-8af24495db32","name","[VICTIM] James Carter","description","James Carter dossier")))
+
+(set: $voice_recordings_evidence to (a:))
+
+(set: $interviews_evidence to (a:(dm:"uid","8146aef3-2aef-4dc5-9191-16b05a47a39b","name","Lucas Reed Interview","description","Detective Johnson interviews Lucas Reed, a loan shark known for his ruthless methods.  **Reed's Goal:** To downplay his relationship with James Carter and to create an alibi that places him elsewhere at the time of the murder.   **Detective's Goal:** To determine the extent of Lucas Reed's involvement with James Carter and to uncover any potential motive he may have had for killing the cab driver.")))
+
+(set: $introductions_evidence to (a:(dm:"uid","11582ae4-5de8-43ab-ac6f-2c94e516e94f","name","[Final GUILTY] culprit","description","GUILTY video"),(dm:"uid","4e701ea7-5b22-499f-8fa2-e93ebaef38a8","name","[Final NOT GUILTY] Culprit","description","not guilty video"),(dm:"uid","5b16e7b0-1f97-499a-a0c4-c2465fd0cdf7","name","[MOVIE] ADA intro","description","ADA intro"),(dm:"uid","d65a3d64-a466-4b1a-bc12-ed7804f5f4eb","name","[MOVIE] Case Intro","description","Case Intro"),(dm:"uid","00d89dda-a9e0-4a7d-a663-7d3ad6bbc8f4","name","Final Intro","description","Final intro video"),(dm:"uid","0d3b1040-46ca-48b9-868c-cc970ad10fa0","name","Interview with Lucas Reed","description","Interview Lucas"),(dm:"uid","cdcc8ec4-b9ed-4201-b4f1-7ef7d9be4645","name","Interview with Natalie Parker","description","Interview Natalie"),(dm:"uid","642473a7-5dba-47b1-b603-1bd1dd3522a6","name","Interview with Ryan Cole","description","Interview Ryan")))
+
+(set: $cctv_evidence to (a:(dm:"uid","237cc8a6-d998-4b8f-baf9-eb3339a5a459","name","[OPPORTINITY Culprit Natalie]","description","cctv")))
+
+(set: $nones_evidence to (a:))
+
+(set: $evidence_list to (a:
+  ...$messages_evidence,
+  ...$photos_evidence,
+  ...$reports_evidence,
+  ...$character_evidence,
+  ...$voice_recordings_evidence,
+  ...$interviews_evidence,
+  ...$introductions_evidence,
+  ...$cctv_evidence,
+  ...$nones_evidence
+))
+]
+
+
+:: Untitled Passage {"position":"525,650","size":"200,200"}
+($intro:
+  ($action: "MOVE", ($passage: "[[INIT]]")),
+  ($introStep:
+    ($introStepBG:
+      "VIDEO",
+      "SOUND_ON",
+      "358ed00a-13cb-4287-a522-c38bdf1805d8"
+    )
+  )
+   )
+
+
+:: Videos [startup] {"position":"0,500","size":"100,100"}
+(set: $videos to (dm:
+  "358ed00a-13cb-4287-a522-c38bdf1805d8", "https://static-qa.casescope.com/uploads/f2d8d58f-4965-4cb8-ab81-657c65db14ed.mp4",
+  "ce8aac00-c0f2-4a71-93a5-0ed11af87216", "https://static-qa.casescope.com/uploads/b78724be-e8c6-4061-a16b-a1891fa89a5f.mp4",
+  "59120a71-4ca4-4bd4-a946-a3b5b0c68ca2", "https://static-qa.casescope.com/uploads/6da5eb2f-82d1-4e72-9617-088546b663db.mp4",
+  "c4a8b7dc-dbbb-450c-99a7-4108af58a17d", "https://static-qa.casescope.com/uploads/6180c30e-2a73-4c5a-b0ea-034d8c8818d8.mp4"
+))
+
+
+:: images placeholder {"position":"125,0","size":"200,200"}
+($bot: ($botMessage: "Location Image", "cabbyCrimeScene"))
+
+($action: "REVEAL", ($evidence: "Final Intro"))
+
+($bot: ($botMessage: "crime scene", "crimeScene"))
+
+($bot: ($botMessage: "office", "office"))
+($bot: ($botMessage: "", "natalie"))
+
+($bot: ($botMessage: "", "lucas"))
+
+($bot: ($botMessage: "james", "james"))
+
+
+($bot: ($botMessage: "", "ryan"))
+
+
+($bot: ($botMessage: "", "accusationIcon"))
+
+($bot: ($botMessage: "", "evidenceIcon"))
