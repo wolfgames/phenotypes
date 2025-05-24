@@ -486,7 +486,7 @@ def validate_and_repair_twine_state(state_dict, repair_enabled=False, cutoff=0.8
 should_repair = True
 fuzzy_cutoff = 0.8 # Use a more sensible default cutoff for other repairs
 
-print("--- Running Validation ---")
+print("\n--- Running Validation ---")
 # 2. Call the function
 errors, repairs, final_state = validate_and_repair_twine_state(
     state, # Pass your state dictionary
@@ -497,13 +497,13 @@ errors, repairs, final_state = validate_and_repair_twine_state(
 # 3. Print results (Keep this section as is)
 print("\n--- Repairs Applied ---")
 if repairs:
-    for i, r in enumerate(repairs, 1): print(f"{i}. {r}")
+    for i, r in enumerate(repairs, 1): print(f"{i}. {r}\n")
 else:
     print("None")
 
 print("\n--- Errors Remaining ---")
 if errors:
-    for i, e in enumerate(errors, 1): print(f"{i}. {e}")
+    for i, e in enumerate(errors, 1): print(f"{i}. {e}\n")
 else:
     print("None")
 

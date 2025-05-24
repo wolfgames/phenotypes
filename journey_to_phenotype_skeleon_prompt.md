@@ -1,5 +1,5 @@
 ---SYSTEM---
-OUTPUT FORMAT: Produce ONLY valid JSON according to the schema specified - a flat array of phenotype steps, each defining its potential connections in a non-linear flow, ensuring all entry points are reachable. No introduction, explanation, code blocks, formatting markers, commentary, or conclusion. Return raw JSON only.
+OUTPUT FORMAT: Produce ONLY valid JSON according to the schema specified—a flat array of phenotype steps, each corresponding directly to a step in the input journey (allowing at most ±2 for necessary splits or merges). Do NOT add, invent, or infer phenotype steps (such as CASE_RESOLUTION, ACCUSATION, DEDUCTION_PUZZLE, etc.) unless they are explicitly present in the input journey. No introduction, explanation, code blocks, formatting markers, commentary, or conclusion. Return raw JSON only.
 
 CRITICAL REQUIREMENTS:
 1. Each output element MUST have exactly six fields: "step_id", "step_index", "phenotype_tags", "step_description", "entry_point_id", "next_steps".
@@ -17,6 +17,7 @@ CRITICAL REQUIREMENTS:
 13. NEVER add numbering to the array items or narrative descriptions.
 14. NEVER produce anything but the raw JSON array.
 15. **MAINTAIN MAXIMUM STEP COUNT:** The output MUST NOT exceed 16 steps total. Consolidate related steps if necessary.
+16. STRICT NODE COUNT ENFORCEMENT: The number of output steps MUST match the number of steps in the input journey, allowing at most ±2 for necessary splits or merges. Do NOT add phenotype steps (such as CASE_RESOLUTION, ACCUSATION, DEDUCTION_PUZZLE, etc.) unless they are explicitly present in the input journey. Do NOT invent or infer missing case structure. Only output nodes that correspond directly to steps in the input journey. Graph reachability should only be enforced among the nodes present in the input journey.
 
 DESCRIPTION REQUIREMENTS:
 1. Focus on WHAT content to present, not HOW to present it.
@@ -24,9 +25,10 @@ DESCRIPTION REQUIREMENTS:
 3. Keep all descriptions between 100-250 characters (excluding source references).
 4. Format source references consistently as: "(Content from X, Y, Z)".
 5. Ensure descriptions are complete, standalone, and implementation-neutral.
+6. Only describe and output steps that are present in the input journey. Do not extrapolate or invent additional narrative beats, conclusions, or structural nodes.
 
 OUTPUT VALIDATION:
-Before returning, verify your output is pure JSON without any wrapper text or code block markers. Confirm all phenotype_tags are valid enum values. Ensure all descriptions follow the required format. Ensure step_ids are unique. **Verify that `entry_point_id` is present and holds a valid `step_id` from the generated list. Verify that all values in `next_steps` arrays are valid `entry_point_id`s present in the output. Verify graph reachability for entry points. COUNT THE NUMBER OF OUTPUT STEPS AND VERIFY IT MATCHES THE INPUT JOURNEY COUNT (±2 steps).**
+Before returning, verify your output is pure JSON without any wrapper text or code block markers. Confirm all phenotype_tags are valid enum values. Ensure all descriptions follow the required format. Ensure step_ids are unique. **Verify that `entry_point_id` is present and holds a valid `step_id` from the generated list. Verify that all values in `next_steps` arrays are valid `entry_point_id`s present in the output. Verify graph reachability for entry points. COUNT THE NUMBER OF OUTPUT STEPS AND VERIFY IT MATCHES THE INPUT JOURNEY COUNT (±2 steps). If the output contains more steps than this, remove any steps that do not correspond directly to an input journey step.**
 
 If in doubt about correctness, default to mimicking the exact structure, style, and format shown in the example output.
 ---/SYSTEM---
@@ -156,8 +158,12 @@ PROCEDURE TransformJourneyIntoPhenotypeSteps(detailed_journey, case_metadata) {
         }
     }
     
-    // Count generated steps and compare to MAX_OUTPUT_STEPS
+    // Count generated steps and compare to input_step_count
     generated_step_count = step_data_map.SIZE();
+    // STRICT: If generated_step_count > input_step_count + 2, remove any steps not directly corresponding to input journey steps.
+    IF step_data_map.SIZE() > input_step_count + 2 {
+        step_data_map = RemoveNonInputSteps(step_data_map, detailed_journey);
+    }
     
     // === Pass 2: Generate Potential Edges (Source Step ID -> Target Entry Point ID) ===
     potential_edges = []; // List of (source_step_id, target_entry_point_id) tuples
@@ -519,6 +525,23 @@ PROCEDURE FindNextEntryPointID(current_index, detailed_journey, id_to_index_map,
      return NULL; // No subsequent entry point found
 }
 
+// NEW: Helper to remove steps not present in the input journey
+PROCEDURE RemoveNonInputSteps(step_data_map, detailed_journey) {
+    valid_ids = NEW SET();
+    FOR EACH index FROM 0 TO detailed_journey.LENGTH - 1 {
+        phenotype_tag = ExtractPhenotypeTagFromDetail(detailed_journey[index]);
+        step_id = phenotype_tag + "_" + index;
+        valid_ids.ADD(step_id);
+    }
+    filtered_map = {};
+    FOR EACH step_id IN step_data_map.KEYS() {
+        IF step_id IN valid_ids {
+            filtered_map[step_id] = step_data_map[step_id];
+        }
+    }
+    return filtered_map;
+}
+
 ```
 ---/INSTRUCTIONS---
 
@@ -819,6 +842,60 @@ PROCEDURE FindNextEntryPointID(current_index, detailed_journey, id_to_index_map,
     "next_steps": []
   }
 ]
+
+
+
+### Minimal Input Example
+**Input Data Snippet:**
+1. **NARRATIVE_CUTSCENE_SEQUENCE:** The detective arrives at the scene.
+2. **NARRATIVE_DIALOGUE_SEQUENCE:** The detective interviews the witness.
+3. **EVIDENCE_COLLECTION:** The detective searches the room.
+4. **SUSPECT_PROFILE:** The detective reviews the suspect's file.
+5. **NARRATIVE_DIALOGUE_SEQUENCE:** The detective reports findings to ADA.
+
+**Output:**
+[
+  {
+    "step_id": "NARRATIVE_CUTSCENE_SEQUENCE_0",
+    "step_index": 0,
+    "phenotype_tags": ["NARRATIVE_CUTSCENE_SEQUENCE"],
+    "step_description": "The detective arrives at the scene. (Content from Input Step 1)",
+    "entry_point_id": "NARRATIVE_CUTSCENE_SEQUENCE_0",
+    "next_steps": ["NARRATIVE_DIALOGUE_SEQUENCE_1"]
+  },
+  {
+    "step_id": "NARRATIVE_DIALOGUE_SEQUENCE_1",
+    "step_index": 1,
+    "phenotype_tags": ["NARRATIVE_DIALOGUE_SEQUENCE"],
+    "step_description": "The detective interviews the witness. (Content from Input Step 2)",
+    "entry_point_id": "NARRATIVE_DIALOGUE_SEQUENCE_1",
+    "next_steps": ["EVIDENCE_COLLECTION_2"]
+  },
+  {
+    "step_id": "EVIDENCE_COLLECTION_2",
+    "step_index": 2,
+    "phenotype_tags": ["EVIDENCE_COLLECTION"],
+    "step_description": "The detective searches the room. (Content from Input Step 3)",
+    "entry_point_id": "EVIDENCE_COLLECTION_2",
+    "next_steps": ["SUSPECT_PROFILE_3"]
+  },
+  {
+    "step_id": "SUSPECT_PROFILE_3",
+    "step_index": 3,
+    "phenotype_tags": ["SUSPECT_PROFILE"],
+    "step_description": "The detective reviews the suspect's file. (Content from Input Step 4)",
+    "entry_point_id": "SUSPECT_PROFILE_3",
+    "next_steps": ["NARRATIVE_DIALOGUE_SEQUENCE_4"]
+  },
+  {
+    "step_id": "NARRATIVE_DIALOGUE_SEQUENCE_4",
+    "step_index": 4,
+    "phenotype_tags": ["NARRATIVE_DIALOGUE_SEQUENCE"],
+    "step_description": "The detective reports findings to ADA. (Content from Input Step 5)",
+    "entry_point_id": "NARRATIVE_DIALOGUE_SEQUENCE_4",
+    "next_steps": []
+  }
+]
 ---/EXAMPLE---
 ---SCHEMA---
 ```json
@@ -1017,7 +1094,5 @@ Process: Mentally (or computationally) traverse the graph. Can a player starting
 
 This thought process prioritizes the player's experience and agency, breaking down the source material into the fundamental building blocks (phenotypes) and then rebuilding them into a flexible, connected graph that supports non-linear exploration while guiding the player towards the case resolution.
 
-Output expanded information following ONLY the player journey below. Output the exact number of steps described in the text:
 
-{{player_journey}} 
 ---/COMMAND---
